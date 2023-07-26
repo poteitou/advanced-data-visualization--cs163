@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
 Screen::Screen(sf::RenderWindow &window, sf::Font &font)
-    : mWindow(window), mFont(font), mData(0), mMenu(mWindow, mFont)//, mStaticArray(mWindow, mFont), mDynamicArray(mWindow, mFont), mSinglyLinkedList(mWindow, mFont), mDoublyLinkedList(mWindow, mFont), mCircularLinkedList(mWindow, mFont), mStack(mWindow, mFont), mQueue(mWindow, mFont)
+    : mWindow(window), mFont(font), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont)//, mDynamicArray(mWindow, mFont), mSinglyLinkedList(mWindow, mFont), mDoublyLinkedList(mWindow, mFont), mCircularLinkedList(mWindow, mFont), mStack(mWindow, mFont), mQueue(mWindow, mFont)
 {
     
 }
@@ -13,9 +13,9 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
     case 0: // Menu
         mMenu.update(mousePress, mousePosition, mData);
         break;
-    // case 1: // Hash table
-    //     mStaticArray.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    case 1: // Hash table
+        mHashTable.update(mousePress, mousePosition, keyPress, mData, dt);
+        break;
     // case 2: // Dynamic array
     //     mDynamicArray.update(mousePress, mousePosition, keyPress, mData, dt);
     //     break;
@@ -46,9 +46,9 @@ void Screen::draw()
     case 0: // Menu
         mMenu.draw();
         break;
-    // case 1: // Hash table
-    //     mStaticArray.draw();
-    //     break;
+    case 1: // Hash table
+        mHashTable.draw();
+        break;
     // case 2: // Dynamic array
     //     mDynamicArray.draw();
     //     break;

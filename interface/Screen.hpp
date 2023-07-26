@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Menu.hpp"
-// #include "../datastruct/StaticArray.hpp"
+#include "../datastruct/HashTable.hpp"
 // #include "../datastruct/DynamicArray.hpp"
 // #include "../datastruct/SinglyLinkedList.hpp"
 // #include "../datastruct/DoublyLinkedList.hpp"
@@ -20,7 +20,7 @@ struct Screen
     sf::RenderWindow &mWindow;
     sf::Font &mFont;
     Menu mMenu;
-    // StaticArray mStaticArray;
+    HashTable mHashTable;
     // DynamicArray mDynamicArray;
     // SinglyLinkedList mSinglyLinkedList;
     // DoublyLinkedList mDoublyLinkedList;
