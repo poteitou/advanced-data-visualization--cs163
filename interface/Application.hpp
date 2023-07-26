@@ -2,14 +2,14 @@
 #define APPLICATION_HPP
 
 #include <SFML/Graphics.hpp>
-// #include "Screen.hpp"
+#include "Screen.hpp"
 
 struct Application
 {
                 Application();
     void        run();
     void        processEvents();
-    void        render();//Screen &mScreen);
+    void        render(Screen &mScreen);
 
     sf::RenderWindow mWindow;
     sf::Font mFont;

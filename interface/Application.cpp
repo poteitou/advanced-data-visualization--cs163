@@ -6,7 +6,7 @@ Application::Application()
     mFont.loadFromFile("resources/fonts/arial.ttf");
     mWindow.setVerticalSyncEnabled(true);
     // to the refresh rate of the monitor, usually around 60Hz. This can avoid graphical artifacts such as screen tearing
-    mWindow.setPosition(sf::Vector2i(175, 50));
+    mWindow.setPosition(sf::Vector2i(150, 50));
 
     mousePress = false;
     keyPress = '$';
@@ -15,15 +15,15 @@ Application::Application()
 void Application::run()
 {
     sf::Clock clock;
-    // Screen mScreen(mWindow, mFont);
+    Screen mScreen(mWindow, mFont);
 
     while (mWindow.isOpen())
     {
         float dt = clock.restart().asSeconds();
         processEvents();
-        // mScreen.update(mousePress, mousePosition, keyPress, dt);
+        mScreen.update(mousePress, mousePosition, keyPress, dt);
         mWindow.clear();
-        // render(mScreen);
+        render(mScreen);
     }
 }
 
@@ -66,13 +66,13 @@ void Application::processEvents()
     }
 }
 
-void Application::render()//Screen &mScreen)
+void Application::render(Screen &mScreen)
 {
     sf::Texture texture;
     texture.loadFromFile("resources/images/background.png");
     sf::Sprite sprite;
     sprite.setTexture(texture, true);
     mWindow.draw(sprite);
-    // mScreen.draw();
+    mScreen.draw();
     mWindow.display();
 }
