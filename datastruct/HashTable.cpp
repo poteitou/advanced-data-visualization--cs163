@@ -79,9 +79,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mBInit[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(275 + i * 200, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBInit[i], font, 22);
 
     /*
-    std::string nameBInsert[] = {"At The First", "At The Last", "At The Middle"};
-    for (int i = 0; i < 3; i++)
-        mBInsert[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(275 + i * 200, 570), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBInsert[i], font, 22);
 
     std::string nameBStep[] = {"Previous", "Next", "Final"};
     for (int i = 0; i < 3; i++)

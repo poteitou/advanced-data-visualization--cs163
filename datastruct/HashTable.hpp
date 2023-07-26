@@ -41,7 +41,6 @@ struct HashTable
     sf::Font &mFont;
     std::vector<Button> mButton;
     std::vector<Button> mBInit;
-    // std::vector<Button> mBInsert;
 
     // std::vector<Button> mBStep;
     // std::vector<Button> mBOnce;
