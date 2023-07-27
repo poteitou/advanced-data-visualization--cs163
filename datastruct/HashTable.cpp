@@ -124,7 +124,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     for (int i = 0; i < 5; i++)
     {
         mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200), 0);
-        mRealBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(50, 140, 200), false);
         mRealBucket[i].mPoint.clear();
         mRealBucket[i].mLine.clear();
     }
@@ -149,6 +148,11 @@ void HashTable::addPoint(Bucket &bucket, int index, int pos, std::string element
 void HashTable::addLine(Bucket &bucket, int index, int pos, bool highLight)
 {
     if (pos == -1) pos = bucket.mLine.size();
+    if (bucket.mPoint.empty())
+    {
+        bucket.mArrow = Arrow(sf::Vector2f(800 + 100, 175 + index * 100 + 25), sf::Color(50, 140, 200), highLight);
+        return;
+    }
     bucket.mLine.push_back(Line(sf::Vector2f(1075 + pos * 100 - 100, 200 + index * 100), sf::Vector2f(1075 + pos * 100, 200 + index * 100), sf::Color(50, 140, 200), highLight));
 }
 
@@ -538,122 +542,34 @@ void HashTable::insert(std::string element)
 {
     if (firstTime == false) return;
     firstTime = false;
-    // if (size == 9 || index > size || index >= 9)
-    // {
-    //     nosuchfile = true;
-    //     return;
-    // }
-    // nosuchfile = false;
-
     mStep.clear();
     Step tmpStep;
     for (int i = 0; i < 5; i++)
     {
         tmpStep.mBucket[i] = mRealBucket[i];
         tmpStep.mTime = 0;
-        mStep.push_back(tmpStep);
     }
+    mStep.push_back(tmpStep);
     int index = stoi(element) % 5;
     if (mRealBucket[index].mPoint.size() == 5)
     {
         // noti
+        // nosuchfile = true;
         return;
     }
-    step = 0; 
+    // nosuchfile = false;
+    step = 0;
+    runOption = 1;
+
     tmpStep.mBucket[index].mLabel.setHighLight(true);
     mStep.push_back(tmpStep);
 
-    if (mRealBucket[index].mPoint.size())
-    {
-        addLine(tmpStep.mBucket[index], index, -1, true);
-        addLine(mRealBucket[index], index, -1, false);
-        mStep.push_back(tmpStep);
-    }
+    addLine(tmpStep.mBucket[index], index, -1, true);
+    addLine(mRealBucket[index], index, -1, false);
 
     addPoint(tmpStep.mBucket[index], index, -1, element, true);
     addPoint(mRealBucket[index], index, -1, element, false);
     mStep.push_back(tmpStep);
-
-    // # clear mStep
-    // non-highlight hashtable
-    // # print out
-    // int index = stoi(element) % 5;
-    // if mBucket[index] full -> print notification! & return
-    // highlight mBucket[index].mLabel
-    // #print out
-    // mBucket[index].lines.push_back(Line(from back to new point)); 
-    // highlight mBucket[index].lines.back()
-    // # print out
-    // mBucket[index].points.push_back(Point(element));
-    // highlight mBucket[index].points.back()
-    // #print out
-    /*
-    runOption = 1;
-
-    if (index == 0)
-    {
-        temp[size].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-        mDataNode.push_back(temp);
-
-        tmp = head;
-        setPos(temp, 0, 450, tmp);
-        if (head != nullptr) mDataNode.push_back(temp);
-
-        newNode->next = head;
-        temp[size].setPosition(sf::Vector2f(350 + index * 100, 250), sf::Vector2f(350 + index * 100, 250), sf::Vector2f(450 + 0 * 100, 150));
-        temp[size].mNext = newNode->next != nullptr;
-        if (newNode->next != nullptr) mDataNode.push_back(temp);
-
-        head = newNode;
-    }
-    else
-    {
-        Node *previous = head;
-
-        for (int i = 0; i <= index - 1; i++)
-        {
-            if (i > 0)
-            {
-                temp[i - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
-            }
-            temp[i] = DataNode(sf::Vector2f(350 + i * 100, 150), sf::Vector2f(350 + (i > 0 ? i - 1 : i) * 100, 150), sf::Vector2f(350 + (i < size - 1 ? i + 1 : i) * 100, 150), previous->data, i == 0 ? "head-0" : std::to_string(i), mFont, sf::Color::White, pallete[color].second, pallete[color].second, sf::Color::Black, 100.f, false, previous->next != nullptr);
-            mDataNode.push_back(temp);
-
-            if (i < index - 1)
-            {
-                temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-                mDataNode.push_back(temp);
-                previous = previous->next;
-            }
-        }
-
-        temp[size].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-        mDataNode.push_back(temp);
-
-        tmp = previous->next;
-        setPos(temp, index, 450, tmp);
-        if (tmp != nullptr) 
-        {
-            temp[index - 1].setPosition(sf::Vector2f(350 + (index - 1) * 100, 150), sf::Vector2f(350 + (index - 1 > 0 ? index - 2 : index - 1) * 100, 150), sf::Vector2f(450 + index * 100, 150));
-            mDataNode.push_back(temp);
-        }
-
-        newNode->next = previous->next;
-        temp[size].setPosition(sf::Vector2f(350 + index * 100, 250), sf::Vector2f(350 + index * 100, 250), sf::Vector2f(350 + (index + 1) * 100, 150));
-        temp[size].mNext = newNode->next != nullptr;
-        if (newNode->next != nullptr) mDataNode.push_back(temp);
-
-        previous->next = newNode;
-        temp[index - 1].setPosition(sf::Vector2f(350 + (index - 1) * 100, 150), sf::Vector2f(350 + (index - 1 > 0 ? index - 2 : index - 1) * 100, 150), sf::Vector2f(350 + index * 100, 250));
-        temp[index - 1].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-        temp[index - 1].mNext = previous->next != nullptr;
-        mDataNode.push_back(temp);
-    }
-    ++size;
-    tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.push_back(temp);
-    */
 }
 /*
 
