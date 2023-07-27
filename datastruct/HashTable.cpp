@@ -110,13 +110,13 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mRect[1].setSize(sf::Vector2f(500, 300));
     mRect[1].setPosition(sf::Vector2f(100, 500));
     firstTime = true;
+    step = -1;
+    mSpeed = 0;
     /*
 
     array = new std::string[9];
     head = nullptr;
     size = 0;
-    step = -1;
-    speed = 0;
     firstStep = true;
     runOption = -1; // no mode:-1       step:0      once:1
     color = 0; */
@@ -166,6 +166,7 @@ int HashTable::Rand(int MAX)
 
 void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt)
 {
+    mDt = dt;
     for (int i = 0; i < 4; i++)
         mButton[i].setMouseOver(mousePosition);
     /* for (int i = 8; i < 11; i++)
@@ -192,6 +193,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             mInputBar[1].reset(std::to_string(Rand(99)));
             // mInputBar[3].reset(std::to_string(Rand(99)));
         }
+    mSpeed = 1;
     /*
     if (runOption == 1 && mousePress && mButton[5].mHovered)
     {
@@ -200,7 +202,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         for (int i = 0; i < 4; i++) mBOnce[i].mHovered = false;
         for (int i = 0; i < 3; i++)
             mBStep[i].setMouseOver(mousePosition);
-        speed = 0;
+        mSpeed = 0;
         step = 0;
         for (int i = 0; i < mDataNode.size(); i++)
         {
@@ -250,10 +252,10 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         mButton[6].mHovered = true;
         for (int i = 0; i < 4; i++)
         {
-            if (speed == 0) speed = 1; // auto 1x speed
+            if (mSpeed == 0) mSpeed = 1; // auto 1x mSpeed
             if (mBOnce[i].setMouseOver(mousePosition) && mousePress)
             {
-                speed = 1 << i;
+                mSpeed = 1 << i;
                 mBOnce[i].mHovered = true;
                 for (int i = 0; i < mDataNode.size(); i++)
                 {
@@ -261,7 +263,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
                         mDataNode[i][j].reset();
                 }
             }
-            if (speed == (1 << i)) mBOnce[i].mHovered = true;
+            if (mSpeed == (1 << i)) mBOnce[i].mHovered = true;
         }
     }
 
@@ -270,7 +272,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         size = 0;
         firstTime = firstStep = true;
         runOption = step = -1;
-        speed = mType = mData = 0;
+        mSpeed = mType = mData = 0;
         color = 0;
         mButton[7].reset();
         mDataNode.clear();
@@ -314,7 +316,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         {
             for (int j = 0; j < mDataNode[i].size(); j++)
             {
-                if (!mDataNode[i][j].appear(100.f, speed * dt))
+                if (!mDataNode[i][j].appear(100.f, mSpeed * dt))
                 {
                     step = i;
                     drawn = true;
@@ -548,6 +550,7 @@ void HashTable::insert(std::string element)
     for (int i = 0; i < 5; i++)
     {
         tmpStep.mBucket[i] = mRealBucket[i];
+        tmpStep.mTime = 0;
         mStep.push_back(tmpStep);
     }
     int index = stoi(element) % 5;
@@ -556,7 +559,7 @@ void HashTable::insert(std::string element)
         // noti
         return;
     }
-
+    step = 0; 
     tmpStep.mBucket[index].mLabel.setHighLight(true);
     mStep.push_back(tmpStep);
 
@@ -586,10 +589,6 @@ void HashTable::insert(std::string element)
     // #print out
     /*
     runOption = 1;
-    step = 0; // activate
-    Node *newNode = new Node(element);
-    temp[size] = DataNode(sf::Vector2f(350 + index * 100, 250), sf::Vector2f(350 + index * 100, 250), sf::Vector2f(350 + index * 100, 250), newNode->data, "", mFont, sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black, 0, false, newNode->next != nullptr);
-    mDataNode.push_back(temp);
 
     if (index == 0)
     {
@@ -857,8 +856,6 @@ void HashTable::setColor()
 
 void HashTable::draw()
 {
-    Line line = Line(sf::Vector2f(975, 200), sf::Vector2f(1075, 200), sf::Color(50, 140, 200), false);
-    line.draw(mWindow);
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
@@ -945,9 +942,21 @@ void HashTable::draw()
         break;
     }
 
-    for (int i = 0; i < mStep.size(); i++)
+    if (step != -1)
     {
-        mStep[i].draw(mWindow);
+        while (step < mStep.size() - 1)
+        {
+            mStep[step].draw(mWindow);
+            mStep[step].mTime += 100.f * mSpeed * mDt;
+            if (mStep[step].mTime < 100.f) break;
+            else 
+            {
+                mStep[step].mTime = 0;
+                ++step;
+            }
+        }
+        if (step == mStep.size() - 1)
+            mStep[step].draw(mWindow);
     }
     // if (runOption != -1 && step != -1)
     // {

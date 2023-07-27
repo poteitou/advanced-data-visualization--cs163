@@ -54,6 +54,7 @@ struct HashTable
     Bucket mRealBucket[5];
     struct Step
     {
+        float mTime;
         Bucket mBucket[5];
         // vector<Pseudo> pseudo;
 
@@ -69,11 +70,12 @@ struct HashTable
     // std::vector<std::vector<DataNode>> mDataNode;
     // std::string *array;
 
-    // int step;
+    int step;
     // int size;
     int mType;
     int mSmallType;
-    // int speed;
+    int mSpeed;
+    float mDt;
     // bool nosuchfile;
     bool firstTime;
     // bool firstStep;
