@@ -122,6 +122,18 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     color = 0; */
 }
 
+void HashTable::Bucket::draw(sf::RenderWindow &mWindow)
+{
+    mLabel.draw(mWindow);
+    if (1) mArrow.draw(mWindow);
+}
+
+void HashTable::Step::draw(sf::RenderWindow &mWindow)
+{
+    for (int i = 0; i < 5; i++)
+        mBucket[i].draw(mWindow);
+}
+
 int HashTable::Rand(int MAX)
 {
     srand(time(NULL));
@@ -512,7 +524,8 @@ void HashTable::insert(std::string element)
     for (int i = 0; i < 5; i++)
     {
         Step tmpStep;
-        tmpStep.mBucket[i].label = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
+        tmpStep.mBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
+        tmpStep.mBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(160, 220, 255), false);
         mStep.push_back(tmpStep);
     }
     int index = stoi(element) % 5;
@@ -523,7 +536,7 @@ void HashTable::insert(std::string element)
     // # print out
     // int index = stoi(element) % 5;
     // if mBucket[index] full -> print notification! & return
-    // highlight mBucket[index].label
+    // highlight mBucket[index].mLabel
     // #print out
     // mBucket[index].lines.push_back(Line(from back to new point)); 
     // highlight mBucket[index].lines.back()
@@ -892,8 +905,7 @@ void HashTable::draw()
 
     for (int i = 0; i < mStep.size(); i++)
     {
-        for (int j = 0; j < 5; j++)
-            mStep[i].mBucket[j].label.draw(mWindow);
+        mStep[i].draw(mWindow);
     }
     // if (runOption != -1 && step != -1)
     // {

@@ -3,8 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "../interface/Button.hpp"
-#include "../interface/Label.hpp"
 #include "../interface/InputBar.hpp"
+#include "../interface/Label.hpp"
+#include "../interface/Arrow.hpp"
 #include <vector>
 #include <string.h>
 #include <fstream>
@@ -37,16 +38,19 @@ struct HashTable
 
     struct Bucket
     {
-        Label label;
-        // Arrow arrowFirst;
+        Label mLabel;
+        Arrow mArrow;
         // vector<Point> points;
         // vector<Line> lines;
+        void draw(sf::RenderWindow &mWindow);
     };
 
     struct Step
     {
         Bucket mBucket[5];
         // vector<Pseudo> pseudo;
+
+        void draw(sf::RenderWindow &mWindow);
     };
 
     std::vector<Step> mStep;
