@@ -311,23 +311,23 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     case 1: // From File
         mButton[4].mHovered = true;
         // mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
-        // if (mButton[11].setMouseOver(mousePosition) && mousePress)
-        // {
-        //     nosuchfile = false;
-        //     init("data/" + mInputBar[1].mValue + ".data");
-        // }
+        if (mButton[6].setMouseOver(mousePosition) && mousePress)
+        {
+            // nosuchfile = false;
+            // init("data/" + mInputBar[1].mValue + ".data");
+        }
         // else firstTime = true;
         break;
     case 2: // Randomize
         mButton[5].mHovered = true;
         // mInputBar[0].update(mousePress, mousePosition, keyPress, 26);
-        // if (mButton[11].setMouseOver(mousePosition) && mousePress)
-        // {
-        //     std::ofstream outFile("data/randomize.data");
-        //     outFile << mInputBar[0].mValue;
-        //     outFile.close();
-        //     init("data/randomize.data");
-        // }
+        if (mButton[6].setMouseOver(mousePosition) && mousePress)
+        {
+            // std::ofstream outFile("data/randomize.data");
+            // outFile << mInputBar[0].mValue;
+            // outFile.close();
+            // init("data/randomize.data");
+        }
         // else firstTime = true;
         // break;
     default:
@@ -512,7 +512,7 @@ void HashTable::insert(std::string element)
     for (int i = 0; i < 5; i++)
     {
         Step tmpStep;
-        tmpStep.mBucket[i].label = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 150 + i * 100), std::to_string(i), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
+        tmpStep.mBucket[i].label = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
         mStep.push_back(tmpStep);
     }
     int index = stoi(element) % 5;
@@ -823,19 +823,19 @@ void HashTable::draw()
     switch (mType)
     {
     case 1: // Init
-        for (int i = 4; i < 7; i++)
+        for (int i = 4; i < 6; i++)
             mButton[i].draw(mWindow);
         switch (mSmallType)
         {
         case 1: // From File
             // mWindow.draw(mDefaultText[4]);
             // mInputBar[0].draw(mWindow);
-            // mButton[11].draw(mWindow);
+            mButton[6].draw(mWindow);
             break;
         case 2: // Randomize
             // mWindow.draw(mDefaultText[5]);
             // mInputBar[1].draw(mWindow);
-            // mButton[11].draw(mWindow);
+            mButton[6].draw(mWindow);
             // if (nosuchfile)
             //     mWindow.draw(mDefaultText[6]);
             break;
