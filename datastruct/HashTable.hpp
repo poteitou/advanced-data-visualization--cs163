@@ -7,6 +7,7 @@
 #include "../interface/Label.hpp"
 #include "../interface/Arrow.hpp"
 #include "../interface/Point.hpp"
+#include "../interface/Line.hpp"
 #include <vector>
 #include <string.h>
 #include <fstream>
@@ -37,15 +38,19 @@ struct HashTable
     // void setColor();
     void draw();
 
+    sf::RenderWindow &mWindow;
+    sf::Font &mFont;
     struct Bucket
     {
         Label mLabel;
         Arrow mArrow;
-        // vector<Point> points;
+        std::vector<Point> mPoint;
         // vector<Line> lines;
         void draw(sf::RenderWindow &mWindow);
     };
-
+    
+    void addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight);
+    Bucket mRealBucket[5];
     struct Step
     {
         Bucket mBucket[5];
@@ -55,9 +60,6 @@ struct HashTable
     };
 
     std::vector<Step> mStep;
-
-    sf::RenderWindow &mWindow;
-    sf::Font &mFont;
     std::vector<Button> mButton;
     std::vector<InputBar> mInputBar;
 

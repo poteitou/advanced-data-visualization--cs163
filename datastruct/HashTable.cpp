@@ -120,12 +120,27 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     firstStep = true;
     runOption = -1; // no mode:-1       step:0      once:1
     color = 0; */
+
+    for (int i = 0; i < 5; i++)
+    {
+        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
+        mRealBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(160, 220, 255), false);
+        mRealBucket[i].mPoint.clear();
+    }
+}
+
+void HashTable::addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight)
+{
+    if (pos == -1) pos = bucket.mPoint.size();
+    bucket.mPoint.push_back(Point(25, sf::Vector2f(975 + pos * 100, 200 + index * 100), element, mFont, highLight, sf::Color(160, 220, 255), 0));
 }
 
 void HashTable::Bucket::draw(sf::RenderWindow &mWindow)
 {
     mLabel.draw(mWindow);
-    if (1) mArrow.draw(mWindow);
+    if (!mPoint.empty()) mArrow.draw(mWindow);
+    for (int i = 0; i < mPoint.size(); i++)
+        mPoint[i].draw(mWindow);
 }
 
 void HashTable::Step::draw(sf::RenderWindow &mWindow)
@@ -159,6 +174,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         {
             mType = i + 1;
             mSmallType = 0;
+            firstTime = true;
             // nosuchfile = false;
             // if (i >= 3)
             //     firstTime = true;
@@ -353,8 +369,6 @@ void HashTable::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &
     mButton[1].mHovered = true;
 
     // nosuchfile = false;
-
-    firstTime = true;
     mInputBar[1].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[1].mValue != "")
         insert(mInputBar[1].mValue);
@@ -521,15 +535,25 @@ void HashTable::insert(std::string element)
     // nosuchfile = false;
 
     mStep.clear();
+    Step tmpStep;
     for (int i = 0; i < 5; i++)
     {
-        Step tmpStep;
-        tmpStep.mBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
-        tmpStep.mBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(160, 220, 255), false);
+        tmpStep.mBucket[i] = mRealBucket[i];
         mStep.push_back(tmpStep);
     }
     int index = stoi(element) % 5;
-    
+    if (mRealBucket[index].mPoint.size() == 5)
+    {
+        // noti
+        return;
+    }
+
+    tmpStep.mBucket[index].mLabel.setHighLight(true);
+    mStep.push_back(tmpStep);
+
+    addPoint(tmpStep.mBucket[index], index, -1, element, true);
+    addPoint(mRealBucket[index], index, -1, element, false);
+    mStep.push_back(tmpStep);
 
     // # clear mStep
     // non-highlight hashtable
@@ -817,8 +841,8 @@ void HashTable::setColor()
 
 void HashTable::draw()
 {
-    Point mPoint = Point(25, sf::Vector2f(975, 200), "99", mFont, false, sf::Color(160, 220, 255), 0);
-    mPoint.draw(mWindow);
+    Line line = Line(sf::Vector2f(975, 200), sf::Vector2f(1075, 200), sf::Color(160, 220, 255), false);
+    line.draw(mWindow);
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
