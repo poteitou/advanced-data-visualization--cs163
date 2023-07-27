@@ -22,16 +22,14 @@ struct HashTable
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateModify(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateDelete(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     // void randomize();
     // void setPos(std::vector<DataNode> &temp, int id, float start, Node* tmp);
     // void init(std::string fileName);
     void insert(std::string element);
-    // void remove(int index);
-    // void modify(int index, std::string element);
+    // void delete(std::string element);
     // void search(std::string element);
 
     // void setColor();
@@ -73,7 +71,7 @@ struct HashTable
     int mSmallType;
     // int speed;
     // bool nosuchfile;
-    // bool firstTime;
+    bool firstTime;
     // bool firstStep;
     // int runOption;
     // std::pair<sf::Color, sf::Color> pallete[3];

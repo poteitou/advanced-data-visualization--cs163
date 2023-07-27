@@ -105,6 +105,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     mRect[1].setSize(sf::Vector2f(500, 300));
     mRect[1].setPosition(sf::Vector2f(100, 500));
+    firstTime = true;
     /*
 
     array = new std::string[9];
@@ -112,7 +113,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     size = 0;
     step = -1;
     speed = 0;
-    firstTime = firstStep = true;
+    firstStep = true;
     runOption = -1; // no mode:-1       step:0      once:1
     color = 0; */
 }
@@ -251,8 +252,8 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
         break;
-    // case 3: // Remove
-    //     updateRemove(mousePress, mousePosition, keyPress);
+    // case 3: // Delete
+    //     updateDelete(mousePress, mousePosition, keyPress);
     //     break;
     // case 4: // Update
     //     updateModify(mousePress, mousePosition, keyPress);
@@ -336,7 +337,6 @@ void HashTable::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &
     mButton[1].mHovered = true;
 
     // nosuchfile = false;
-    mInputBar[1].reset(std::to_string(Rand(99)));
     // firstTime = true;
 
     mInputBar[1].update(mousePress, mousePosition, keyPress, 2);
@@ -346,7 +346,7 @@ void HashTable::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &
 }
 
 /*
-void HashTable::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+void HashTable::updateDelete(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[2].mHovered = true;
     for (int i = 0; i < 3; i++)
@@ -363,19 +363,19 @@ void HashTable::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &
     {
     case 1: // At the first
         mBInsert[0].mHovered = true;
-        if (mButton[11].setMouseOver(mousePosition) && mousePress) remove(0);
+        if (mButton[11].setMouseOver(mousePosition) && mousePress) delete(0);
         else firstTime = true;
         break;
     case 2: // At the last
         mBInsert[1].mHovered = true;
-        if (mButton[11].setMouseOver(mousePosition) && mousePress) remove(size - 1);
+        if (mButton[11].setMouseOver(mousePosition) && mousePress) delete(size - 1);
         else firstTime = true;
         break;
     case 3: // At the middle
         mBInsert[2].mHovered = true;
         mInputBar[2].update(mousePress, mousePosition, keyPress, 1);
         if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-            remove(stoi(mInputBar[2].mValue));
+            delete(stoi(mInputBar[2].mValue));
         else firstTime = true;
         break;
     default:
@@ -597,7 +597,7 @@ void HashTable::insert(std::string element)
 }
 /*
 
-void HashTable::remove(int index)
+void HashTable::delete(int index)
 {
     if (firstTime == false) return;
     firstTime = false;
@@ -843,7 +843,7 @@ void HashTable::draw()
         // if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
     /*
-    case 3: // Remove
+    case 3: // Delete
         for (int i = 0; i < 3; i++)
             mBInsert[i].draw(mWindow);
         switch (mSmallType)
