@@ -45,11 +45,12 @@ struct HashTable
         Label mLabel;
         Arrow mArrow;
         std::vector<Point> mPoint;
-        // vector<Line> lines;
+        std::vector<Line> mLine;
         void draw(sf::RenderWindow &mWindow);
     };
     
     void addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight);
+    void addLine(Bucket &bucket, int index, int pos, bool highLight);
     Bucket mRealBucket[5];
     struct Step
     {

@@ -123,24 +123,33 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     for (int i = 0; i < 5; i++)
     {
-        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
-        mRealBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(160, 220, 255), false);
+        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200), 0);
+        mRealBucket[i].mArrow = Arrow(sf::Vector2f(800 + 100, 175 + i * 100 + 25), sf::Color(50, 140, 200), false);
         mRealBucket[i].mPoint.clear();
+        mRealBucket[i].mLine.clear();
     }
-}
-
-void HashTable::addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight)
-{
-    if (pos == -1) pos = bucket.mPoint.size();
-    bucket.mPoint.push_back(Point(25, sf::Vector2f(975 + pos * 100, 200 + index * 100), element, mFont, highLight, sf::Color(160, 220, 255), 0));
 }
 
 void HashTable::Bucket::draw(sf::RenderWindow &mWindow)
 {
     mLabel.draw(mWindow);
     if (!mPoint.empty()) mArrow.draw(mWindow);
+    for (int i = 0; i < mLine.size(); i++)
+        mLine[i].draw(mWindow);
     for (int i = 0; i < mPoint.size(); i++)
         mPoint[i].draw(mWindow);
+}
+
+void HashTable::addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight)
+{
+    if (pos == -1) pos = bucket.mPoint.size();
+    bucket.mPoint.push_back(Point(25, sf::Vector2f(975 + pos * 100, 200 + index * 100), element, mFont, highLight, sf::Color(50, 140, 200), 0));
+}
+
+void HashTable::addLine(Bucket &bucket, int index, int pos, bool highLight)
+{
+    if (pos == -1) pos = bucket.mLine.size();
+    bucket.mLine.push_back(Line(sf::Vector2f(1075 + pos * 100 - 100, 200 + index * 100), sf::Vector2f(1075 + pos * 100, 200 + index * 100), sf::Color(50, 140, 200), highLight));
 }
 
 void HashTable::Step::draw(sf::RenderWindow &mWindow)
@@ -551,6 +560,13 @@ void HashTable::insert(std::string element)
     tmpStep.mBucket[index].mLabel.setHighLight(true);
     mStep.push_back(tmpStep);
 
+    if (mRealBucket[index].mPoint.size())
+    {
+        addLine(tmpStep.mBucket[index], index, -1, true);
+        addLine(mRealBucket[index], index, -1, false);
+        mStep.push_back(tmpStep);
+    }
+
     addPoint(tmpStep.mBucket[index], index, -1, element, true);
     addPoint(mRealBucket[index], index, -1, element, false);
     mStep.push_back(tmpStep);
@@ -841,7 +857,7 @@ void HashTable::setColor()
 
 void HashTable::draw()
 {
-    Line line = Line(sf::Vector2f(975, 200), sf::Vector2f(1075, 200), sf::Color(160, 220, 255), false);
+    Line line = Line(sf::Vector2f(975, 200), sf::Vector2f(1075, 200), sf::Color(50, 140, 200), false);
     line.draw(mWindow);
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
