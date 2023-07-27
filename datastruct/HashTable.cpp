@@ -4,11 +4,11 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 {
     mButton.resize(12);
     mBInit.resize(2);
-    // mBInsert.resize(3);
+    mInputBar.resize(10);
     // mBStep.resize(3);
     // mBOnce.resize(4);
 
-    /* mSearchBar.resize(10);
+    /*
     mDefaultText.resize(20);
     for (int i = 0; i < 10; i++)
     {
@@ -76,7 +76,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     std::string nameBInit[] = {"From File", "Randomize"};
     for (int i = 0; i < 2; i++)
-        mBInit[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(275 + i * 200, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBInit[i], font, 22);
+        mBInit[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(250 + i * 200, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBInit[i], font, 22);
 
     /*
 
@@ -87,13 +87,12 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     std::string nameBOnce[] = {"1x", "2x", "4x", "8x"};
     for (int i = 0; i < 4; i++)
         mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], font, 22);
-
-    mSearchBar[0] = SearchBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), font, "", false);
-    mSearchBar[1] = SearchBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), font, "datafile", true);
-    mSearchBar[2] = SearchBar(sf::Vector2f(80, 50), sf::Vector2f(330, 630 + 5), font, std::to_string(Rand(9)), false);
-    mSearchBar[3] = SearchBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), font, std::to_string(Rand(99)), false);
-
     */
+    // mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), font, "", false);
+    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(250, 100 + 1 * 55), font, std::to_string(Rand(99)), false);
+    // mInputBar[2] = InputBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), font, std::to_string(Rand(99)), false);
+    // mInputBar[3] = InputBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), font, "datafile", true);
+
     for (int i = 0; i < 2; i++)
     {
         mRect[i].setOrigin(sf::Vector2f(0.f, 0.f));
@@ -116,6 +115,12 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     firstTime = firstStep = true;
     runOption = -1; // no mode:-1       step:0      once:1
     color = 0; */
+}
+
+int HashTable::Rand(int MAX)
+{
+    srand(time(NULL));
+    return rand() % MAX;
 }
 
 void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt)
@@ -142,8 +147,8 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             //     firstTime = true;
             // if (i == 3)
             //     nosuchfile = false;
-            // mSearchBar[2].reset(std::to_string(Rand(i < 4 ? 9 : 99)));
-            // mSearchBar[3].reset(std::to_string(Rand(99)));
+            mInputBar[1].reset(std::to_string(Rand(99)));
+            // mInputBar[3].reset(std::to_string(Rand(99)));
         }
     /*
     if (runOption == 1 && mousePress && mButton[5].mHovered)
@@ -243,9 +248,9 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     case 1: // Init
         updateInit(mousePress, mousePosition, keyPress);
         break;
-    // case 2: // Insert
-    //     updateInsert(mousePress, mousePosition, keyPress);
-    //     break;
+    case 2: // Insert
+        updateInsert(mousePress, mousePosition, keyPress);
+        break;
     // case 3: // Remove
     //     updateRemove(mousePress, mousePosition, keyPress);
     //     break;
@@ -291,7 +296,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     }
     else if (mBInit[1].setMouseOver(mousePosition) && mousePress) // Randomize
     {
-        // mSearchBar[1].reset("datafile");
+        // mInputBar[1].reset("datafile");
         mSmallType = 2;
         // nosuchfile = false;
         // firstTime = true;
@@ -300,21 +305,21 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     {
     case 1: // From File
         mBInit[0].mHovered = true;
-        // mSearchBar[0].update(mousePress, mousePosition, keyPress, 10);
+        // mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
         // if (mButton[11].setMouseOver(mousePosition) && mousePress)
         // {
         //     nosuchfile = false;
-        //     init("data/" + mSearchBar[1].mValue + ".data");
+        //     init("data/" + mInputBar[1].mValue + ".data");
         // }
         // else firstTime = true;
         break;
     case 2: // Randomize
         mBInit[1].mHovered = true;
-        // mSearchBar[0].update(mousePress, mousePosition, keyPress, 26);
+        // mInputBar[0].update(mousePress, mousePosition, keyPress, 26);
         // if (mButton[11].setMouseOver(mousePosition) && mousePress)
         // {
         //     std::ofstream outFile("data/randomize.data");
-        //     outFile << mSearchBar[0].mValue;
+        //     outFile << mInputBar[0].mValue;
         //     outFile.close();
         //     init("data/randomize.data");
         // }
@@ -325,53 +330,22 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     }
 }
 
-
-/*
 void HashTable::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[1].mHovered = true;
-    for (int i = 0; i < 3; i++)
-    {
-        if (mBInsert[i].setMouseOver(mousePosition) && mousePress)
-        {
-            mSmallType = i + 1;
-            nosuchfile = false;
-            mSearchBar[2].reset(std::to_string(Rand(i < 2 ? 99 : 9)));
-            mSearchBar[3].reset(std::to_string(Rand(99)));
-            firstTime = true;
-        }
-    }
-    switch (mSmallType)
-    {
-    case 1: // At the first
-        mBInsert[0].mHovered = true;
-        mSearchBar[2].update(mousePress, mousePosition, keyPress, 2);
-        if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "")
-            insert(0, mSearchBar[2].mValue);
-        else firstTime = true;
-        break;
-    case 2: // At the last
-        mBInsert[1].mHovered = true;
-        mSearchBar[2].update(mousePress, mousePosition, keyPress, 2);
-        if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "")
-            insert(size, mSearchBar[2].mValue);
-        else firstTime = true;
-        break;
-    case 3: // At the middle
-        mBInsert[2].mHovered = true;
-        tempkeyPress = keyPress;
-        mSearchBar[2].update(mousePress, mousePosition, keyPress, 1);
-        mSearchBar[3].update(mousePress, mousePosition, tempkeyPress, 2);
-        if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "" && mSearchBar[3].mValue != "")
-            insert(stoi(mSearchBar[2].mValue), mSearchBar[3].mValue);
-        else firstTime = true;
-        break;
-    default:
-        break;
-    }
+
+    // nosuchfile = false;
+    mInputBar[1].reset(std::to_string(Rand(99)));
+    // firstTime = true;
+
+    mInputBar[1].update(mousePress, mousePosition, keyPress, 2);
+    // if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
+    //     insert(mInputBar[2].mValue);
+    // else firstTime = true;
 }
 
+/*
 void HashTable::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[2].mHovered = true;
@@ -381,7 +355,7 @@ void HashTable::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &
         {
             mSmallType = i + 1;
             nosuchfile = false;
-            mSearchBar[2].reset(std::to_string(Rand(9)));
+            mInputBar[2].reset(std::to_string(Rand(9)));
             firstTime = true;
         }
     }
@@ -399,9 +373,9 @@ void HashTable::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &
         break;
     case 3: // At the middle
         mBInsert[2].mHovered = true;
-        mSearchBar[2].update(mousePress, mousePosition, keyPress, 1);
-        if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "")
-            remove(stoi(mSearchBar[2].mValue));
+        mInputBar[2].update(mousePress, mousePosition, keyPress, 1);
+        if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
+            remove(stoi(mInputBar[2].mValue));
         else firstTime = true;
         break;
     default:
@@ -414,10 +388,10 @@ void HashTable::updateModify(bool mousePress, sf::Vector2i mousePosition, char &
     mButton[3].mHovered = true;
 
     char tempkeyPress = keyPress;
-    mSearchBar[2].update(mousePress, mousePosition, keyPress, 1);
-    mSearchBar[3].update(mousePress, mousePosition, tempkeyPress, 2);
-    if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "" && mSearchBar[3].mValue != "")
-        modify(stoi(mSearchBar[2].mValue), mSearchBar[3].mValue);
+    mInputBar[2].update(mousePress, mousePosition, keyPress, 1);
+    mInputBar[3].update(mousePress, mousePosition, tempkeyPress, 2);
+    if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "" && mInputBar[3].mValue != "")
+        modify(stoi(mInputBar[2].mValue), mInputBar[3].mValue);
     else firstTime = true;
 }
 
@@ -425,18 +399,11 @@ void HashTable::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &
 {
     mButton[4].mHovered = true;
     
-    mSearchBar[2].update(mousePress, mousePosition, keyPress, 2);
-    if (mButton[11].setMouseOver(mousePosition) && mousePress && mSearchBar[2].mValue != "")
-        search(mSearchBar[2].mValue);
+    mInputBar[2].update(mousePress, mousePosition, keyPress, 2);
+    if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
+        search(mInputBar[2].mValue);
     else firstTime = true;
 }
-
-int HashTable::Rand(int MAX)
-{
-    srand(time(NULL));
-    return rand() % MAX;
-}
-
 */
 
 /*
@@ -453,8 +420,8 @@ void HashTable::randomize()
         outFile << value << ' ';
         temp += value + ' ';
     }
-    mSearchBar[0].mValue = temp;
-    mSearchBar[0].mText.setString(temp);
+    mInputBar[0].mValue = temp;
+    mInputBar[0].mText.setString(temp);
     outFile.close();
 }
 
@@ -543,19 +510,19 @@ void HashTable::insert(std::string element)
     // setPos(temp, 0, 350, tmp);
     // mDataNode.clear();
     // mDataNode.push_back(temp);
-    # clear steps
-    non-highlight hashtable
-    # print out
-    int index = atoi(element) % NUMBUCKET;
-    if buckets[index] full -> print notification! & return
-    highlight buckets[index].label
-    #print out
-    buckets[index].lines.push_back(Line(from back to new point)); 
-    highlight buckets[index].lines.back()
-    # print out
-    buckets[index].points.push_back(Point(element));
-    highlight buckets[index].points.back()
-    #print out
+    // # clear steps
+    // non-highlight hashtable
+    // # print out
+    // int index = atoi(element) % NUMBUCKET;
+    // if buckets[index] full -> print notification! & return
+    // highlight buckets[index].label
+    // #print out
+    // buckets[index].lines.push_back(Line(from back to new point)); 
+    // highlight buckets[index].lines.back()
+    // # print out
+    // buckets[index].points.push_back(Point(element));
+    // highlight buckets[index].points.back()
+    // #print out
     /*
     runOption = 1;
     step = 0; // activate
@@ -854,12 +821,12 @@ void HashTable::draw()
         {
         case 1: // From File
             // mWindow.draw(mDefaultText[4]);
-            // mSearchBar[0].draw(mWindow);
+            // mInputBar[0].draw(mWindow);
             // mButton[11].draw(mWindow);
             break;
         case 2: // Randomize
             // mWindow.draw(mDefaultText[5]);
-            // mSearchBar[1].draw(mWindow);
+            // mInputBar[1].draw(mWindow);
             // mButton[11].draw(mWindow);
             // if (nosuchfile)
             //     mWindow.draw(mDefaultText[6]);
@@ -868,34 +835,14 @@ void HashTable::draw()
             break;
         }
         break;
-    /*
     case 2: // Insert
-        for (int i = 0; i < 3; i++)
-            mBInsert[i].draw(mWindow);
-        switch (mSmallType)
-        {
-        case 1: // At the first
-            mWindow.draw(mDefaultText[4]);
-            mSearchBar[2].draw(mWindow);
-            mButton[11].draw(mWindow);
-            break;
-        case 2: // At the last
-            mWindow.draw(mDefaultText[4]);
-            mSearchBar[2].draw(mWindow);
-            mButton[11].draw(mWindow);
-            break;
-        case 3: // At the middle
-            mWindow.draw(mDefaultText[7]);
-            mWindow.draw(mDefaultText[8]);
-            mSearchBar[2].draw(mWindow);
-            mSearchBar[3].draw(mWindow);
-            mButton[11].draw(mWindow);
-            break;
-        default:
-            break;
-        }
-        if (nosuchfile) mWindow.draw(mDefaultText[9]);
+
+        // mWindow.draw(mDefaultText[4]);
+        mInputBar[1].draw(mWindow);
+        // mButton[11].draw(mWindow);
+        // if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
+    /*
     case 3: // Remove
         for (int i = 0; i < 3; i++)
             mBInsert[i].draw(mWindow);
@@ -909,7 +856,7 @@ void HashTable::draw()
             break;
         case 3: // At the middle
             mWindow.draw(mDefaultText[7]);
-            mSearchBar[2].draw(mWindow);
+            mInputBar[2].draw(mWindow);
             mButton[11].draw(mWindow);
             break;
         default:
@@ -920,14 +867,14 @@ void HashTable::draw()
     case 4: // Update
         mWindow.draw(mDefaultText[7]);
         mWindow.draw(mDefaultText[8]);
-        mSearchBar[2].draw(mWindow);
-        mSearchBar[3].draw(mWindow);
+        mInputBar[2].draw(mWindow);
+        mInputBar[3].draw(mWindow);
         mButton[11].draw(mWindow);
         if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
     case 5: // Search
         mWindow.draw(mDefaultText[4]);
-        mSearchBar[2].draw(mWindow);
+        mInputBar[2].draw(mWindow);
         mButton[11].draw(mWindow);
         break;
     */
