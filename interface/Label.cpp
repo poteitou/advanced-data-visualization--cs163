@@ -2,7 +2,7 @@
 
 Label::Label() {}
 
-Label::Label(sf::Vector2f size, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color, float appearTime) : mSize(size), mPos(pos), mAppear(false), mAppearTime(appearTime), mDefaultAppear(appearTime), mHighLight(highLight), mColor(Color)
+Label::Label(sf::Vector2f size, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color) : mSize(size), mPos(pos), mHighLight(highLight), mColor(Color)
 {
     mFontSize = 25;
     // create rectangle
@@ -42,23 +42,6 @@ void Label::setPosition(sf::Vector2f pos)
     mRect.setPosition(mPos);
     mTextIn.setPosition(mPos.x + (mSize.x - mTextIn.getLocalBounds().width) / 2, mPos.y + (mSize.y - mFontSize) / 2);
 }
-
-// void Label::reset()
-// {
-//     mAppearTime = mDefaultAppear;
-//     mAppear = false;
-// }
-
-// bool Label::appear(float limit, float dt)
-// {
-//     mAppearTime += limit * dt;
-//     if (mAppearTime >= limit)
-//     {
-//         mAppearTime = limit;
-//         mAppear = true;
-//     }
-//     return mAppear;
-// }
 
 void Label::draw(sf::RenderWindow &mWindow)
 {

@@ -79,7 +79,7 @@ struct HashTable
     // bool nosuchfile;
     bool firstTime;
     // bool firstStep;
-    // int runOption;
+    int runOption;
     // std::pair<sf::Color, sf::Color> pallete[3];
     sf::RectangleShape mRect[2];
     // int color;

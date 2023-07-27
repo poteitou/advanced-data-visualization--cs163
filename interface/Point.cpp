@@ -2,7 +2,7 @@
 
 Point::Point() {}
 
-Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color, float appearTime) : mRadius(radius), mPos(pos), mAppear(false), mAppearTime(appearTime), mDefaultAppear(appearTime), mHighLight(highLight), mColor(Color)
+Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color) : mRadius(radius), mPos(pos), mHighLight(highLight), mColor(Color)
 {
     mFontSize = 25;
     // create rectangle
@@ -18,7 +18,7 @@ Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font,
     mTextIn.setFont(font);
 
     mTextIn.setCharacterSize(mFontSize);
-    mTextIn.setPosition(mPos.x - mTextIn.getLocalBounds().width / 2, mPos.y - mFontSize / 2 - 3);
+    mTextIn.setPosition(mPos.x - mTextIn.getLocalBounds().width / 2 - 2, mPos.y - mFontSize / 2 - 3);
     mTextIn.setFillColor(mHighLight ? sf::Color::White : sf::Color::Black);
 }
 
@@ -40,25 +40,8 @@ void Point::setPosition(sf::Vector2f pos)
 {
     mPos = pos;
     mCir.setPosition(mPos);
-    mTextIn.setPosition(mPos.x - mTextIn.getLocalBounds().width / 2, mPos.y - mFontSize / 2 - 3);
+    mTextIn.setPosition(mPos.x - mTextIn.getLocalBounds().width / 2 - 2, mPos.y - mFontSize / 2 - 3);
 }
-
-// void Point::reset()
-// {
-//     mAppearTime = mDefaultAppear;
-//     mAppear = false;
-// }
-
-// bool Point::appear(float limit, float dt)
-// {
-//     mAppearTime += limit * dt;
-//     if (mAppearTime >= limit)
-//     {
-//         mAppearTime = limit;
-//         mAppear = true;
-//     }
-//     return mAppear;
-// }
 
 void Point::draw(sf::RenderWindow &mWindow)
 {

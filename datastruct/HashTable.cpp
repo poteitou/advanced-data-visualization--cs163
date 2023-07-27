@@ -123,7 +123,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     for (int i = 0; i < 5; i++)
     {
-        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200), 0);
+        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200));
         mRealBucket[i].mPoint.clear();
         mRealBucket[i].mLine.clear();
     }
@@ -538,6 +538,7 @@ void HashTable::init(std::string filename)
     inFile.close();
 }
 */
+
 void HashTable::insert(std::string element)
 {
     if (firstTime == false) return;
