@@ -10,7 +10,7 @@ Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font,
     mCir.setRadius(mRadius);
     mCir.setPosition(mPos);
     mCir.setFillColor(mHighLight ? mColor : sf::Color::White);
-    mCir.setOutlineThickness(2.f);
+    mCir.setOutlineThickness(3.f);
     mCir.setOutlineColor(mColor);
 
     // create text

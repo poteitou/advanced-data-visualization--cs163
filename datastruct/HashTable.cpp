@@ -132,8 +132,8 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
 void HashTable::Bucket::draw(sf::RenderWindow &mWindow)
 {
-    mLabel.draw(mWindow);
     if (!mPoint.empty()) mArrow.draw(mWindow);
+    mLabel.draw(mWindow);
     for (int i = 0; i < mLine.size(); i++)
         mLine[i].draw(mWindow);
     for (int i = 0; i < mPoint.size(); i++)

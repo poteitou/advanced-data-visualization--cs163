@@ -10,7 +10,7 @@ Label::Label(sf::Vector2f size, sf::Vector2f pos, std::string textIn, sf::Font &
     mRect.setSize(mSize);
     mRect.setPosition(mPos);
     mRect.setFillColor(mHighLight ? mColor : sf::Color::White);
-    mRect.setOutlineThickness(2.f);
+    mRect.setOutlineThickness(3.f);
     mRect.setOutlineColor(mColor);
 
     // create text
