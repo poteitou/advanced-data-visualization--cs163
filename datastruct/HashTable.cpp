@@ -3,7 +3,6 @@
 HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window), mFont(font), mType(0), mSmallType(0)
 {
     mButton.resize(12);
-    mBInit.resize(2);
     mInputBar.resize(10);
     // mBStep.resize(3);
     // mBOnce.resize(4);
@@ -59,9 +58,22 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mDefaultText[9].setFillColor(sf::Color::Red);
     mDefaultText[9].setPosition(350, 630 + 50 + 15); */
 
-    std::string nameButton[] = {"Init", "Insert", "Delete", "Search"};
-    for (int i = 0; i < 4; i++)
+    std::string nameButton[] = {"Init", "Insert", "Delete", "Search", "From File", "Randomize", "OK", "OK", "OK"};
+    for (int i = 0; i < 4; i++) // Init, Insert, Delete, Search
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], font, 22);
+    
+    
+    for (int i = 4; i < 6; i++) // From File + Randomize + OK
+        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], font, 22);
+    mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], font, 22);
+
+    // Insert bar + OK
+    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), font, std::to_string(Rand(99)), false);
+    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], font, 22);
+
+    // Delete bar + OK
+    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), font, std::to_string(Rand(99)), false);
+    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], font, 22);
 
     /*   
     pallete[0] = {sf::Color(255, 200, 200), sf::Color(255, 95, 95)};
@@ -72,13 +84,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mButton[i] = Button(sf::Vector2f(50, 50), sf::Vector2f(1200 + (i - 8) * 70, 590), pallete[i - 8].first, pallete[i - 8].second, nameButton[i], font, 22);
 
     mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], font, 22);
-    */
-
-    std::string nameBInit[] = {"From File", "Randomize"};
-    for (int i = 0; i < 2; i++)
-        mBInit[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(250 + i * 200, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBInit[i], font, 22);
-
-    /*
 
     std::string nameBStep[] = {"Previous", "Next", "Final"};
     for (int i = 0; i < 3; i++)
@@ -89,7 +94,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], font, 22);
     */
     // mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), font, "", false);
-    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(250, 100 + 1 * 55), font, std::to_string(Rand(99)), false);
     // mInputBar[2] = InputBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), font, std::to_string(Rand(99)), false);
     // mInputBar[3] = InputBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), font, "datafile", true);
 
@@ -289,13 +293,13 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
 void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[0].mHovered = true;
-    if (mBInit[0].setMouseOver(mousePosition) && mousePress) // From File
+    if (mButton[4].setMouseOver(mousePosition) && mousePress) // From File
     {
         mSmallType = 1;
         // randomize();
         // firstTime = true;
     }
-    else if (mBInit[1].setMouseOver(mousePosition) && mousePress) // Randomize
+    else if (mButton[5].setMouseOver(mousePosition) && mousePress) // Randomize
     {
         // mInputBar[1].reset("datafile");
         mSmallType = 2;
@@ -305,7 +309,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     switch (mSmallType)
     {
     case 1: // From File
-        mBInit[0].mHovered = true;
+        mButton[4].mHovered = true;
         // mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
         // if (mButton[11].setMouseOver(mousePosition) && mousePress)
         // {
@@ -315,7 +319,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
         // else firstTime = true;
         break;
     case 2: // Randomize
-        mBInit[1].mHovered = true;
+        mButton[5].mHovered = true;
         // mInputBar[0].update(mousePress, mousePosition, keyPress, 26);
         // if (mButton[11].setMouseOver(mousePosition) && mousePress)
         // {
@@ -337,12 +341,12 @@ void HashTable::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &
     mButton[1].mHovered = true;
 
     // nosuchfile = false;
-    // firstTime = true;
 
+    firstTime = true;
     mInputBar[1].update(mousePress, mousePosition, keyPress, 2);
-    // if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-    //     insert(mInputBar[2].mValue);
-    // else firstTime = true;
+    if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[1].mValue != "")
+        insert(mInputBar[1].mValue);
+    else firstTime = true;
 }
 
 /*
@@ -495,9 +499,8 @@ void HashTable::init(std::string filename)
 */
 void HashTable::insert(std::string element)
 {
-    // if (firstTime == false) return;
-
-    // firstTime = false;
+    if (firstTime == false) return;
+    firstTime = false;
     // if (size == 9 || index > size || index >= 9)
     // {
     //     nosuchfile = true;
@@ -505,23 +508,28 @@ void HashTable::insert(std::string element)
     // }
     // nosuchfile = false;
 
-    // std::vector<DataNode> temp(size + 1);
-    // Node *tmp = head;
-    // setPos(temp, 0, 350, tmp);
-    // mDataNode.clear();
-    // mDataNode.push_back(temp);
-    // # clear steps
+    mStep.clear();
+    for (int i = 0; i < 5; i++)
+    {
+        Step tmpStep;
+        tmpStep.mBucket[i].label = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 150 + i * 100), std::to_string(i), std::to_string(i), mFont, false, sf::Color(160, 220, 255), 0);
+        mStep.push_back(tmpStep);
+    }
+    int index = stoi(element) % 5;
+    
+
+    // # clear mStep
     // non-highlight hashtable
     // # print out
-    // int index = atoi(element) % NUMBUCKET;
-    // if buckets[index] full -> print notification! & return
-    // highlight buckets[index].label
+    // int index = stoi(element) % 5;
+    // if mBucket[index] full -> print notification! & return
+    // highlight mBucket[index].label
     // #print out
-    // buckets[index].lines.push_back(Line(from back to new point)); 
-    // highlight buckets[index].lines.back()
+    // mBucket[index].lines.push_back(Line(from back to new point)); 
+    // highlight mBucket[index].lines.back()
     // # print out
-    // buckets[index].points.push_back(Point(element));
-    // highlight buckets[index].points.back()
+    // mBucket[index].points.push_back(Point(element));
+    // highlight mBucket[index].points.back()
     // #print out
     /*
     runOption = 1;
@@ -800,7 +808,7 @@ void HashTable::draw()
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
     //     mWindow.draw(mDefaultText[i]);
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
         mButton[i].draw(mWindow);
     // if (runOption == 0)
     // {
@@ -815,8 +823,8 @@ void HashTable::draw()
     switch (mType)
     {
     case 1: // Init
-        for (int i = 0; i < 2; i++)
-            mBInit[i].draw(mWindow);
+        for (int i = 4; i < 7; i++)
+            mButton[i].draw(mWindow);
         switch (mSmallType)
         {
         case 1: // From File
@@ -839,7 +847,7 @@ void HashTable::draw()
 
         // mWindow.draw(mDefaultText[4]);
         mInputBar[1].draw(mWindow);
-        // mButton[11].draw(mWindow);
+        mButton[7].draw(mWindow);
         // if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
     /*
@@ -882,6 +890,11 @@ void HashTable::draw()
         break;
     }
 
+    for (int i = 0; i < mStep.size(); i++)
+    {
+        for (int j = 0; j < 5; j++)
+            mStep[i].mBucket[j].label.draw(mWindow);
+    }
     // if (runOption != -1 && step != -1)
     // {
     //     for (int i = 0; i < mDataNode[step].size(); i++)

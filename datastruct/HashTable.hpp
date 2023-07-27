@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "../interface/Button.hpp"
-// #include "../interface/DataNode.hpp"
+#include "../interface/Label.hpp"
 #include "../interface/InputBar.hpp"
 #include <vector>
 #include <string.h>
@@ -35,29 +35,25 @@ struct HashTable
     // void setColor();
     void draw();
 
-    // struct Bucket
-    // {
-    //     Label label;
-    //     Arrow arrowFirst;
-    //     vector<Point> points;
-    //     vector<Line> lines;
-    // };
+    struct Bucket
+    {
+        Label label;
+        // Arrow arrowFirst;
+        // vector<Point> points;
+        // vector<Line> lines;
+    };
 
-    // struct Step
-    // {
-    //     vector<Bucket> buckets;
-    //     vector<Pseudo> pseudo;
-    // };
+    struct Step
+    {
+        Bucket mBucket[5];
+        // vector<Pseudo> pseudo;
+    };
 
-    // vector<Step> steps;
+    std::vector<Step> mStep;
 
     sf::RenderWindow &mWindow;
     sf::Font &mFont;
     std::vector<Button> mButton;
-    std::vector<Button> mBInit;
-
-    // std::vector<Button> mBStep;
-    // std::vector<Button> mBOnce;
     std::vector<InputBar> mInputBar;
 
     // std::vector<sf::Text> mDefaultText;

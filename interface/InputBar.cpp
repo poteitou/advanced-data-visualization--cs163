@@ -12,6 +12,8 @@ InputBar::InputBar(sf::Vector2f size, sf::Vector2f pos, sf::Font &font, std::str
     mHoveredColor = sf::Color(200, 200, 200);
     mSelectedColor = sf::Color(0, 0, 0);
     mRect.setFillColor(mDefaultColor);
+    mRect.setOutlineThickness(2.f);
+    mRect.setOutlineColor(sf::Color::Black);
 
     mText.setFont(font);
     mText.setString(mValue);
