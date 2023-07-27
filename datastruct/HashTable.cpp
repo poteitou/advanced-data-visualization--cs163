@@ -525,25 +525,38 @@ void HashTable::init(std::string filename)
     mDataNode.push_back(temp);
     inFile.close();
 }
-
-void HashTable::insert(int index, std::string element)
+*/
+void HashTable::insert(std::string element)
 {
-    if (firstTime == false) return;
+    // if (firstTime == false) return;
 
-    firstTime = false;
-    if (size == 9 || index > size || index >= 9)
-    {
-        nosuchfile = true;
-        return;
-    }
-    nosuchfile = false;
+    // firstTime = false;
+    // if (size == 9 || index > size || index >= 9)
+    // {
+    //     nosuchfile = true;
+    //     return;
+    // }
+    // nosuchfile = false;
 
-    std::vector<DataNode> temp(size + 1);
-    Node *tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.clear();
-    mDataNode.push_back(temp);
-
+    // std::vector<DataNode> temp(size + 1);
+    // Node *tmp = head;
+    // setPos(temp, 0, 350, tmp);
+    // mDataNode.clear();
+    // mDataNode.push_back(temp);
+    # clear steps
+    non-highlight hashtable
+    # print out
+    int index = atoi(element) % NUMBUCKET;
+    if buckets[index] full -> print notification! & return
+    highlight buckets[index].label
+    #print out
+    buckets[index].lines.push_back(Line(from back to new point)); 
+    highlight buckets[index].lines.back()
+    # print out
+    buckets[index].points.push_back(Point(element));
+    highlight buckets[index].points.back()
+    #print out
+    /*
     runOption = 1;
     step = 0; // activate
     Node *newNode = new Node(element);
@@ -613,7 +626,9 @@ void HashTable::insert(int index, std::string element)
     tmp = head;
     setPos(temp, 0, 350, tmp);
     mDataNode.push_back(temp);
+    */
 }
+/*
 
 void HashTable::remove(int index)
 {

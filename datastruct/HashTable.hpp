@@ -29,13 +29,29 @@ struct HashTable
     // void randomize();
     // void setPos(std::vector<DataNode> &temp, int id, float start, Node* tmp);
     // void init(std::string fileName);
-    // void insert(int index, std::string element);
+    void insert(std::string element);
     // void remove(int index);
     // void modify(int index, std::string element);
     // void search(std::string element);
 
     // void setColor();
     void draw();
+
+    struct Bucket
+    {
+        Label label;
+        Arrow arrowFirst;
+        vector<Point> points;
+        vector<Line> lines;
+    };
+
+    struct Step
+    {
+        vector<Bucket> buckets;
+        vector<Pseudo> pseudo;
+    };
+
+    vector<Step> steps;
 
     sf::RenderWindow &mWindow;
     sf::Font &mFont;
