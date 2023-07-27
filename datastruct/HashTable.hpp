@@ -6,6 +6,7 @@
 #include "../interface/InputBar.hpp"
 #include "../interface/Label.hpp"
 #include "../interface/Arrow.hpp"
+#include "../interface/Point.hpp"
 #include <vector>
 #include <string.h>
 #include <fstream>

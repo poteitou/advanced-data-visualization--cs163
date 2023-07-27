@@ -817,6 +817,8 @@ void HashTable::setColor()
 
 void HashTable::draw()
 {
+    Point mPoint = Point(25, sf::Vector2f(975, 200), "99", mFont, false, sf::Color(160, 220, 255), 0);
+    mPoint.draw(mWindow);
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
