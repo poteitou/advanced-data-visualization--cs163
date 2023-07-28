@@ -220,9 +220,6 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             // nosuchfile = false;
             // if (i == 3)
             //     nosuchfile = false;
-            std::ofstream outFile("data/randomize.data");
-            outFile << mInputBar[1].mValue;
-            outFile.close();
             mInputBar[2].reset(std::to_string(Rand(99)));
             mInputBar[3].reset(std::to_string(Rand(99)));
             mInputBar[4].reset(std::to_string(Rand(99)));
@@ -418,7 +415,12 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
         mButton[5].mHovered = true;
         mInputBar[1].update(mousePress, mousePosition, keyPress, 26);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
+        {
+            std::ofstream outFile("data/randomize.data");
+            outFile << mInputBar[1].mValue;
+            outFile.close();
             init("data/randomize.data");
+        }
         else firstTime = true;
         break;
     default:
