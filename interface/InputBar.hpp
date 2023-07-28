@@ -7,7 +7,7 @@
 struct InputBar
 {
     InputBar();
-    InputBar(sf::Vector2f size, sf::Vector2f pos, sf::Font &font, std::string defaultText, bool alphabet);
+    InputBar(sf::Vector2f size, sf::Vector2f pos, sf::Font &font, std::string defaultText, int type);
 
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int capacity);
     void draw(sf::RenderWindow &mWindow);
@@ -20,7 +20,7 @@ struct InputBar
     sf::Color mDefaultColor;
     sf::Color mHoveredColor;
     sf::Color mSelectedColor;
-    bool mAlphabet;
+    int mType; // 0: number, 1: digit, 2: filename
     bool mHovered;
     bool mSelected;
     int mFontSize;

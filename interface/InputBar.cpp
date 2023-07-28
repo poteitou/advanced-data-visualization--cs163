@@ -2,8 +2,8 @@
 
 InputBar::InputBar() {}
 
-InputBar::InputBar(sf::Vector2f size, sf::Vector2f pos, sf::Font &font, std::string defaultText, bool alphabet)
-    : mSize(size), mPos(pos), mValue(defaultText), mHovered(false), mSelected(false), mAlphabet(alphabet)
+InputBar::InputBar(sf::Vector2f size, sf::Vector2f pos, sf::Font &font, std::string defaultText, int type)
+    : mSize(size), mPos(pos), mValue(defaultText), mHovered(false), mSelected(false), mType(type)
 {
     mFontSize = 26;
     mRect.setPosition(mPos);
@@ -70,14 +70,26 @@ void InputBar::update(bool mousePress, sf::Vector2i mousePosition, char &keyPres
     }
     else if ((int)mValue.size() < capacity)
     {
-        if (keyPress == ' ' && (mAlphabet || capacity <= 2 || mValue.empty() || mValue.back() == ' '))
+        if (keyPress == ' ' && (mType == 2 || capacity <= 2 || mValue.empty() || mValue.back() == ' '))
         {
-            // Do not allow the first character to be a space or 2 spaces, space in alphabet mode, space in 2-digit mode
+            // Do not allow the first character to be a space or 2 spaces, space in filename mode, space in 2-digit mode
+            keyPress = '$';
+            return;
+        }
+        if (keyPress == '.' && mType <= 1)
+        {
+            // '.' in !filename mode
+            keyPress = '$';
+            return;
+        }
+        if (mType == 0 && !(('0' <= keyPress && keyPress <= '9') || keyPress == ' '))
+        {
+            // only digit in digit mode
             keyPress = '$';
             return;
         }
         int mSize = (int)mValue.size();
-        if (!mAlphabet && keyPress != ' ' && mSize >= 2 && mValue[mSize - 1] != ' ' && mValue[mSize - 2] != ' ')
+        if (mType == 0 && keyPress != ' ' && mSize >= 2 && mValue[mSize - 1] != ' ' && mValue[mSize - 2] != ' ')
         {
             // Do not allow 3-digit numbers
             keyPress = '$';

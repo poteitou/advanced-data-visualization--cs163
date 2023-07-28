@@ -67,15 +67,15 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
     
     // Init bar + OK
-    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), true);
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, "datafile.data", 2);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
-    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), false);
+    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Delete bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), false);
+    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), 0);
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     /*   
@@ -96,9 +96,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     for (int i = 0; i < 4; i++)
         mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], mFont, 22);
     */
-    // mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), mFont, "", false);
-    // mInputBar[2] = InputBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), mFont, std::to_string(Rand(99)), false);
-    // mInputBar[3] = InputBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), mFont, "datafile", true);
 
     for (int i = 0; i < 2; i++)
     {
@@ -208,7 +205,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             // if (i == 3)
             //     nosuchfile = false;
             mInputBar[1].reset(std::to_string(Rand(99)));
-            // mInputBar[3].reset(std::to_string(Rand(99)));
+            mInputBar[2].reset(std::to_string(Rand(99)));
         }
     mSpeed = 1;
     /*
@@ -351,7 +348,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     mButton[0].mHovered = true;
     if (mButton[4].setMouseOver(mousePosition) && mousePress) // From File
     {
-        // mInputBar[1].reset("datafile");
+        mInputBar[0].reset("datafile.data");
         mSmallType = 1;
         // nosuchfile = false;
         firstTime = true;
@@ -366,7 +363,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     {
     case 1: // From File
         mButton[4].mHovered = true;
-        mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
+        mInputBar[0].update(mousePress, mousePosition, keyPress, 20);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
         {
             // nosuchfile = false;
@@ -477,8 +474,8 @@ void HashTable::randomize()
         outFile << value << ' ';
         temp += value + ' ';
     }
-    mInputBar[0].mValue = temp;
-    mInputBar[0].mText.setString(temp);
+    // mInputBar[0].mValue = temp;
+    // mInputBar[0].mText.setString(temp);
     outFile.close();
 }
 
