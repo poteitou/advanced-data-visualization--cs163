@@ -11,7 +11,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mDefaultText.resize(20);
     for (int i = 0; i < 10; i++)
     {
-        mDefaultText[i].setFont(font);
+        mDefaultText[i].setFont(mFont);
         mDefaultText[i].setFillColor(sf::Color::Black);
     } */
 
@@ -60,20 +60,23 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     std::string nameButton[] = {"Init", "Insert", "Delete", "Search", "From File", "Randomize", "OK", "OK", "OK"};
     for (int i = 0; i < 4; i++) // Init, Insert, Delete, Search
-        mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], font, 22);
+        mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
     
     
-    for (int i = 4; i < 6; i++) // From File + Randomize + OK
-        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], font, 22);
-    mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], font, 22);
+    for (int i = 4; i < 6; i++) // From File + Randomize
+        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
+    
+    // Init bar + OK
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), true);
+    mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
-    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), font, std::to_string(Rand(99)), false);
-    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], font, 22);
+    mInputBar[1] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), false);
+    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Delete bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), font, std::to_string(Rand(99)), false);
-    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], font, 22);
+    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), false);
+    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     /*   
     pallete[0] = {sf::Color(255, 200, 200), sf::Color(255, 95, 95)};
@@ -81,21 +84,21 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     pallete[2] = {sf::Color(180, 255, 255), sf::Color(0, 180, 240)};
 
     for (int i = 8; i < 11; i++)
-        mButton[i] = Button(sf::Vector2f(50, 50), sf::Vector2f(1200 + (i - 8) * 70, 590), pallete[i - 8].first, pallete[i - 8].second, nameButton[i], font, 22);
+        mButton[i] = Button(sf::Vector2f(50, 50), sf::Vector2f(1200 + (i - 8) * 70, 590), pallete[i - 8].first, pallete[i - 8].second, nameButton[i], mFont, 22);
 
-    mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], font, 22);
+    mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], mFont, 22);
 
     std::string nameBStep[] = {"Previous", "Next", "Final"};
     for (int i = 0; i < 3; i++)
-        mBStep[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 420), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBStep[i], font, 22);
+        mBStep[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 420), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBStep[i], mFont, 22);
 
     std::string nameBOnce[] = {"1x", "2x", "4x", "8x"};
     for (int i = 0; i < 4; i++)
-        mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], font, 22);
+        mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], mFont, 22);
     */
-    // mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), font, "", false);
-    // mInputBar[2] = InputBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), font, std::to_string(Rand(99)), false);
-    // mInputBar[3] = InputBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), font, "datafile", true);
+    // mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(350, 630 + 5), mFont, "", false);
+    // mInputBar[2] = InputBar(sf::Vector2f(80, 50), sf::Vector2f(560, 630 + 5), mFont, std::to_string(Rand(99)), false);
+    // mInputBar[3] = InputBar(sf::Vector2f(230, 50), sf::Vector2f(430, 630 + 5), mFont, "datafile", true);
 
     for (int i = 0; i < 2; i++)
     {
@@ -118,9 +121,19 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     head = nullptr;
     size = 0;
     firstStep = true;
-    runOption = -1; // no mode:-1       step:0      once:1
+    mRun = -1; // no mode:-1       step:0      once:1
     color = 0; */
 
+    for (int i = 0; i < 5; i++)
+    {
+        mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200));
+        mRealBucket[i].mPoint.clear();
+        mRealBucket[i].mLine.clear();
+    }
+}
+
+void HashTable::reset()
+{
     for (int i = 0; i < 5; i++)
     {
         mRealBucket[i].mLabel = Label(sf::Vector2f(100, 50), sf::Vector2f(800, 175 + i * 100), std::to_string(i), mFont, false, sf::Color(50, 140, 200));
@@ -142,7 +155,7 @@ void HashTable::Bucket::draw(sf::RenderWindow &mWindow)
 void HashTable::addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight)
 {
     if (pos == -1) pos = bucket.mPoint.size();
-    bucket.mPoint.push_back(Point(25, sf::Vector2f(975 + pos * 100, 200 + index * 100), element, mFont, highLight, sf::Color(50, 140, 200), 0));
+    bucket.mPoint.push_back(Point(25, sf::Vector2f(975 + pos * 100, 200 + index * 100), element, mFont, highLight, sf::Color(50, 140, 200)));
 }
 
 void HashTable::addLine(Bucket &bucket, int index, int pos, bool highLight)
@@ -199,9 +212,9 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         }
     mSpeed = 1;
     /*
-    if (runOption == 1 && mousePress && mButton[5].mHovered)
+    if (mRun == 1 && mousePress && mButton[5].mHovered)
     {
-        runOption = 0;
+        mRun = 0;
         mButton[5].mHovered = true;
         for (int i = 0; i < 4; i++) mBOnce[i].mHovered = false;
         for (int i = 0; i < 3; i++)
@@ -214,7 +227,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
                 mDataNode[i][j].reset();
         }
     }
-    else if (runOption == 0) // Run step-by-step
+    else if (mRun == 0) // Run step-by-step
     {
         mButton[5].mHovered = true;
 
@@ -250,9 +263,9 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         }
         else firstStep = true;
     }
-    if ((runOption == 0 && mousePress && mButton[6].mHovered) || runOption == 1) // Run at-once
+    if ((mRun == 0 && mousePress && mButton[6].mHovered) || mRun == 1) // Run at-once
     {
-        runOption = 1;
+        mRun = 1;
         mButton[6].mHovered = true;
         for (int i = 0; i < 4; i++)
         {
@@ -275,7 +288,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     {
         size = 0;
         firstTime = firstStep = true;
-        runOption = step = -1;
+        mRun = step = -1;
         mSpeed = mType = mData = 0;
         color = 0;
         mButton[7].reset();
@@ -313,7 +326,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     }
     /*
 
-    if (runOption == 1)
+    if (mRun == 1)
     {
         bool drawn = false;
         for (int i = 0; i < mDataNode.size(); i++)
@@ -338,28 +351,28 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
     mButton[0].mHovered = true;
     if (mButton[4].setMouseOver(mousePosition) && mousePress) // From File
     {
+        // mInputBar[1].reset("datafile");
         mSmallType = 1;
-        // randomize();
-        // firstTime = true;
+        // nosuchfile = false;
+        firstTime = true;
     }
     else if (mButton[5].setMouseOver(mousePosition) && mousePress) // Randomize
     {
-        // mInputBar[1].reset("datafile");
         mSmallType = 2;
-        // nosuchfile = false;
-        // firstTime = true;
+        randomize();
+        firstTime = true;
     }
     switch (mSmallType)
     {
     case 1: // From File
         mButton[4].mHovered = true;
-        // mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
+        mInputBar[0].update(mousePress, mousePosition, keyPress, 10);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
         {
             // nosuchfile = false;
-            // init("data/" + mInputBar[1].mValue + ".data");
+            init("data/" + mInputBar[0].mValue);
         }
-        // else firstTime = true;
+        else firstTime = true;
         break;
     case 2: // Randomize
         mButton[5].mHovered = true;
@@ -369,10 +382,10 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
             // std::ofstream outFile("data/randomize.data");
             // outFile << mInputBar[0].mValue;
             // outFile.close();
-            // init("data/randomize.data");
+            init("data/randomize.data");
         }
-        // else firstTime = true;
-        // break;
+        else firstTime = true;
+        break;
     default:
         break;
     }
@@ -451,13 +464,12 @@ void HashTable::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &
 }
 */
 
-/*
 void HashTable::randomize()
 {
     std::ofstream outFile("data/randomize.data");
 
     srand(time(NULL));
-    int randSize = rand() % 9 + 1;
+    int randSize = rand() % 25 + 1;
     std::string temp = "";
     for (int i = 0; i < randSize; i++)
     {
@@ -470,6 +482,7 @@ void HashTable::randomize()
     outFile.close();
 }
 
+/*
 void HashTable::setPos(std::vector<DataNode> &temp, int id, float start, Node* tmp)
 {
     if (tmp == nullptr)
@@ -480,64 +493,62 @@ void HashTable::setPos(std::vector<DataNode> &temp, int id, float start, Node* t
         tmp = tmp->next;
     }
 }
+*/
 
 void HashTable::init(std::string filename)
 {
     std::ifstream inFile(filename);
     if (!inFile)
     {
-        nosuchfile = true;
+        // nosuchfile = true;
         return;
     }
-    nosuchfile = false;
+    // nosuchfile = false;
 
     if (firstTime == false) return;
     firstTime = false;
-    runOption = 1;
-    step = 0; // activate
-    mDataNode.clear();
-    Node *tmp;
-    while (head != nullptr)
-    {
-        tmp = head;
-        head = head->next;
-        delete tmp;
-    }
-
-    size = 0;
-    while (size < 9 && inFile >> array[size]) ++size;
-    if (size == 0)
-    {
-        inFile.close();
-        return;
-    }
+    step = 0;
+    mRun = 1;
     
-    std::vector<DataNode> temp;
-    head = new Node(array[0]);
-    Node *cur = head;
-
-    temp.push_back(DataNode(sf::Vector2f(350 + 0 * 100, 150), sf::Vector2f(350 + 0 * 100, 150), sf::Vector2f(350 + 1 * 100, 150), head->data, "head-0", mFont, sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second, 0.f, false, false));
-    mDataNode.push_back(temp);
-
-    for (int i = 1; i < size; i++)
+    reset();
+    mStep.clear();
+    Step tmpStep;
+    for (int i = 0; i < 5; i++)
     {
-        temp[i - 1].mNext = true;
-        mDataNode.push_back(temp);
-        tmp = new Node(array[i]);
-        cur->next = tmp;
-        cur = cur->next;
-
-        temp[i - 1].mAppearTime = temp[i - 1].mDefaultAppear = 100.f;
-        temp[i - 1].mAppear = true;
-        temp[i - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
-        temp.push_back(DataNode(sf::Vector2f(350 + i * 100, 150), sf::Vector2f(350 + (i > 0 ? i - 1 : i) * 100, 150), sf::Vector2f(350 + (i < size - 1 ? i + 1 : i) * 100, 150), tmp->data, std::to_string(i), mFont, sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second, 0.f, false, false));
-        mDataNode.push_back(temp);
+        tmpStep.mBucket[i] = mRealBucket[i];
+        tmpStep.mTime = 0;
     }
-    temp[size - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
-    mDataNode.push_back(temp);
+    mStep.push_back(tmpStep);
+
+    std::string element;
+    while (inFile >> element)
+    {
+        int index = stoi(element) % 5;
+        if (mRealBucket[index].mPoint.size() == 5)
+        {
+            // noti
+            // nosuchfile = true;
+            continue;
+        }
+        // nosuchfile = false;
+        tmpStep.mBucket[index].mLabel.setHighLight(true);
+        mStep.push_back(tmpStep);
+
+        addLine(tmpStep.mBucket[index], index, -1, true);
+        addLine(mRealBucket[index], index, -1, false);
+        addPoint(tmpStep.mBucket[index], index, -1, element, true);
+        addPoint(mRealBucket[index], index, -1, element, false);
+        mStep.push_back(tmpStep);
+    } 
+    for (int i = 0; i < 5; i++)
+    {
+        tmpStep.mBucket[i] = mRealBucket[i];
+        tmpStep.mTime = 0;
+    }
+    mStep.push_back(tmpStep);
+    
     inFile.close();
 }
-*/
 
 void HashTable::insert(std::string element)
 {
@@ -560,16 +571,22 @@ void HashTable::insert(std::string element)
     }
     // nosuchfile = false;
     step = 0;
-    runOption = 1;
+    mRun = 1;
 
     tmpStep.mBucket[index].mLabel.setHighLight(true);
     mStep.push_back(tmpStep);
 
     addLine(tmpStep.mBucket[index], index, -1, true);
     addLine(mRealBucket[index], index, -1, false);
-
     addPoint(tmpStep.mBucket[index], index, -1, element, true);
     addPoint(mRealBucket[index], index, -1, element, false);
+    mStep.push_back(tmpStep);
+
+    for (int i = 0; i < 5; i++)
+    {
+        tmpStep.mBucket[i] = mRealBucket[i];
+        tmpStep.mTime = 0;
+    }
     mStep.push_back(tmpStep);
 }
 /*
@@ -591,7 +608,7 @@ void HashTable::delete(int index)
     mDataNode.clear();
     mDataNode.push_back(temp);
 
-    runOption = 1;
+    mRun = 1;
     step = 0; // activate
     if (index == 0)
     {
@@ -680,7 +697,7 @@ void HashTable::modify(int index, std::string element)
     mDataNode.clear();
     mDataNode.push_back(temp);
 
-    runOption = 1;
+    mRun = 1;
     step = 0; // activate
     tmp = head;
     temp[0].mAppear = false;
@@ -721,7 +738,7 @@ void HashTable::search(std::string element)
     mDataNode.clear();
     mDataNode.push_back(temp);
 
-    runOption = 1;
+    mRun = 1;
     step = 0; // activate
     tmp = head;
     temp[0].mAppear = false;
@@ -779,12 +796,12 @@ void HashTable::draw()
     //     mWindow.draw(mDefaultText[i]);
     for (int i = 0; i < 4; i++)
         mButton[i].draw(mWindow);
-    // if (runOption == 0)
+    // if (mRun == 0)
     // {
     //     for (int i = 0; i < 3; i++)
     //         mBStep[i].draw(mWindow);
     // }
-    // if (runOption == 1)
+    // if (mRun == 1)
     // {
     //     for (int i = 0; i < 4; i++)
     //         mBOnce[i].draw(mWindow);
@@ -798,7 +815,7 @@ void HashTable::draw()
         {
         case 1: // From File
             // mWindow.draw(mDefaultText[4]);
-            // mInputBar[0].draw(mWindow);
+            mInputBar[0].draw(mWindow);
             mButton[6].draw(mWindow);
             break;
         case 2: // Randomize
@@ -859,7 +876,7 @@ void HashTable::draw()
         break;
     }
 
-    if (step != -1)
+    if (mRun != -1 && step != -1)
     {
         while (step < mStep.size() - 1)
         {
@@ -875,9 +892,4 @@ void HashTable::draw()
         if (step == mStep.size() - 1)
             mStep[step].draw(mWindow);
     }
-    // if (runOption != -1 && step != -1)
-    // {
-    //     for (int i = 0; i < mDataNode[step].size(); i++)
-    //         mDataNode[step][i].draw(mWindow);
-    // }
 }
