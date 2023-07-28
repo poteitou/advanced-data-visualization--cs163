@@ -124,7 +124,7 @@ void HashTable::reset(Bucket (&bucket)[5])
         bucket[i].mLine.clear();
     }
 }
-
+#include <iostream>
 void HashTable::beautify(Bucket (&bucket)[5])
 {
     for (int i = 0; i < 5; i++)
@@ -622,8 +622,7 @@ void HashTable::remove(std::string element)
         mStep.push_back(tmpStep);
         if (tmpStep.mBucket[index].mPoint[i].mValue == element) 
         {
-            mRealBucket[index].mPoint.erase(mRealBucket[index].mPoint.begin() + i);
-            if (i > 1) mRealBucket[index].mLine.erase(mRealBucket[index].mLine.begin() + i - 1);
+            mRealBucket[index].mPoint.erase(mRealBucket[index].mPoint.begin() + i);mRealBucket[index].mLine.pop_back();
             break;
         }
     }
