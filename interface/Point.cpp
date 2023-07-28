@@ -2,7 +2,7 @@
 
 Point::Point() {}
 
-Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color) : mRadius(radius), mPos(pos), mHighLight(highLight), mColor(Color)
+Point::Point(float radius, sf::Vector2f pos, std::string textIn, sf::Font &font, bool highLight, sf::Color Color) : mRadius(radius), mPos(pos), mHighLight(highLight), mColor(Color), mValue(textIn)
 {
     mFontSize = 25;
     // create rectangle

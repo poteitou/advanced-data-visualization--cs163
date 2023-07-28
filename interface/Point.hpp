@@ -18,6 +18,7 @@ struct Point
     sf::Text mTextIn;
     sf::Color mColor;
 
+    std::string mValue;
     int mFontSize;
     bool mHighLight;
 };
