@@ -4,8 +4,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 {
     mButton.resize(12);
     mInputBar.resize(10);
-    // mBStep.resize(3);
-    // mBOnce.resize(4);
+    mButtonImg.resize(10);
 
     /*
     mDefaultText.resize(20);
@@ -22,30 +21,19 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     /* // Init randomize, data file
     mDefaultText[6].setString("Error: No such file or directory!");
-
-    mDefaultText[7].setString("Index:");
-    mDefaultText[8].setString("Value:");
     mDefaultText[9].setString("Error: Index out of range or reaching capacity!");
 
     mDefaultText[0].setCharacterSize(45);
     mDefaultText[1].setCharacterSize(25);
     mDefaultText[2].setCharacterSize(25);
     mDefaultText[3].setCharacterSize(25);
-
-    mDefaultText[5].setCharacterSize(25);
     mDefaultText[6].setCharacterSize(25);
-
-    mDefaultText[7].setCharacterSize(25);
-    mDefaultText[8].setCharacterSize(25);
     mDefaultText[9].setCharacterSize(25);
 
     mDefaultText[0].setPosition(600, 40);
     mDefaultText[1].setPosition(1050, 420);
     mDefaultText[2].setPosition(1050, 470);
     mDefaultText[3].setPosition(1050, 600);
-
-    mDefaultText[7].setPosition(250, 630 + 15);
-    mDefaultText[8].setPosition(480, 630 + 15);
 
     mDefaultText[6].setFillColor(sf::Color::Red);
     mDefaultText[6].setPosition(350, 630 + 50 + 15);
@@ -77,6 +65,18 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(99)), 0);
     mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
+    std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause"};
+    for (int i = 0; i < 5; i++)
+        mButtonImg[i] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + i * 55, 350), nameImg[i] + ".png", nameImg[i] + "Hover.png");
+    mButtonImg[7] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + 2 * 55, 350), nameImg[7] + ".png", nameImg[7] + "Hover.png");
+
+    mButtonImg[5] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 6 * 55, 350), nameImg[5] + ".png", nameImg[5] + "Hover.png");
+    mButtonImg[6] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 9 * 55 - 5, 350), nameImg[6] + ".png", nameImg[6] + "Hover.png");
+
+    // speed image
+    mTexture.loadFromFile("resources/images/speed" + std::to_string(1) + ".png");
+    mSpriteSpeed.setTexture(mTexture, true);
+    mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 350));
     /*   
     pallete[0] = {sf::Color(255, 200, 200), sf::Color(255, 95, 95)};
     pallete[1] = {sf::Color(180, 255, 215), sf::Color(30, 190, 90)};
@@ -86,10 +86,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mButton[i] = Button(sf::Vector2f(50, 50), sf::Vector2f(1200 + (i - 8) * 70, 590), pallete[i - 8].first, pallete[i - 8].second, nameButton[i], mFont, 22);
 
     mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], mFont, 22);
-
-    std::string nameBStep[] = {"Previous", "Next", "Final"};
-    for (int i = 0; i < 3; i++)
-        mBStep[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 420), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBStep[i], mFont, 22);
 
     std::string nameBOnce[] = {"1x", "2x", "4x", "8x"};
     for (int i = 0; i < 4; i++)
@@ -234,6 +230,8 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             mInputBar[4].reset(std::to_string(Rand(99)));
         }
     mSpeed = 1;
+    for (int i = 0; i < 7; i++)
+        mButtonImg[i].setMouseOver(mousePosition);
     /*
     if (mRun == 1 && mousePress && mButton[5].mHovered)
     {
@@ -742,12 +740,16 @@ void HashTable::search(std::string element)
 
 void HashTable::draw()
 {
+    // ButtonImg tmp = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + i * 55, 350), "begin" + ".png", "begin" + "Hover.png");
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
     //     mWindow.draw(mDefaultText[i]);
     for (int i = 0; i < 4; i++)
         mButton[i].draw(mWindow);
+    for (int i = 0; i < 7; i++)
+        mButtonImg[i].draw(mWindow);
+    mWindow.draw(mSpriteSpeed);
     // if (mRun == 0)
     // {
     //     for (int i = 0; i < 3; i++)

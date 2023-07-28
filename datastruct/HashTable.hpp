@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "../interface/Button.hpp"
+#include "../interface/ButtonImg.hpp"
 #include "../interface/InputBar.hpp"
 #include "../interface/Label.hpp"
 #include "../interface/Arrow.hpp"
@@ -62,7 +63,10 @@ struct HashTable
 
     std::vector<Step> mStep;
     std::vector<Button> mButton;
+    std::vector<ButtonImg> mButtonImg;
     std::vector<InputBar> mInputBar;
+    sf::Texture mTexture;
+    sf::Sprite mSpriteSpeed;
 
     // std::vector<sf::Text> mDefaultText;
 
