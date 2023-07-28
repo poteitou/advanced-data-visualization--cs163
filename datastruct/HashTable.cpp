@@ -104,14 +104,10 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
 
     mRect[1].setSize(sf::Vector2f(500, 300));
     mRect[1].setPosition(sf::Vector2f(100, 500));
-    firstTime = true;
+    firstTime = firstTimeSpeed = true;
     step = -1;
-    mSpeed = 0;
+    mSpeed = 1;
     /*
-
-    array = new std::string[9];
-    head = nullptr;
-    size = 0;
     firstStep = true;
     mRun = -1; // no mode:-1       step:0      once:1
     color = 0; */
@@ -203,6 +199,8 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     mDt = dt;
     for (int i = 0; i < 4; i++)
         mButton[i].setMouseOver(mousePosition);
+     for (int i = 0; i < 7; i++)
+        mButtonImg[i].setMouseOver(mousePosition);
     /* for (int i = 8; i < 11; i++)
     {
         if (mButton[i].setMouseOver(mousePosition) && mousePress)
@@ -229,9 +227,30 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             mInputBar[3].reset(std::to_string(Rand(99)));
             mInputBar[4].reset(std::to_string(Rand(99)));
         }
-    mSpeed = 1;
-    for (int i = 0; i < 7; i++)
-        mButtonImg[i].setMouseOver(mousePosition);
+    
+    if (mousePress && mButtonImg[5].mHovered)
+    {
+        if (firstTimeSpeed)
+        {
+            mSpeed = std::max(1, mSpeed / 2);
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mousePress && mButtonImg[6].mHovered)
+    {
+        if (firstTimeSpeed)
+        {
+            mSpeed = std::min(8, mSpeed * 2);
+            firstTimeSpeed = false;
+        }
+    }
+    else
+        firstTimeSpeed = true;
+
+    mTexture.loadFromFile("resources/images/speed" + std::to_string(mSpeed) + ".png");
+    mSpriteSpeed.setTexture(mTexture, true);
+    mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 350));
+    
     /*
     if (mRun == 1 && mousePress && mButton[5].mHovered)
     {
@@ -602,7 +621,7 @@ void HashTable::remove(std::string element)
         if (tmpStep.mBucket[index].mPoint[i].mValue == element) 
         {
             mRealBucket[index].mPoint.erase(mRealBucket[index].mPoint.begin() + i);
-            if (i) mRealBucket[index].mLine.erase(mRealBucket[index].mLine.begin() + i - 1);
+            if (i > 1) mRealBucket[index].mLine.erase(mRealBucket[index].mLine.begin() + i - 1);
             break;
         }
     }
@@ -615,54 +634,6 @@ void HashTable::remove(std::string element)
     }
     mStep.push_back(tmpStep);
 }
-/*
-
-void HashTable::modify(int index, std::string element)
-{
-    if (firstTime == false) return;
-
-    firstTime = false;
-    if (mDataNode.empty() || index >= size)
-    {
-        nosuchfile = true;
-        return;
-    }
-    nosuchfile = false;
-    
-    std::vector<DataNode> temp(size);
-    Node *tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.clear();
-    mDataNode.push_back(temp);
-
-    mRun = 1;
-    step = 0; // activate
-    tmp = head;
-    temp[0].mAppear = false;
-    temp[0].mAppearTime = temp[0].mDefaultAppear = 0.f;
-
-    for (int i = 0; i <= index; i++)
-    {
-        if (i > 0)
-        {
-            temp[i - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
-        }
-        temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, sf::Color::Black);
-        mDataNode.push_back(temp);
-
-        if (i < index)
-        {
-            temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-            mDataNode.push_back(temp);
-            tmp = tmp->next;
-        }
-    }
-    tmp->data = element;
-    tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.push_back(temp);
-}
-*/
 
 void HashTable::search(std::string element) 
 {
@@ -718,6 +689,55 @@ void HashTable::search(std::string element)
     }
     mStep.push_back(tmpStep);
 }
+
+/*
+
+void HashTable::modify(int index, std::string element)
+{
+    if (firstTime == false) return;
+
+    firstTime = false;
+    if (mDataNode.empty() || index >= size)
+    {
+        nosuchfile = true;
+        return;
+    }
+    nosuchfile = false;
+    
+    std::vector<DataNode> temp(size);
+    Node *tmp = head;
+    setPos(temp, 0, 350, tmp);
+    mDataNode.clear();
+    mDataNode.push_back(temp);
+
+    mRun = 1;
+    step = 0; // activate
+    tmp = head;
+    temp[0].mAppear = false;
+    temp[0].mAppearTime = temp[0].mDefaultAppear = 0.f;
+
+    for (int i = 0; i <= index; i++)
+    {
+        if (i > 0)
+        {
+            temp[i - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
+        }
+        temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, sf::Color::Black);
+        mDataNode.push_back(temp);
+
+        if (i < index)
+        {
+            temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
+            mDataNode.push_back(temp);
+            tmp = tmp->next;
+        }
+    }
+    tmp->data = element;
+    tmp = head;
+    setPos(temp, 0, 350, tmp);
+    mDataNode.push_back(temp);
+}
+*/
 
 // void HashTable::setColor()
 // {

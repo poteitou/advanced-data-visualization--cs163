@@ -77,7 +77,7 @@ struct HashTable
     int mSpeed;
     float mDt;
     // bool nosuchfile;
-    bool firstTime;
+    bool firstTime, firstTimeSpeed;
     // bool firstStep;
     int mRun;
     // std::pair<sf::Color, sf::Color> pallete[3];
