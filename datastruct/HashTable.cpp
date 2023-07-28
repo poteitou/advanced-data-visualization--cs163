@@ -21,8 +21,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mDefaultText[3].setString("Color tone:"); */
 
     /* // Init randomize, data file
-    mDefaultText[4].setString("Value:");
-    mDefaultText[5].setString("Directory: data/                                   .data");
     mDefaultText[6].setString("Error: No such file or directory!");
 
     mDefaultText[7].setString("Index:");
@@ -34,7 +32,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mDefaultText[2].setCharacterSize(25);
     mDefaultText[3].setCharacterSize(25);
 
-    mDefaultText[4].setCharacterSize(25);
     mDefaultText[5].setCharacterSize(25);
     mDefaultText[6].setCharacterSize(25);
 
@@ -46,9 +43,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     mDefaultText[1].setPosition(1050, 420);
     mDefaultText[2].setPosition(1050, 470);
     mDefaultText[3].setPosition(1050, 600);
-
-    mDefaultText[4].setPosition(250, 630 + 15);
-    mDefaultText[5].setPosition(250, 630 + 15);
 
     mDefaultText[7].setPosition(250, 630 + 15);
     mDefaultText[8].setPosition(480, 630 + 15);
@@ -810,12 +804,10 @@ void HashTable::draw()
         switch (mSmallType)
         {
         case 1: // From File
-            // mWindow.draw(mDefaultText[4]);
             mInputBar[0].draw(mWindow);
             mButton[6].draw(mWindow);
             break;
         case 2: // Randomize
-            // mWindow.draw(mDefaultText[5]);
             mInputBar[1].draw(mWindow);
             mButton[6].draw(mWindow);
             // if (nosuchfile)
@@ -827,7 +819,6 @@ void HashTable::draw()
         break;
     case 2: // Insert
 
-        // mWindow.draw(mDefaultText[4]);
         mInputBar[2].draw(mWindow);
         mButton[7].draw(mWindow);
         // if (nosuchfile) mWindow.draw(mDefaultText[9]);
@@ -863,7 +854,6 @@ void HashTable::draw()
         if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
     case 5: // Search
-        mWindow.draw(mDefaultText[4]);
         mInputBar[3].draw(mWindow);
         mButton[11].draw(mWindow);
         break;
