@@ -68,7 +68,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     
     // Init bar + OK
     mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, "datafile.data", 2);
-    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 100 + 55), mFont, "", 0);
+    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
@@ -205,6 +205,9 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             //     firstTime = true;
             // if (i == 3)
             //     nosuchfile = false;
+            std::ofstream outFile("data/randomize.data");
+            outFile << mInputBar[1].mValue;
+            outFile.close();
             mInputBar[2].reset(std::to_string(Rand(99)));
             mInputBar[3].reset(std::to_string(Rand(99)));
         }
@@ -376,12 +379,7 @@ void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &ke
         mButton[5].mHovered = true;
         mInputBar[1].update(mousePress, mousePosition, keyPress, 26);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
-        {
-            std::ofstream outFile("data/randomize.data");
-            outFile << mInputBar[1].mValue;
-            outFile.close();
             init("data/randomize.data");
-        }
         else firstTime = true;
         break;
     default:
@@ -467,7 +465,7 @@ void HashTable::randomize()
     std::ofstream outFile("data/randomize.data");
 
     srand(time(NULL));
-    int randSize = rand() % 10;
+    int randSize = rand() % 9 + 1;
     std::string temp = "";
     for (int i = 0; i < randSize; i++)
     {
