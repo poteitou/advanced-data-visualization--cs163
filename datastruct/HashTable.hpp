@@ -41,7 +41,6 @@ struct HashTable
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void setPos(std::vector<DataNode> &temp, int id, float start, Node* tmp);
     void init(std::string fileName);
     void insert(std::string element);
     void remove(std::string element);

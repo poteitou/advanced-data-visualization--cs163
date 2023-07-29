@@ -325,32 +325,9 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     case 4: // Search
         updateSearch(mousePress, mousePosition, keyPress);
         break;
-    // case 5: // Update
-    //     updateModify(mousePress, mousePosition, keyPress);
-    //     break;
     default:
         break;
     }
-    /*
-
-    if (mRun == 1)
-    {
-        bool drawn = false;
-        for (int i = 0; i < mDataNode.size(); i++)
-        {
-            for (int j = 0; j < mDataNode[i].size(); j++)
-            {
-                if (!mDataNode[i][j].appear(100.f, mSpeed * dt))
-                {
-                    step = i;
-                    drawn = true;
-                }
-            }
-            if (drawn) break;
-        }
-        if (drawn == false)
-            step = (int)mDataNode.size() - 1;
-    } */
 }
 
 void HashTable::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
@@ -448,19 +425,6 @@ void HashTable::updateModify(bool mousePress, sf::Vector2i mousePosition, char &
 }
 */
 
-/*
-void HashTable::setPos(std::vector<DataNode> &temp, int id, float start, Node* tmp)
-{
-    if (tmp == nullptr)
-        return;
-    for (int i = id; i < size; i++)
-    {
-        temp[i] = DataNode(sf::Vector2f(start + i * 100, 150), sf::Vector2f(start + (i > 0 ? i - 1 : i) * 100, 150), sf::Vector2f(start + (i < size - 1 ? i + 1 : i) * 100, 150), tmp->data, i == 0 ? "head-0" : std::to_string(i), mFont, sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black, 100.f, false, tmp->next != nullptr);
-        tmp = tmp->next;
-    }
-}
-*/
-
 void HashTable::init(std::string filename)
 {
     std::ifstream inFile(filename);
@@ -520,6 +484,13 @@ void HashTable::insert(std::string element)
 {
     if (firstTime == false) return;
     firstTime = false;
+    int index = stoi(element) % 5;
+    if (mRealBucket[index].mPoint.size() == 5)
+    {
+        // noti
+        // nosuchfile = true;
+        return;
+    }
     mStep.clear();
     Step tmpStep;
     for (int i = 0; i < 5; i++)
@@ -528,13 +499,6 @@ void HashTable::insert(std::string element)
         tmpStep.mTime = 0;
     }
     mStep.push_back(tmpStep);
-    int index = stoi(element) % 5;
-    if (mRealBucket[index].mPoint.size() == 5)
-    {
-        // noti
-        // nosuchfile = true;
-        return;
-    }
     // nosuchfile = false;
     step = 0;
     mRun = 1;
@@ -569,13 +533,6 @@ void HashTable::remove(std::string element)
     }
     mStep.push_back(tmpStep);
     int index = stoi(element) % 5;
-    if (mRealBucket[index].mPoint.size() == 5)
-    {
-        // noti
-        // nosuchfile = true;
-        return;
-    }
-    // nosuchfile = false;
     step = 0;
     mRun = 1;
 
@@ -619,13 +576,6 @@ void HashTable::search(std::string element)
     }
     mStep.push_back(tmpStep);
     int index = stoi(element) % 5;
-    if (mRealBucket[index].mPoint.size() == 5)
-    {
-        // noti
-        // nosuchfile = true;
-        return;
-    }
-    // nosuchfile = false;
     step = 0;
     mRun = 1;
 
