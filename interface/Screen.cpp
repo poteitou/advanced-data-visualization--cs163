@@ -41,12 +41,19 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
 
 void Screen::draw()
 {
+    sf::Font mFont1;
+    mFont1.loadFromFile("resources/fonts/childtitle.ttf");
+    sf::Text textTitle;
+    textTitle.setCharacterSize(130);
+    textTitle.setFont(mFont1);
+    textTitle.setFillColor(sf::Color(230, 100, 140));
     switch(mData)
     {
     case 0: // Menu
         mMenu.draw();
         break;
     case 1: // Hash table
+        textTitle.setString("Hash table");
         mHashTable.draw();
         break;
     // case 2: // Dynamic array
@@ -69,6 +76,18 @@ void Screen::draw()
     //     break;
     default:
         break;
+    }
+    sf::Text textOperation;
+    textOperation.setCharacterSize(35);
+    textOperation.setString("Operations");
+    textOperation.setFont(mFont);
+    textOperation.setFillColor(sf::Color(230, 100, 140));
+    textOperation.setPosition(100 + 555 / 2 - textOperation.getLocalBounds().width / 2, 50 - 35 / 2);
+    if (mData > 0) 
+    {
+        textTitle.setPosition(800 + 350 - textTitle.getLocalBounds().width / 2, 50 - 130 / 2);
+        mWindow.draw(textOperation);
+        mWindow.draw(textTitle);
     }
 }
 

@@ -67,8 +67,7 @@ struct HashTable
     std::vector<InputBar> mInputBar;
     sf::Texture mTexture;
     sf::Sprite mSpriteSpeed;
-
-    // std::vector<sf::Text> mDefaultText;
+    std::vector<sf::Text> mDefaultText;
 
     int step;
     // int size;

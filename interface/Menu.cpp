@@ -29,13 +29,12 @@ void Menu::draw()
 {
     sf::Font mFont1;
     mFont1.loadFromFile("resources/fonts/title.ttf");
-    
     sf::Text text1;
     text1.setString("Data Structure");
     text1.setCharacterSize(110);
     text1.setPosition(300, 100);
     text1.setFont(mFont1);
-    text1.setFillColor(sf::Color(230, 100, 100));
+    text1.setFillColor(sf::Color(230, 100, 140));
 
     sf::Font mFont2;
     mFont2.loadFromFile("resources/fonts/baloon.otf");

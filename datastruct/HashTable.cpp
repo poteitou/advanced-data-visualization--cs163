@@ -5,9 +5,11 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
     mButton.resize(12);
     mInputBar.resize(10);
     mButtonImg.resize(10);
+    mDefaultText.resize(10);
 
+    // mDefaultText[i].setFont(mFont);
+    // mDefaultText[i].setFillColor(sf::Color(50, 140, 200));
     /*
-    mDefaultText.resize(20);
     for (int i = 0; i < 10; i++)
     {
         mDefaultText[i].setFont(mFont);
@@ -93,12 +95,12 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
         mRect[i].setOrigin(sf::Vector2f(0.f, 0.f));
         mRect[i].setFillColor(sf::Color::Transparent);
         mRect[i].setOutlineThickness(2.f);
-        mRect[i].setOutlineColor(sf::Color::Black);
+        mRect[i].setOutlineColor(sf::Color(50, 140, 200));
     }
     mRect[0].setSize(sf::Vector2f(800, 600));
     mRect[0].setPosition(sf::Vector2f(700, 100));
 
-    mRect[1].setSize(sf::Vector2f(500, 300));
+    mRect[1].setSize(sf::Vector2f(555, 300));
     mRect[1].setPosition(sf::Vector2f(100, 500));
     firstTime = firstTimeSpeed = true;
     step = -1;
