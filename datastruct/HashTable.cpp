@@ -1,6 +1,6 @@
 #include "HashTable.hpp"
 
-HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window), mFont(font), mType(0), mSmallType(0)
+HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWindow(window), mFont(font), mFontCode(fontCode), mType(0), mSmallType(0)
 {
     mButton.resize(12);
     mInputBar.resize(10);

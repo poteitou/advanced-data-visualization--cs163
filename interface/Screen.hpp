@@ -13,12 +13,12 @@
 
 struct Screen
 {
-    Screen(sf::RenderWindow &window, sf::Font &font);
+    Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, float dt);
     void draw();
 
     sf::RenderWindow &mWindow;
-    sf::Font &mFont;
+    sf::Font &mFont, &mFontCode;
     Menu mMenu;
     HashTable mHashTable;
     // DynamicArray mDynamicArray;

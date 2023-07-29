@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
-Screen::Screen(sf::RenderWindow &window, sf::Font &font)
-    : mWindow(window), mFont(font), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont)//, mDynamicArray(mWindow, mFont), mSinglyLinkedList(mWindow, mFont), mDoublyLinkedList(mWindow, mFont), mCircularLinkedList(mWindow, mFont), mStack(mWindow, mFont), mQueue(mWindow, mFont)
+Screen::Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode)
+    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode)
 {
     
 }

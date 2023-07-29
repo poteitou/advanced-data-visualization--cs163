@@ -12,7 +12,7 @@ struct Application
     void        render(Screen &mScreen);
 
     sf::RenderWindow mWindow;
-    sf::Font mFont;
+    sf::Font mFont, mFontCode;
 
     bool mousePress;
     sf::Vector2i mousePosition;

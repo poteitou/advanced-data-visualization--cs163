@@ -18,7 +18,7 @@
 
 struct HashTable
 {
-    HashTable(sf::RenderWindow &window, sf::Font &font);
+    HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     struct Bucket
     {
         Label mLabel;
@@ -51,7 +51,7 @@ struct HashTable
     void draw();
 
     sf::RenderWindow &mWindow;
-    sf::Font &mFont;
+    sf::Font &mFont, &mFontCode;
     struct Step
     {
         float mTime;

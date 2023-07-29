@@ -4,6 +4,7 @@ Application::Application()
     : mWindow(sf::VideoMode(1600, 900), "Data Structure Visualization", sf::Style::Titlebar | sf::Style::Close)
 {
     mFont.loadFromFile("resources/fonts/main.ttf");
+    mFontCode.loadFromFile("resources/fonts/code.ttf");
     mWindow.setVerticalSyncEnabled(true);
     // to the refresh rate of the monitor, usually around 60Hz. This can avoid graphical artifacts such as screen tearing
     mWindow.setPosition(sf::Vector2i(150, 50));
@@ -15,7 +16,7 @@ Application::Application()
 void Application::run()
 {
     sf::Clock clock;
-    Screen mScreen(mWindow, mFont);
+    Screen mScreen(mWindow, mFont, mFontCode);
 
     while (mWindow.isOpen())
     {
