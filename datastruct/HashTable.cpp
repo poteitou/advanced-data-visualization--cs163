@@ -86,10 +86,6 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
         mButton[i] = Button(sf::Vector2f(50, 50), sf::Vector2f(1200 + (i - 8) * 70, 590), pallete[i - 8].first, pallete[i - 8].second, nameButton[i], mFont, 22);
 
     mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], mFont, 22);
-
-    std::string nameBOnce[] = {"1x", "2x", "4x", "8x"};
-    for (int i = 0; i < 4; i++)
-        mBOnce[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(350 + i * 150, 475), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameBOnce[i], mFont, 22);
     */
 
     for (int i = 0; i < 2; i++)
@@ -107,9 +103,9 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font) : mWindow(window)
     firstTime = firstTimeSpeed = true;
     step = -1;
     mSpeed = 1;
+    mRun = 1; // pause: 0   play: 1
     /*
-    firstStep = true;
-    mRun = -1; // no mode:-1       step:0      once:1
+    firstStep = true; 
     color = 0; */
 
     reset(mRealBucket);
@@ -124,7 +120,7 @@ void HashTable::reset(Bucket (&bucket)[5])
         bucket[i].mLine.clear();
     }
 }
-#include <iostream>
+
 void HashTable::beautify(Bucket (&bucket)[5])
 {
     for (int i = 0; i < 5; i++)
@@ -201,6 +197,8 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
         mButton[i].setMouseOver(mousePosition);
      for (int i = 0; i < 7; i++)
         mButtonImg[i].setMouseOver(mousePosition);
+    if (mRun == 0)
+        mButtonImg[7].setMouseOver(mousePosition);
     /* for (int i = 8; i < 11; i++)
     {
         if (mButton[i].setMouseOver(mousePosition) && mousePress)
@@ -241,105 +239,75 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
             firstTimeSpeed = false;
         }
     }
+    else if (mRun == 1 && mousePress && mButtonImg[2].mHovered) // pause
+    {
+        if (firstTimeSpeed)
+        {
+            mRun = 0;
+            mButtonImg[7].setMouseOver(mousePosition);
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mRun == 0 && mousePress && mButtonImg[7].mHovered) // play
+    {
+        if (firstTimeSpeed)
+        {
+            mRun = 1;
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mousePress && mButtonImg[0].mHovered) 
+    {
+        if (firstTimeSpeed)
+        {
+            step = 0;
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mousePress && mButtonImg[1].mHovered) 
+    {
+        if (firstTimeSpeed)
+        {
+            step = std::max(0, step - 1);
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mousePress && mButtonImg[3].mHovered) 
+    {
+        if (firstTimeSpeed)
+        {
+            step = std::min((int)mStep.size() - 1, step + 1);
+            firstTimeSpeed = false;
+        }
+    }
+    else if (mousePress && mButtonImg[4].mHovered) 
+    {
+        if (firstTimeSpeed)
+        {
+            step = (int)mStep.size() - 1;
+            firstTimeSpeed = false;
+        }
+    }
     else
         firstTimeSpeed = true;
 
     mTexture.loadFromFile("resources/images/speed" + std::to_string(mSpeed) + ".png");
     mSpriteSpeed.setTexture(mTexture, true);
     mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 350));
-    
-    /*
-    if (mRun == 1 && mousePress && mButton[5].mHovered)
-    {
-        mRun = 0;
-        mButton[5].mHovered = true;
-        for (int i = 0; i < 4; i++) mBOnce[i].mHovered = false;
-        for (int i = 0; i < 3; i++)
-            mBStep[i].setMouseOver(mousePosition);
-        mSpeed = 0;
-        step = 0;
-        for (int i = 0; i < mDataNode.size(); i++)
-        {
-            for (int j = 0; j < mDataNode[i].size(); j++)
-                mDataNode[i][j].reset();
-        }
-    }
-    else if (mRun == 0) // Run step-by-step
-    {
-        mButton[5].mHovered = true;
 
-        if (mBStep[0].setMouseOver(mousePosition) && mousePress)
-        {
-            if (step > 0 && firstStep) 
-            {
-                --step;
-                for (int i = 0; i < mDataNode[step].size(); i++)
-                    mDataNode[step][i].reset();
-            }
-            firstStep = false;
-        }
-        else if (mBStep[1].setMouseOver(mousePosition) && mousePress)
-        {
-            if (step + 1 < (int)mDataNode.size() && firstStep) 
-            {
-                ++step;
-                for (int i = 0; i < mDataNode[step].size(); i++)
-                    mDataNode[step][i].reset();
-            }
-            firstStep = false;
-        }
-        else if (mBStep[2].setMouseOver(mousePosition) && mousePress)
-        {
-            if (firstStep) 
-            {
-                step = (int)mDataNode.size() - 1;
-                for (int i = 0; i < mDataNode[step].size(); i++)
-                    mDataNode[step][i].reset();
-            }
-            firstStep = false;
-        }
-        else firstStep = true;
-    }
-    if ((mRun == 0 && mousePress && mButton[6].mHovered) || mRun == 1) // Run at-once
-    {
-        mRun = 1;
-        mButton[6].mHovered = true;
-        for (int i = 0; i < 4; i++)
-        {
-            if (mSpeed == 0) mSpeed = 1; // auto 1x mSpeed
-            if (mBOnce[i].setMouseOver(mousePosition) && mousePress)
-            {
-                mSpeed = 1 << i;
-                mBOnce[i].mHovered = true;
-                for (int i = 0; i < mDataNode.size(); i++)
-                {
-                    for (int j = 0; j < mDataNode[i].size(); j++)
-                        mDataNode[i][j].reset();
-                }
-            }
-            if (mSpeed == (1 << i)) mBOnce[i].mHovered = true;
-        }
-    }
+    // if (mousePress && mButton[7].mHovered)
+    // {
+    //     size = 0;
+    //     firstTime = firstStep = true;
+    //     mRun = step = -1;
+    //     mSpeed = mType = mData = 0;
+    //     color = 0;
+    //     mButton[7].reset();
+    //     mDataNode.clear();
+            // reset(mRealBucket);
+    //     return;
+    // }
 
-    if (mousePress && mButton[7].mHovered)
-    {
-        size = 0;
-        firstTime = firstStep = true;
-        mRun = step = -1;
-        mSpeed = mType = mData = 0;
-        color = 0;
-        mButton[7].reset();
-        mDataNode.clear();
-        Node *tmp;
-        while (head != nullptr)
-        {
-            tmp = head;
-            head = head->next;
-            remove tmp;
-        }
-        return;
-    }
-    */
 
     switch (mType)
     {
@@ -761,7 +729,6 @@ void HashTable::modify(int index, std::string element)
 
 void HashTable::draw()
 {
-    // ButtonImg tmp = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + i * 55, 350), "begin" + ".png", "begin" + "Hover.png");
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
     // for (int i = 0; i < 4; i++)
@@ -770,17 +737,8 @@ void HashTable::draw()
         mButton[i].draw(mWindow);
     for (int i = 0; i < 7; i++)
         mButtonImg[i].draw(mWindow);
+    if (mRun == 0) mButtonImg[7].draw(mWindow);
     mWindow.draw(mSpriteSpeed);
-    // if (mRun == 0)
-    // {
-    //     for (int i = 0; i < 3; i++)
-    //         mBStep[i].draw(mWindow);
-    // }
-    // if (mRun == 1)
-    // {
-    //     for (int i = 0; i < 4; i++)
-    //         mBOnce[i].draw(mWindow);
-    // }
     switch (mType)
     {
     case 1: // Init
@@ -817,19 +775,11 @@ void HashTable::draw()
         mButton[9].draw(mWindow);
         // if (nosuchfile) mWindow.draw(mDefaultText[9]);
         break;
-    /*
-    case 5: // Update
-        mInputBar[3].draw(mWindow);
-        mInputBar[3].draw(mWindow);
-        mButton[11].draw(mWindow);
-        if (nosuchfile) mWindow.draw(mDefaultText[9]);
-        break;
-    */
     default:
         break;
     }
 
-    if (mRun != -1 && step != -1)
+    if (mRun == 1 && !mStep.empty())
     {
         while (step < mStep.size() - 1)
         {
@@ -844,5 +794,9 @@ void HashTable::draw()
         }
         if (step == mStep.size() - 1)
             mStep[step].draw(mWindow);
+    }
+    else if (mRun == 0 && !mStep.empty())
+    {
+        mStep[step].draw(mWindow);
     }
 }
