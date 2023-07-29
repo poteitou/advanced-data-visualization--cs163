@@ -6,6 +6,16 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
     mInputBar.resize(10);
     mButtonImg.resize(10);
     mDefaultText.resize(10);
+    mRealText.resize(10);
+
+    for (int i = 0; i < 10; i++)
+    {
+        mRealText[i].setCharacterSize(22);
+        mRealText[i].setFont(mFontCode);
+        mRealText[i].setStyle(sf::Text::Bold);
+        mRealText[i].setFillColor(sf::Color::Black);
+        mRealText[i].setPosition(125, 525 + i * 40 - 22 / 2);
+    }
 
     // mDefaultText[i].setFont(mFont);
     // mDefaultText[i].setFillColor(sf::Color(50, 140, 200));
@@ -93,15 +103,16 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
     for (int i = 0; i < 2; i++)
     {
         mRect[i].setOrigin(sf::Vector2f(0.f, 0.f));
-        mRect[i].setFillColor(sf::Color::Transparent);
         mRect[i].setOutlineThickness(2.f);
         mRect[i].setOutlineColor(sf::Color(50, 140, 200));
     }
     mRect[0].setSize(sf::Vector2f(800, 600));
     mRect[0].setPosition(sf::Vector2f(700, 100));
+    mRect[0].setFillColor(sf::Color::Transparent);
 
-    mRect[1].setSize(sf::Vector2f(555, 300));
+    mRect[1].setSize(sf::Vector2f(555, 350));
     mRect[1].setPosition(sf::Vector2f(100, 500));
+    mRect[0].setFillColor(sf::Color::White);
     firstTime = firstTimeSpeed = true;
     step = -1;
     mSpeed = 1;
@@ -166,6 +177,8 @@ void HashTable::Step::draw(sf::RenderWindow &mWindow)
 {
     for (int i = 0; i < 5; i++)
         mBucket[i].draw(mWindow);
+    for (int i = 0; i < cntCode; i++)
+        mWindow.draw(mText[i]);
 }
 
 int HashTable::Rand(int MAX)
@@ -427,7 +440,7 @@ void HashTable::updateModify(bool mousePress, sf::Vector2i mousePosition, char &
 
 void HashTable::init(std::string filename)
 {
-    std::ifstream inFile(filename);
+    std::ifstream inFile(filename), inCode("pseudo/hashtable/init.pseudo");
     if (!inFile)
     {
         // nosuchfile = true;
@@ -435,7 +448,12 @@ void HashTable::init(std::string filename)
     }
     // nosuchfile = false;
 
-    if (firstTime == false) return;
+    if (firstTime == false) 
+    {
+        inFile.close();
+        inCode.close();
+        return;
+    }
     firstTime = false;
     step = 0;
     mRun = 1;
@@ -443,12 +461,26 @@ void HashTable::init(std::string filename)
     reset(mRealBucket);
     mStep.clear();
     Step tmpStep;
-    for (int i = 0; i < 5; i++)
+
+    int cnt = 0;
+    std::string tmp;
+    while (getline(inCode, tmp))
     {
-        tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
+        mRealText[cnt].setString(tmp);
+        mRealText[cnt++].setFillColor(sf::Color::Black);
     }
+
+    tmpStep.cntCode = cnt;
+    for (int i = 0; i < 5; i++)
+        tmpStep.mBucket[i] = mRealBucket[i];
+    tmpStep.mTime = 0;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
+
+    tmpStep.mText = mRealText;
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
 
     std::string element;
     while (inFile >> element)
@@ -471,53 +503,73 @@ void HashTable::init(std::string filename)
         mStep.push_back(tmpStep);
     } 
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
+    tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     
     inFile.close();
+    inCode.close();
 }
 
 void HashTable::insert(std::string element)
 {
-    if (firstTime == false) return;
-    firstTime = false;
-    int index = stoi(element) % 5;
-    if (mRealBucket[index].mPoint.size() == 5)
+    std::ifstream inCode("pseudo/hashtable/insert.pseudo");
+    if (firstTime == false) 
     {
-        // noti
-        // nosuchfile = true;
+        inCode.close();
         return;
     }
+    firstTime = false;
+
     mStep.clear();
     Step tmpStep;
-    for (int i = 0; i < 5; i++)
+
+    int cnt = 0;
+    std::string tmp;
+    while (getline(inCode, tmp))
     {
-        tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
+        mRealText[cnt].setString(tmp);
+        mRealText[cnt++].setFillColor(sf::Color::Black);
     }
+
+    tmpStep.cntCode = cnt;
+    for (int i = 0; i < 5; i++)
+        tmpStep.mBucket[i] = mRealBucket[i];
+    tmpStep.mTime = 0;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
-    // nosuchfile = false;
+
     step = 0;
     mRun = 1;
 
+    int index = stoi(element) % 5;
     tmpStep.mBucket[index].mLabel.setHighLight(true);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
-
-    addLine(tmpStep.mBucket[index], index, -1, true);
-    addLine(mRealBucket[index], index, -1, false);
-    addPoint(tmpStep.mBucket[index], index, -1, element, true);
-    addPoint(mRealBucket[index], index, -1, element, false);
-    mStep.push_back(tmpStep);
+    if (mRealBucket[index].mPoint.size() == 5)
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+    }
+    else
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+        addLine(tmpStep.mBucket[index], index, -1, true);
+        addLine(mRealBucket[index], index, -1, false);
+        addPoint(tmpStep.mBucket[index], index, -1, element, true);
+        addPoint(mRealBucket[index], index, -1, element, false);
+        mStep.push_back(tmpStep);
+    }
 
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
+    tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
+    inCode.close();
 }
 
 void HashTable::remove(std::string element)
@@ -527,10 +579,8 @@ void HashTable::remove(std::string element)
     mStep.clear();
     Step tmpStep;
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
+    tmpStep.mTime = 0;
     mStep.push_back(tmpStep);
     int index = stoi(element) % 5;
     step = 0;
@@ -556,10 +606,7 @@ void HashTable::remove(std::string element)
 
     beautify(mRealBucket);
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
     mStep.push_back(tmpStep);
 }
 
@@ -570,10 +617,8 @@ void HashTable::search(std::string element)
     mStep.clear();
     Step tmpStep;
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
+    tmpStep.mTime = 0;
     mStep.push_back(tmpStep);
     int index = stoi(element) % 5;
     step = 0;
@@ -593,10 +638,7 @@ void HashTable::search(std::string element)
         if (tmpStep.mBucket[index].mPoint[i].mValue == element) 
         {
             for (int j = 0; j < 5; j++)
-            {
                 tmpStep.mBucket[j] = mRealBucket[j];
-                tmpStep.mTime = 0;
-            }
             tmpStep.mBucket[index].mPoint[i].setHighLight(true);
             mStep.push_back(tmpStep);
             return;
@@ -604,10 +646,7 @@ void HashTable::search(std::string element)
     }
 
     for (int i = 0; i < 5; i++)
-    {
         tmpStep.mBucket[i] = mRealBucket[i];
-        tmpStep.mTime = 0;
-    }
     mStep.push_back(tmpStep);
 }
 
@@ -683,6 +722,15 @@ void HashTable::draw()
 {
     mWindow.draw(mRect[0]);
     mWindow.draw(mRect[1]);
+    sf::Text textImple;
+    textImple.setCharacterSize(35);
+    textImple.setString("Implementation");
+    textImple.setStyle(sf::Text::Bold);
+    textImple.setFont(mFont);
+    textImple.setFillColor(sf::Color(230, 100, 140));
+    textImple.setPosition(100 + 555 / 2 - textImple.getLocalBounds().width / 2, 450 - 35 / 2);
+    mWindow.draw(textImple);
+
     // for (int i = 0; i < 4; i++)
     //     mWindow.draw(mDefaultText[i]);
     for (int i = 0; i < 4; i++)
@@ -745,10 +793,14 @@ void HashTable::draw()
             }
         }
         if (step == mStep.size() - 1)
+        {
+            mRun = 0;
             mStep[step].draw(mWindow);
+        }
     }
     else if (mRun == 0 && !mStep.empty())
     {
         mStep[step].draw(mWindow);
     }
+
 }

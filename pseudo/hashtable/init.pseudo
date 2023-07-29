@@ -1,0 +1,3 @@
+this HashTable = new HashTable
+for value in list:
+    insert(value) to this HashTable

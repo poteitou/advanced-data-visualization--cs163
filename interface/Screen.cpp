@@ -80,6 +80,7 @@ void Screen::draw()
     sf::Text textOperation;
     textOperation.setCharacterSize(35);
     textOperation.setString("Operations");
+    textOperation.setStyle(sf::Text::Bold);
     textOperation.setFont(mFont);
     textOperation.setFillColor(sf::Color(230, 100, 140));
     textOperation.setPosition(100 + 555 / 2 - textOperation.getLocalBounds().width / 2, 50 - 35 / 2);

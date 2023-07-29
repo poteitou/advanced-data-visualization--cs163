@@ -45,7 +45,6 @@ struct HashTable
     void insert(std::string element);
     void remove(std::string element);
     void search(std::string element);
-
     // void setColor();
     void draw();
 
@@ -53,9 +52,10 @@ struct HashTable
     sf::Font &mFont, &mFontCode;
     struct Step
     {
+        int cntCode;
         float mTime;
         Bucket mBucket[5];
-        // vector<Pseudo> pseudo;
+        std::vector<sf::Text> mText;
 
         void draw(sf::RenderWindow &mWindow);
     };
@@ -66,7 +66,7 @@ struct HashTable
     std::vector<InputBar> mInputBar;
     sf::Texture mTexture;
     sf::Sprite mSpriteSpeed;
-    std::vector<sf::Text> mDefaultText;
+    std::vector<sf::Text> mDefaultText, mRealText;
 
     int step;
     // int size;
