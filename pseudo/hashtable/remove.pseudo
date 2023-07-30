@@ -1,0 +1,6 @@
+input(value)
+index = value % KEY
+for Node(temp) in LinkedList[index]:
+    if temp->value == value:
+        remove(temp) from LinkedList[index]
+        break

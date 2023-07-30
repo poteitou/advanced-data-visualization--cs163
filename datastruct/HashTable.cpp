@@ -10,11 +10,11 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
 
     for (int i = 0; i < 10; i++)
     {
-        mRealText[i].setCharacterSize(22);
+        mRealText[i].setCharacterSize(20);
         mRealText[i].setFont(mFontCode);
         mRealText[i].setStyle(sf::Text::Bold);
         mRealText[i].setFillColor(sf::Color::Black);
-        mRealText[i].setPosition(125, 525 + i * 40 - 22 / 2);
+        mRealText[i].setPosition(120, 525 + i * 40 - 20 / 2);
     }
 
     // mDefaultText[i].setFont(mFont);
@@ -487,12 +487,7 @@ void HashTable::init(std::string filename)
     {
         int index = stoi(element) % 5;
         if (mRealBucket[index].mPoint.size() == 5)
-        {
-            // noti
-            // nosuchfile = true;
             continue;
-        }
-        // nosuchfile = false;
         tmpStep.mBucket[index].mLabel.setHighLight(true);
         mStep.push_back(tmpStep);
 
@@ -548,6 +543,7 @@ void HashTable::insert(std::string element)
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
+
     if (mRealBucket[index].mPoint.size() == 5)
     {
         tmpStep.mText = mRealText;
@@ -574,19 +570,40 @@ void HashTable::insert(std::string element)
 
 void HashTable::remove(std::string element)
 {
-    if (firstTime == false) return;
+    std::ifstream inCode("pseudo/hashtable/remove.pseudo");
+    if (firstTime == false) 
+    {
+        inCode.close();
+        return;
+    }
     firstTime = false;
+
     mStep.clear();
     Step tmpStep;
+
+    int cnt = 0;
+    std::string tmp;
+    while (getline(inCode, tmp))
+    {
+        mRealText[cnt].setString(tmp);
+        mRealText[cnt++].setFillColor(sf::Color::Black);
+    }
+
+    tmpStep.cntCode = cnt;
     for (int i = 0; i < 5; i++)
         tmpStep.mBucket[i] = mRealBucket[i];
     tmpStep.mTime = 0;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
-    int index = stoi(element) % 5;
+
     step = 0;
     mRun = 1;
 
+    int index = stoi(element) % 5;
     tmpStep.mBucket[index].mLabel.setHighLight(true);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     for (int i = 0; i < tmpStep.mBucket[index].mPoint.size(); i++)
@@ -595,10 +612,18 @@ void HashTable::remove(std::string element)
             tmpStep.mBucket[index].mArrow.setHighLight(true);
         else 
             tmpStep.mBucket[index].mLine[i - 1].setHighLight(true);
+
         tmpStep.mBucket[index].mPoint[i].setHighLight(true);
+        tmpStep.mText = mRealText;
+        tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(tmpStep);
         if (tmpStep.mBucket[index].mPoint[i].mValue == element) 
         {
+            tmpStep.mText = mRealText;
+            tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
+            mStep.push_back(tmpStep);
             mRealBucket[index].mPoint.erase(mRealBucket[index].mPoint.begin() + i);mRealBucket[index].mLine.pop_back();
             break;
         }
@@ -607,24 +632,47 @@ void HashTable::remove(std::string element)
     beautify(mRealBucket);
     for (int i = 0; i < 5; i++)
         tmpStep.mBucket[i] = mRealBucket[i];
+    tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
+    inCode.close();
 }
 
 void HashTable::search(std::string element) 
 {
-    if (firstTime == false) return;
+    std::ifstream inCode("pseudo/hashtable/search.pseudo");
+    if (firstTime == false) 
+    {
+        inCode.close();
+        return;
+    }
     firstTime = false;
+
     mStep.clear();
     Step tmpStep;
+
+    int cnt = 0;
+    std::string tmp;
+    while (getline(inCode, tmp))
+    {
+        mRealText[cnt].setString(tmp);
+        mRealText[cnt++].setFillColor(sf::Color::Black);
+    }
+
+    tmpStep.cntCode = cnt;
     for (int i = 0; i < 5; i++)
         tmpStep.mBucket[i] = mRealBucket[i];
     tmpStep.mTime = 0;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
-    int index = stoi(element) % 5;
+
     step = 0;
     mRun = 1;
 
+    int index = stoi(element) % 5;
     tmpStep.mBucket[index].mLabel.setHighLight(true);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     for (int i = 0; i < tmpStep.mBucket[index].mPoint.size(); i++)
@@ -633,13 +681,19 @@ void HashTable::search(std::string element)
             tmpStep.mBucket[index].mArrow.setHighLight(true);
         else 
             tmpStep.mBucket[index].mLine[i - 1].setHighLight(true);
+
         tmpStep.mBucket[index].mPoint[i].setHighLight(true);
+        tmpStep.mText = mRealText;
+        tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(tmpStep);
         if (tmpStep.mBucket[index].mPoint[i].mValue == element) 
         {
             for (int j = 0; j < 5; j++)
                 tmpStep.mBucket[j] = mRealBucket[j];
             tmpStep.mBucket[index].mPoint[i].setHighLight(true);
+            tmpStep.mText = mRealText;
+            tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
             mStep.push_back(tmpStep);
             return;
         }
@@ -647,7 +701,10 @@ void HashTable::search(std::string element)
 
     for (int i = 0; i < 5; i++)
         tmpStep.mBucket[i] = mRealBucket[i];
+    tmpStep.mText = mRealText;
+    tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
+    inCode.close();
 }
 
 /*
