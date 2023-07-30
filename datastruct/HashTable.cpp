@@ -2,55 +2,36 @@
 
 HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWindow(window), mFont(font), mFontCode(fontCode), mType(0), mSmallType(0)
 {
-    mButton.resize(12);
-    mInputBar.resize(10);
+    mButton.resize(10);
+    mInputBar.resize(5);
     mButtonImg.resize(10);
-    mDefaultText.resize(10);
-    mRealText.resize(10);
+    mRealText.resize(9);
+    mNoteText.resize(3);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 9; i++)
     {
-        mRealText[i].setCharacterSize(20);
+        mRealText[i].setCharacterSize(19);
         mRealText[i].setFont(mFontCode);
-        mRealText[i].setStyle(sf::Text::Bold);
         mRealText[i].setFillColor(sf::Color::Black);
-        mRealText[i].setPosition(120, 525 + i * 40 - 20 / 2);
+        mRealText[i].setPosition(120, 525 + i * 35 - 19 / 2);
     }
 
-    // mDefaultText[i].setFont(mFont);
-    // mDefaultText[i].setFillColor(sf::Color(50, 140, 200));
-    /*
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 3; i++)
     {
-        mDefaultText[i].setFont(mFont);
-        mDefaultText[i].setFillColor(sf::Color::Black);
-    } */
+        mNoteText[i].setFont(mFont);
+        mNoteText[i].setFillColor(sf::Color::Black);
+        mNoteText[i].setCharacterSize(20);
+    }
 
-    /* mDefaultText[0].setString("HASH TABLE");
-    mDefaultText[1].setString("Maximum capacity: 9");
-    mDefaultText[2].setString("Value range: 0..99");
-    mDefaultText[3].setString("Color tone:"); */
-
-    /* // Init randomize, data file
-    mDefaultText[6].setString("Error: No such file or directory!");
-    mDefaultText[9].setString("Error: Index out of range or reaching capacity!");
-
-    mDefaultText[0].setCharacterSize(45);
-    mDefaultText[1].setCharacterSize(25);
-    mDefaultText[2].setCharacterSize(25);
-    mDefaultText[3].setCharacterSize(25);
-    mDefaultText[6].setCharacterSize(25);
-    mDefaultText[9].setCharacterSize(25);
-
-    mDefaultText[0].setPosition(600, 40);
-    mDefaultText[1].setPosition(1050, 420);
-    mDefaultText[2].setPosition(1050, 470);
-    mDefaultText[3].setPosition(1050, 600);
-
-    mDefaultText[6].setFillColor(sf::Color::Red);
-    mDefaultText[6].setPosition(350, 630 + 50 + 15);
-    mDefaultText[9].setFillColor(sf::Color::Red);
-    mDefaultText[9].setPosition(350, 630 + 50 + 15); */
+    std::ifstream inNote("pseudo/hashtable/hashtable.note");
+    std::string tmp;
+    cntNote = 0;
+    while (getline(inNote, tmp))
+    {
+        mNoteText[cntNote].setPosition(720, 760 + cntNote * 35 - 20 / 2);
+        mNoteText[cntNote++].setString(tmp);
+    }
+    inNote.close();
 
     std::string nameButton[] = {"Init", "Insert", "Remove", "Search", "From File", "Randomize", "OK", "OK", "OK", "OK"};
     for (int i = 0; i < 4; i++) // Init, Insert, Remove, Search
@@ -61,8 +42,8 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
         mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
     
     // Init bar + OK
-    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, "datafile.data", 2);
-    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "datafile.data", 2);
+    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, std::to_string(Rand(99)), 0);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
@@ -104,8 +85,7 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
     step = -1;
     mSpeed = 1;
     mRun = 1; // pause: 0   play: 1
-    /*
-    color = 0; */
+    color = 0;
 
     reset(mRealBucket);
 }
@@ -184,7 +164,8 @@ void HashTable::randomize()
     {
         std::string value = std::to_string(rand() % 100);
         outFile << value << ' ';
-        temp += value + ' ';
+        temp += value;
+        if (i < randSize - 1) temp += ' ';
     }
     mInputBar[1].mValue = temp;
     mInputBar[1].mText.setString(temp);
@@ -409,20 +390,6 @@ void HashTable::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &
         search(mInputBar[4].mValue);
     else firstTime = true;
 }
-
-/*
-void HashTable::updateModify(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
-{
-    mButton[3].mHovered = true;
-
-    char tempkeyPress = keyPress;
-    mInputBar[3].update(mousePress, mousePosition, keyPress, 1);
-    mInputBar[3].update(mousePress, mousePosition, tempkeyPress, 2);
-    if (mButton[11].setMouseOver(mousePosition) && mousePress && mInputBar[3].mValue != "" && mInputBar[3].mValue != "")
-        modify(stoi(mInputBar[3].mValue), mInputBar[3].mValue);
-    else firstTime = true;
-}
-*/
 
 void HashTable::init(std::string filename)
 {
@@ -693,55 +660,6 @@ void HashTable::search(std::string element)
     inCode.close();
 }
 
-/*
-
-void HashTable::modify(int index, std::string element)
-{
-    if (firstTime == false) return;
-
-    firstTime = false;
-    if (mDataNode.empty() || index >= size)
-    {
-        nosuchfile = true;
-        return;
-    }
-    nosuchfile = false;
-    
-    std::vector<DataNode> temp(size);
-    Node *tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.clear();
-    mDataNode.push_back(temp);
-
-    mRun = 1;
-    step = 0; // activate
-    tmp = head;
-    temp[0].mAppear = false;
-    temp[0].mAppearTime = temp[0].mDefaultAppear = 0.f;
-
-    for (int i = 0; i <= index; i++)
-    {
-        if (i > 0)
-        {
-            temp[i - 1].setColor(sf::Color::Black, sf::Color::Black, pallete[color].first, sf::Color::Black);
-        }
-        temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, sf::Color::Black);
-        mDataNode.push_back(temp);
-
-        if (i < index)
-        {
-            temp[i].setColor(sf::Color::White, pallete[color].second, pallete[color].second, pallete[color].second);
-            mDataNode.push_back(temp);
-            tmp = tmp->next;
-        }
-    }
-    tmp->data = element;
-    tmp = head;
-    setPos(temp, 0, 350, tmp);
-    mDataNode.push_back(temp);
-}
-*/
-
 // void HashTable::setColor()
 // {
 //     for (int i = 0; i < mDataNode.size(); i++)
@@ -772,8 +690,8 @@ void HashTable::draw()
     textImple.setPosition(100 + 555 / 2 - textImple.getLocalBounds().width / 2, 450 - 35 / 2);
     mWindow.draw(textImple);
 
-    // for (int i = 0; i < 4; i++)
-    //     mWindow.draw(mDefaultText[i]);
+    for (int i = 0; i < cntNote; i++)
+        mWindow.draw(mNoteText[i]);
     for (int i = 0; i < 4; i++)
         mButton[i].draw(mWindow);
     for (int i = 0; i < 7; i++)
@@ -791,7 +709,7 @@ void HashTable::draw()
             mInputBar[0].draw(mWindow);
             mButton[6].draw(mWindow);
             // if (nosuchfile)
-            //     mWindow.draw(mDefaultText[6]);
+            //     mWindow.draw(mNoteText[6]);
             break;
         case 2: // Randomize
             mInputBar[1].draw(mWindow);
@@ -804,17 +722,17 @@ void HashTable::draw()
     case 2: // Insert
         mInputBar[2].draw(mWindow);
         mButton[7].draw(mWindow);
-        // if (nosuchfile) mWindow.draw(mDefaultText[9]);
+        // if (nosuchfile) mWindow.draw(mNoteText[9]);
         break;
     case 3: // Remove
         mInputBar[3].draw(mWindow);
         mButton[8].draw(mWindow);
-        // if (nosuchfile) mWindow.draw(mDefaultText[9]);
+        // if (nosuchfile) mWindow.draw(mNoteText[9]);
         break;
     case 4: // Search
         mInputBar[4].draw(mWindow);
         mButton[9].draw(mWindow);
-        // if (nosuchfile) mWindow.draw(mDefaultText[9]);
+        // if (nosuchfile) mWindow.draw(mNoteText[9]);
         break;
     default:
         break;

@@ -66,10 +66,10 @@ struct HashTable
     std::vector<InputBar> mInputBar;
     sf::Texture mTexture;
     sf::Sprite mSpriteSpeed;
-    std::vector<sf::Text> mDefaultText, mRealText;
+    std::vector<sf::Text> mNoteText, mRealText;
 
     int step;
-    // int size;
+    int cntNote;
     int mType;
     int mSmallType;
     int mSpeed;
@@ -78,7 +78,7 @@ struct HashTable
     bool firstTime, firstTimeSpeed;
     int mRun;
     // std::pair<sf::Color, sf::Color> pallete[3];
-    // int color;
+    int color;
 };
 
 #endif // HASHTABLE_HPP
