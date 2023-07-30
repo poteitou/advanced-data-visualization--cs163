@@ -18,7 +18,9 @@ struct Screen
     void draw();
 
     sf::RenderWindow &mWindow;
-    sf::Font &mFont, &mFontCode;
+    sf::Font &mFont, &mFontCode, mFont1;
+    sf::RectangleShape mRect[3];
+    sf::Text textTitle, textOperation;
     Menu mMenu;
     HashTable mHashTable;
     // DynamicArray mDynamicArray;

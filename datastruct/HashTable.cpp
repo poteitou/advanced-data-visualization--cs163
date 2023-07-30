@@ -100,25 +100,11 @@ HashTable::HashTable(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCod
     mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(750, 630 + 5), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], mFont, 22);
     */
 
-    for (int i = 0; i < 2; i++)
-    {
-        mRect[i].setOrigin(sf::Vector2f(0.f, 0.f));
-        mRect[i].setOutlineThickness(2.f);
-        mRect[i].setOutlineColor(sf::Color(50, 140, 200));
-    }
-    mRect[0].setSize(sf::Vector2f(800, 600));
-    mRect[0].setPosition(sf::Vector2f(700, 100));
-    mRect[0].setFillColor(sf::Color::Transparent);
-
-    mRect[1].setSize(sf::Vector2f(555, 350));
-    mRect[1].setPosition(sf::Vector2f(100, 500));
-    mRect[0].setFillColor(sf::Color::White);
     firstTime = firstTimeSpeed = true;
     step = -1;
     mSpeed = 1;
     mRun = 1; // pause: 0   play: 1
     /*
-    firstStep = true; 
     color = 0; */
 
     reset(mRealBucket);
@@ -313,7 +299,7 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     // if (mousePress && mButton[7].mHovered)
     // {
     //     size = 0;
-    //     firstTime = firstStep = true;
+    //     firstTime = true;
     //     mRun = step = -1;
     //     mSpeed = mType = mData = 0;
     //     color = 0;
@@ -777,8 +763,6 @@ void HashTable::modify(int index, std::string element)
 
 void HashTable::draw()
 {
-    mWindow.draw(mRect[0]);
-    mWindow.draw(mRect[1]);
     sf::Text textImple;
     textImple.setCharacterSize(35);
     textImple.setString("Implementation");

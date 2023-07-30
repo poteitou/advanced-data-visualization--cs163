@@ -1,4 +1,4 @@
 Node temp = new Node(value)
 index = value % KEY
-if LinkedList[index].size = CAP: return
+if LinkedList[index].size = capacity: return
 add(temp) to tail of LinkedList[index]
