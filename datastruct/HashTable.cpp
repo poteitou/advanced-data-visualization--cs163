@@ -294,18 +294,18 @@ void HashTable::update(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     mSpriteSpeed.setTexture(mTexture, true);
     mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 350));
 
-    // if (mousePress && mButtonImg[11].mHovered)
-    // {
-    //     firstTime = firstTimeSpeed = true;
-    //     step = -1;
-    //     mRun = mSpeed = 1;
-    //     mType = mSmallType = mData = 0;
-    //     mColor = 0;
-    //     mStep.clear();
-    //     reset(mRealBucket);
-    //     mButtonImg[11].mHovered = false;
-    //     return;
-    // }
+    if (mousePress && mButtonImg[11].mHovered)
+    {
+        firstTime = firstTimeSpeed = true;
+        step = -1;
+        mRun = mSpeed = 1;
+        mType = mSmallType = mData = 0;
+        mColor = 0;
+        mStep.clear();
+        reset(mRealBucket);
+        mButtonImg[11].mHovered = false;
+        return;
+    }
 
     switch (mType)
     {
