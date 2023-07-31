@@ -2,8 +2,3 @@ Node temp = new Node(value)
 index = value % KEY
 if LinkedList[index].size = capacity: return
 add(temp) to tail of LinkedList[index]
-Node temp = new Node(value)
-index = value % KEY
-if LinkedList[index].size = capacity: return
-add(temp) to tail of LinkedList[index]
-add(temp) to tail of LinkedList[index]

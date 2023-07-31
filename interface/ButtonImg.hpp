@@ -10,7 +10,6 @@ struct ButtonImg
 
     void draw(sf::RenderWindow &mWindow);
     bool setMouseOver(sf::Vector2i mousePosition);
-    void reset();
 
     sf::Texture mTexture;
     sf::Sprite mSprite;

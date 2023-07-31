@@ -20,7 +20,7 @@ void Menu::update(bool mousePress, sf::Vector2i mousePosition, int &mData)
         if (mButton[i].setMouseOver(mousePosition) && mousePress)
         {
             mData = i + 1;
-            mButton[i].reset();
+            mButton[i].mHovered = false;
         }
     }
 }

@@ -53,8 +53,4 @@ bool Button::setMouseOver(sf::Vector2i mousePosition)
     }
 }
 
-void Button::reset()
-{
-    mHovered = false;
-}
 

@@ -27,6 +27,7 @@ void Label::setColor(sf::Color Color)
     mColor = Color;
     mTextIn.setFillColor(mHighLight ? sf::Color::White : sf::Color::Black);
     mRect.setFillColor(mHighLight ? mColor : sf::Color::White);
+    mRect.setOutlineColor(mColor);
 }
 
 void Label::setHighLight(bool highLight)

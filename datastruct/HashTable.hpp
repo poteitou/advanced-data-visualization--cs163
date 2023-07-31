@@ -15,6 +15,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <utility>
+#include <iostream>
 
 struct HashTable
 {
@@ -36,6 +37,7 @@ struct HashTable
 
     int Rand(int MAX);
     void randomize();
+    void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
@@ -45,7 +47,6 @@ struct HashTable
     void insert(std::string element);
     void remove(std::string element);
     void search(std::string element);
-    // void setColor();
     void draw();
 
     sf::RenderWindow &mWindow;
@@ -56,7 +57,6 @@ struct HashTable
         float mTime;
         Bucket mBucket[5];
         std::vector<sf::Text> mText;
-
         void draw(sf::RenderWindow &mWindow);
     };
 
@@ -64,21 +64,17 @@ struct HashTable
     std::vector<Button> mButton;
     std::vector<ButtonImg> mButtonImg;
     std::vector<InputBar> mInputBar;
+    std::vector<sf::Text> mNoteText, mRealText;
     sf::Texture mTexture;
     sf::Sprite mSpriteSpeed;
-    std::vector<sf::Text> mNoteText, mRealText;
 
-    int step;
-    int cntNote;
-    int mType;
-    int mSmallType;
-    int mSpeed;
+    int step, cntNote;
+    int mColor;
+    sf::Color pallete[3];
+    int mRun, mSpeed;
+    int mType, mSmallType;
     float mDt;
-    // bool nosuchfile;
     bool firstTime, firstTimeSpeed;
-    int mRun;
-    // std::pair<sf::Color, sf::Color> pallete[3];
-    int color;
 };
 
 #endif // HASHTABLE_HPP

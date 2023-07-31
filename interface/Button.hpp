@@ -10,7 +10,6 @@ struct Button
 
     void draw(sf::RenderWindow &mWindow);
     bool setMouseOver(sf::Vector2i mousePosition);
-    void reset();
 
     sf::RectangleShape mRect;
     sf::Text mText;

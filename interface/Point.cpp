@@ -27,6 +27,7 @@ void Point::setColor(sf::Color Color)
     mColor = Color;
     mTextIn.setFillColor(mHighLight ? sf::Color::White : sf::Color::Black);
     mCir.setFillColor(mHighLight ? mColor : sf::Color::White);
+    mCir.setOutlineColor(mColor);
 }
 
 void Point::setHighLight(bool highLight)
