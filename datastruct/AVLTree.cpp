@@ -84,10 +84,7 @@ AVLTree::AVLTree(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
     step = -1;
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
-    reset(mRealTree);
-
     mRoot = NULL;
-    delete mRoot;
 }
 
 int AVLTree::height(Node *root)
@@ -112,10 +109,22 @@ AVLTree::Node* AVLTree::newNode(std::string key)
     return node;
 }
 
-void AVLTree::reset(Tree &tree)
+void AVLTree::destroy(Node* &root)
 {
-    tree.mPoint.clear();
-    tree.mLine.clear();
+    if (root)
+    {
+        destroy(root->left);
+        destroy(root->right);
+        delete root;
+    }
+    root = NULL;
+}
+
+void AVLTree::reset()
+{
+    destroy(mRoot);
+    mRealTree.mPoint.clear();
+    mRealTree.mLine.clear();
 }
 
 void AVLTree::preOrder(Node *root)
@@ -128,11 +137,11 @@ void AVLTree::preOrder(Node *root)
     }
 }
 
-void AVLTree::beautify(Tree &tree, Node *root, bool highLight = false, int index = 0, float x = 1100, float y = 175, float distance = 100)
+void AVLTree::beautify(Tree &tree, Node *root, bool highLight = false, int index = 0, float x = 1100, float y = 175, float distance = 200)
 {
     if (root !=  NULL)
     {
-        tree.mPoint.push_back(Point(25, sf::Vector2f(x, y), root->key, mFont, highLight, pallete[mColor]));
+        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, highLight, pallete[mColor]));
         if (root->left)
             tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100.f), pallete[mColor], highLight));
         if (root->right)
@@ -141,7 +150,6 @@ void AVLTree::beautify(Tree &tree, Node *root, bool highLight = false, int index
         beautify(tree, root->right, highLight, index * 2 + 2, x + distance, y + 100.f, distance / 2);
     }
 }
-
 
 void AVLTree::Tree::draw(sf::RenderWindow &mWindow)
 {
@@ -164,7 +172,7 @@ int AVLTree::getIndex(Node *root, int indexRoot, std::string key)
 
 void AVLTree::addPoint(Tree &tree, float x, float y, std::string key, bool highLight)
 {
-    tree.mPoint.push_back(Point(25, sf::Vector2f(x, y), key, mFont, highLight, pallete[mColor]));
+    tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), key, mFont, highLight, pallete[mColor]));
 }
 
 void AVLTree::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
@@ -340,7 +348,7 @@ void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         mType = mSmallType = mData = 0;
         mColor = 0;
         mStep.clear();
-        reset(mRealTree);
+        reset();
         mButtonImg[11].mHovered = false;
         return;
     }
@@ -556,7 +564,7 @@ void AVLTree::init(std::string filename)
 }
  */
 
-AVLTree::Node* AVLTree::insert(Step &step, Node* &root, std::string key, float x = 1100, float y = 175, float distance = 100)
+AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     /* 1. Perform the normal BST insertion */
     if (root == NULL)
@@ -576,15 +584,15 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* &root, std::string key, float x
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100.f, true);
-        addLine(mRealTree, x, y, x - distance, y + 100.f, false);
-        root->left = insert(step, root->left, key);
+        addLine(mRealTree, x, y, x - distance, y + 100, false);
+        addLine(step.mTree, x, y, x - distance, y + 100, true);
+        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100.f, true);
-        addLine(mRealTree, x, y, x - distance, y + 100.f, false);
-        root->right = insert(step, root->right, key);
+        addLine(mRealTree, x, y, x + distance, y + 100, false);
+        addLine(step.mTree, x, y, x + distance, y + 100, true);
+        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else // Equal keys are not allowed in BST
     {
@@ -592,18 +600,18 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* &root, std::string key, float x
     }
 
     /* 2. Update height of this ancestor root */
-    root->height = std::max(height(root->left), height(root->right)) + 1;
+    // root->height = std::max(height(root->left), height(root->right)) + 1;
 
-    /* 3. Get the balance factor of this ancestor
-        root to check whether this root became
-        unbalanced */
-    int balance = getBalance(root);
-    for (int i = 0; i < step.mTree.mPoint.size(); i++)
-    {
-        if (step.mTree.mPoint[i].mValue == root->key)
-            step.mTree.mPoint[i].setHighLight(true);
-    }
-    mStep.push_back(step);
+    // /* 3. Get the balance factor of this ancestor
+    //     root to check whether this root became
+    //     unbalanced */
+    // int balance = getBalance(root);
+    // for (int i = 0; i < step.mTree.mPoint.size(); i++)
+    // {
+    //     if (step.mTree.mPoint[i].mValue == root->key)
+    //         step.mTree.mPoint[i].setHighLight(true);
+    // }
+    // mStep.push_back(step);
 
 /*
     // Left Left Problem
@@ -636,17 +644,17 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* &root, std::string key, float x
  */
     /* return the (unchanged) root pointer */
 
-    beautify(mRealTree, mRoot);
-    mStep.push_back(step);
+    // beautify(mRealTree, mRoot);
+    // mStep.push_back(step);
     return root;
 }
 
 void AVLTree::finalInsert(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/insert.pseudo");
+    // std::ifstream inCode("pseudo/avltree/insert.pseudo");
     if (firstTime == false)
     {
-        inCode.close();
+        // inCode.close();
         return;
     }
     firstTime = false;
@@ -655,18 +663,18 @@ void AVLTree::finalInsert(std::string key)
     Step tmpStep;
 
     int cnt = 0;
-    std::string tmp;
-    while (getline(inCode, tmp))
-    {
-        mRealText[cnt].setString(tmp);
-        mRealText[cnt++].setFillColor(sf::Color::Black);
-    }
+    // std::string tmp;
+    // while (getline(inCode, tmp))
+    // {
+    //     mRealText[cnt].setString(tmp);
+    //     mRealText[cnt++].setFillColor(sf::Color::Black);
+    // }
 
     tmpStep.cntCode = cnt;
     tmpStep.mTree = mRealTree;
     tmpStep.mTime = 0;
-    tmpStep.mText = mRealText;
-    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
+    // tmpStep.mText = mRealText;
+    // tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     step = 0;
@@ -674,10 +682,11 @@ void AVLTree::finalInsert(std::string key)
 
     mRoot = insert(tmpStep, mRoot, key);
 
+    beautify(mRealTree, mRoot);
     tmpStep.mTree = mRealTree;
-    tmpStep.mText = mRealText;
+    // tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
-    inCode.close();
+    // inCode.close();
 }
 
 /* 

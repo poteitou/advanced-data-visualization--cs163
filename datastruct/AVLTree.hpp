@@ -46,7 +46,8 @@ struct AVLTree
     int height(Node *node);
     int getBalance(Node *node);
     Node* newNode(std::string key);
-    void reset(Tree &tree);
+    void destroy(Node* &root);
+    void reset();
     void preOrder(Node *root);
     void beautify(Tree &tree, Node *root, bool highLight, int index, float x, float y, float distance);
 
@@ -65,7 +66,7 @@ struct AVLTree
     // Node *rightRotate(Node *y);
     // Node *leftRotate(Node *x);
     // void init(std::string fileName);
-    Node* insert(Step &step, Node* &root, std::string key, float x, float y, float distance);
+    Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalInsert(std::string key);
     // void remove(std::string element);
     // void search(std::string element);
