@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
 Screen::Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode)
-    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode)
+    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode)
 {
     mFont1.loadFromFile("resources/fonts/childtitle.ttf");
     textTitle.setFont(mFont1);
@@ -44,15 +44,15 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
     case 1: // Hash table
         mHashTable.update(mousePress, mousePosition, keyPress, mData, dt);
         break;
-    // case 2: // Dynamic array
-    //     mDynamicArray.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    case 2: // AVL tree
+        mAVLTree.update(mousePress, mousePosition, keyPress, mData, dt);
+        break;
     // case 3: // 234 tree
     //     mSinglyLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
     //     break;
     // case 4: // Doubly linked list
     //     mDoublyLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    //     brea0k;
     // case 5: // Circular linked list
     //     mCircularLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
     //     break;
@@ -79,9 +79,10 @@ void Screen::draw()
         textTitle.setString("Hash table");
         mHashTable.draw();
         break;
-    // case 2: // Dynamic array
-    //     mDynamicArray.draw();
-    //     break;
+    case 2: // AVL Tree
+        textTitle.setString("AVL tree");
+        mAVLTree.draw();
+        break;
     // case 3: // 234 tree
     //     mSinglyLinkedList.draw();
     //     break;

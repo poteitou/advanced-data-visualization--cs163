@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Menu.hpp"
 #include "../datastruct/HashTable.hpp"
-// #include "../datastruct/DynamicArray.hpp"
+#include "../datastruct/AVLTree.hpp"
 // #include "../datastruct/SinglyLinkedList.hpp"
 // #include "../datastruct/DoublyLinkedList.hpp"
 // #include "../datastruct/CircularLinkedList.hpp"
@@ -23,7 +23,7 @@ struct Screen
     sf::Text textTitle, textOperation;
     Menu mMenu;
     HashTable mHashTable;
-    // DynamicArray mDynamicArray;
+    AVLTree mAVLTree;
     // SinglyLinkedList mSinglyLinkedList;
     // DoublyLinkedList mDoublyLinkedList;
     // CircularLinkedList mCircularLinkedList;

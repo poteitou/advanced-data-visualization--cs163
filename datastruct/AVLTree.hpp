@@ -20,44 +20,59 @@ struct AVLTree
     AVLTree(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     struct Node
     {
-        Point mPoint;
+        std::string key;
         Node *left;
         Node *right;
-        mLine left, right;
         int height;
+    };
+    Node *mRoot;
+    struct Tree
+    {
+        std::vector<Point> mPoint;
+        std::vector<Line> mLine;
         void draw(sf::RenderWindow &mWindow);
     };
-    Node mRealRoot;
-    // void reset(Bucket (&bucket)[5]);
-    // void beautify(Bucket (&bucket)[5]);
+    Tree mRealTree;
 
-    void addPoint(Bucket &bucket, int index, int pos, std::string element, bool highLight);
-    void addLine(Bucket &bucket, int index, int pos, bool highLight);
-
-    int Rand(int MAX);
-    void randomize();
-    void setColor();
-    void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void init(std::string fileName);
-    void insert(std::string element);
-    void remove(std::string element);
-    void search(std::string element);
-    void draw();
-
-    sf::RenderWindow &mWindow;
-    sf::Font &mFont, &mFontCode;
     struct Step
     {
         int cntCode;
         float mTime;
-        Bucket mBucket[5];
+        Tree mTree;
         std::vector<sf::Text> mText;
         void draw(sf::RenderWindow &mWindow);
     };
+
+    int height(Node *node);
+    int getBalance(Node *node);
+    Node* newNode(std::string key);
+    void reset(Tree &tree);
+    void preOrder(Node *root);
+    void beautify(Tree &tree, Node *root, bool highLight, int index, float x, float y, float distance);
+
+    int getIndex(Node *root, int indexRoot, std::string key);
+    void addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
+    void addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
+
+    int Rand(int MAX);
+    void randomize();
+    // void setColor();
+    void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
+    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // Node *rightRotate(Node *y);
+    // Node *leftRotate(Node *x);
+    // void init(std::string fileName);
+    Node* insert(Step &step, Node* &root, std::string key, float x, float y, float distance);
+    void finalInsert(std::string key);
+    // void remove(std::string element);
+    // void search(std::string element);
+    void draw();
+
+    sf::RenderWindow &mWindow;
+    sf::Font &mFont, &mFontCode;
 
     std::vector<Step> mStep;
     std::vector<Button> mButton;
