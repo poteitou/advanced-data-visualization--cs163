@@ -32,7 +32,6 @@ struct AVLTree
         std::vector<Line> mLine;
         void draw(sf::RenderWindow &mWindow);
     };
-    Tree mRealTree;
 
     struct Step
     {
@@ -47,24 +46,26 @@ struct AVLTree
     int getBalance(Node *node);
     Node* newNode(std::string key);
     void destroy(Node* &root);
-    void reset();
+    void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
     void preOrder(Node *root);
-    void beautify(Tree &tree, Node *root, bool highLight, int index, float x, float y, float distance);
+    void beautify(Tree &tree, Node *root, float x, float y, float distance);
+    void reset(Tree &tree, Node *root);
+    void resetSub(Tree &tree, Node *root, float x, float y, float distance);
 
     int getIndex(Node *root, int indexRoot, std::string key);
-    void addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
-    void addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
+    int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
+    int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
     void randomize();
-    // void setColor();
+    void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // Node *rightRotate(Node *y);
-    // Node *leftRotate(Node *x);
+    Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
+    Node *leftRotate(Step &step, Node *X, float x, float y, float distance);
     // void init(std::string fileName);
     Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalInsert(std::string key);

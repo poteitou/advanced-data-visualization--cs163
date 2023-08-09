@@ -119,12 +119,19 @@ void AVLTree::destroy(Node* &root)
     }
     root = NULL;
 }
-
-void AVLTree::reset()
+#include <iostream>
+void AVLTree::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, float distance = 200)
 {
-    destroy(mRoot);
-    mRealTree.mPoint.clear();
-    mRealTree.mLine.clear();
+    if (root)
+    {
+        destroy(root->left);
+        destroy(root->right);
+        std::cout << root->left->key << ' ' << root->right->key << '\n';
+        tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, false));
+        tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
+    }
+    tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, root->key, false));
+    std::cout << root->key << '\n';
 }
 
 void AVLTree::preOrder(Node *root)
@@ -137,18 +144,31 @@ void AVLTree::preOrder(Node *root)
     }
 }
 
-void AVLTree::beautify(Tree &tree, Node *root, bool highLight = false, int index = 0, float x = 1100, float y = 175, float distance = 200)
+void AVLTree::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
 {
     if (root !=  NULL)
     {
-        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, highLight, pallete[mColor]));
+        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, false, pallete[mColor]));
         if (root->left)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100.f), pallete[mColor], highLight));
+            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100.f), pallete[mColor], false));
         if (root->right)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100.f), pallete[mColor], highLight));
-        beautify(tree, root->left, highLight, index * 2 + 1, x - distance, y + 100.f, distance / 2);
-        beautify(tree, root->right, highLight, index * 2 + 2, x + distance, y + 100.f, distance / 2);
+            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100.f), pallete[mColor], false));
+        beautify(tree, root->left, x - distance, y + 100.f, distance / 2);
+        beautify(tree, root->right, x + distance, y + 100.f, distance / 2);
     }
+}
+
+void AVLTree::reset(Tree &tree, Node *root)
+{
+    tree.mPoint.clear();
+    tree.mLine.clear();
+    beautify(tree, root);
+}
+
+void AVLTree::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
+{
+    destroyNode(tree, root, x, y, distance);
+    beautify(tree, root);
 }
 
 void AVLTree::Tree::draw(sf::RenderWindow &mWindow)
@@ -170,14 +190,37 @@ int AVLTree::getIndex(Node *root, int indexRoot, std::string key)
     return indexRoot;
 }
 
-void AVLTree::addPoint(Tree &tree, float x, float y, std::string key, bool highLight)
+int AVLTree::addPoint(Tree &tree, float x, float y, std::string key, bool highLight)
 {
+    for (int i = 0; i < tree.mPoint.size(); i++)
+    {
+        if (tree.mPoint[i].mValue == key)
+        {
+            tree.mPoint[i].setHighLight(highLight);
+            return i;
+        }
+    }
     tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), key, mFont, highLight, pallete[mColor]));
+    return tree.mPoint.size() - 1;
 }
 
-void AVLTree::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
+int AVLTree::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
 {
+    for (int i = 0; i < tree.mLine.size(); i++)
+    {
+        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v))
+        {
+            tree.mLine[i].setHighLight(highLight);
+            return i;
+        }
+        if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y))
+        {
+            tree.mLine[i].setHighLight(highLight);
+            return i;
+        }
+    }
     tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(u, v), pallete[mColor], highLight));
+    return tree.mLine.size() - 1;
 }
 
 void AVLTree::Step::draw(sf::RenderWindow &mWindow)
@@ -213,34 +256,22 @@ void AVLTree::randomize()
     outFile.close();
 }
 
-/* 
 void AVLTree::setColor()
 {
     for (int i = 0; i < mStep.size(); i++)
     {
-        for (int j = 0; j < 5; j++)
+        for (int id = 0; id < mStep[i].mTree.mLine.size(); id++)
         {
-            if (!mStep[i].mBucket[j].mPoint.empty())
-            {
-                if (mStep[i].mBucket[j].mArrow.mColor != sf::Color::Black)
-                    mStep[i].mBucket[j].mArrow.setColor(pallete[mColor]);
-            }
-            if (mStep[i].mBucket[j].mLabel.mColor != sf::Color::Black)
-                mStep[i].mBucket[j].mLabel.setColor(pallete[mColor]);
-            for (int id = 0; id < mStep[i].mBucket[j].mLine.size(); id++)
-            {
-                if (mStep[i].mBucket[j].mLine[id].mColor != sf::Color::Black)
-                    mStep[i].mBucket[j].mLine[id].setColor(pallete[mColor]);
-            }
-            for (int id = 0; id < mStep[i].mBucket[j].mPoint.size(); id++)
-            {
-                if (mStep[i].mBucket[j].mPoint[id].mColor != sf::Color::Black)
-                    mStep[i].mBucket[j].mPoint[id].setColor(pallete[mColor]);
-            }
+            if (mStep[i].mTree.mLine[id].mColor != sf::Color::Black)
+                mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
+        }
+        for (int id = 0; id < mStep[i].mTree.mPoint.size(); id++)
+        {
+            if (mStep[i].mTree.mPoint[id].mColor != sf::Color::Black)
+                mStep[i].mTree.mPoint[id].setColor(pallete[mColor]);
         }
     }
 }
- */
 
 void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt)
 {
@@ -348,7 +379,7 @@ void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         mType = mSmallType = mData = 0;
         mColor = 0;
         mStep.clear();
-        reset();
+        destroy(mRoot);
         mButtonImg[11].mHovered = false;
         return;
     }
@@ -437,42 +468,60 @@ void AVLTree::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &ke
  T1  T2     Left Rotation           T2  T3  
 */
 
-/* 
-
-Node* AVLTree::rightRotate(Node *y)
+AVLTree::Node* AVLTree::rightRotate(Step &step, Node *Y, float x, float y, float distance)
 {
-	Node *x = y->left;
-	Node *T2 = x->right;
+    addPoint(step.mTree, x, y, Y->key, true);
+	Node *X = Y->left;
+    if (X)
+    {
+        addPoint(step.mTree, x - distance, y + 100, X->key, true);
+        // addLine(step.mTree, x, y, x - distance, y + 100, true);
+    }
+	Node *T2 = X->right;
+    if (T2) addPoint(step.mTree, x - distance + distance / 2, y + 2 * 100, T2->key, true);
+    mStep.push_back(step);
+    // int id = addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true);
 
 	// Perform rotation
-	x->right = y;
-	y->left = T2;
+	X->right = Y;
+    // step.mTree.mLine.erase(step.mTree.mLine.begin() + id);
+    // addLine(step.mTree, x, y, x - distance, y + 100, true);
+    // mStep.push_back(step);
+
+	Y->left = T2;
 
 	// Update heights
-	y->height = max(height(y->left), height(y->right)) + 1;
-	x->height = max(height(x->left), height(x->right)) + 1;
+	Y->height = std::max(height(Y->left), height(Y->right)) + 1;
+	X->height = std::max(height(X->left), height(X->right)) + 1;
 
 	// Return new root
-	return x;
+	return X;
 }
 
-Node* AVLTree::leftRotate(Node *x)
+AVLTree::Node* AVLTree::leftRotate(Step &step, Node *X, float x, float y, float distance)
 {
-    Node *y = x->right;
-    Node *T2 = y->left;
+    addPoint(step.mTree, x, y, X->key, true);
+    Node *Y = X->right;
+    if (Y)
+    {
+        addPoint(step.mTree, x + distance, y + 100, Y->key, true);
+        // addLine(step.mTree, x, y, x + distance, y + 100, true);
+    }
+    Node *T2 = Y->left;
+    if (T2) addPoint(step.mTree, x + distance - distance / 2, y + 2 * 100, T2->key, true);
+    mStep.push_back(step);
 
     // Perform rotation
-    y->left = x;
-    x->right = T2;
+    Y->left = X;
+    X->right = T2;
 
     // Update heights
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
+    X->height = std::max(height(X->left), height(X->right)) + 1;
+    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
 
     // Return new root
-    return y;
+    return Y;
 }
- */
 
 /* 
 void AVLTree::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
@@ -515,7 +564,7 @@ void AVLTree::init(std::string filename)
     step = 0;
     mRun = 1;
 
-    reset(mRealBucket);
+    destroy(mRoot);
     mStep.clear();
     Step tmpStep;
 
@@ -570,27 +619,20 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x 
     if (root == NULL)
     {
         addPoint(step.mTree, x, y, key, true);
-        addPoint(mRealTree, x, y, key, false);
         mStep.push_back(step);
         return newNode(key);
     }
 
-    for (int i = 0; i < step.mTree.mPoint.size(); i++)
-    {
-        if (step.mTree.mPoint[i].mValue == root->key)
-            step.mTree.mPoint[i].setHighLight(true);
-    }
+    addPoint(step.mTree, x, y, root->key, true);
     mStep.push_back(step);
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(mRealTree, x, y, x - distance, y + 100, false);
         addLine(step.mTree, x, y, x - distance, y + 100, true);
         root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(mRealTree, x, y, x + distance, y + 100, false);
         addLine(step.mTree, x, y, x + distance, y + 100, true);
         root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
     }
@@ -600,52 +642,52 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x 
     }
 
     /* 2. Update height of this ancestor root */
-    // root->height = std::max(height(root->left), height(root->right)) + 1;
+    root->height = std::max(height(root->left), height(root->right)) + 1;
 
-    // /* 3. Get the balance factor of this ancestor
-    //     root to check whether this root became
-    //     unbalanced */
-    // int balance = getBalance(root);
-    // for (int i = 0; i < step.mTree.mPoint.size(); i++)
-    // {
-    //     if (step.mTree.mPoint[i].mValue == root->key)
-    //         step.mTree.mPoint[i].setHighLight(true);
-    // }
-    // mStep.push_back(step);
+    /* 3. Get the balance factor of this ancestor
+        root to check whether this root became
+        unbalanced */
+    int balance = getBalance(root);
 
-/*
     // Left Left Problem
     if (balance > 1 && key < root->left->key)
     {
-        
-        return rightRotate(root);
+        Node* temp = rightRotate(step, root, x, y, distance);
+
+        resetSub(step.mTree, root, x, y, distance);
+        mStep.push_back(step);
+        return temp;
     }
     // Right Right Problem
     if (balance < -1 && key > root->right->key)
     {
-        return leftRotate(root);
+        Node* temp = leftRotate(step, root, x, y, distance);
+        resetSub(step.mTree, root, x, y, distance);
+        mStep.push_back(step);
+        return temp;
     }
 
     // Left Right Problem
     if (balance > 1 && key > root->left->key)
     {
-        root->left = leftRotate(root->left);
-        print all tree
-        return rightRotate(root);
+        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
+        Node* temp = rightRotate(step, root, x, y, distance);
+        resetSub(step.mTree, root, x, y, distance);
+        mStep.push_back(step);
+        return temp;
     }
 
     // Right Left Problem
     if (balance < -1 && key < root->right->key)
     {
-        root->right = rightRotate(root->right);
-        print all tree
-        return leftRotate(root);
+        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
+        Node* temp = leftRotate(step, root, x, y, distance);
+        resetSub(step.mTree, root, x, y, distance);
+        mStep.push_back(step);
+        return temp;
     }
- */
+ 
     /* return the (unchanged) root pointer */
-
-    // beautify(mRealTree, mRoot);
-    // mStep.push_back(step);
     return root;
 }
 
@@ -671,7 +713,7 @@ void AVLTree::finalInsert(std::string key)
     // }
 
     tmpStep.cntCode = cnt;
-    tmpStep.mTree = mRealTree;
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mTime = 0;
     // tmpStep.mText = mRealText;
     // tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -682,8 +724,7 @@ void AVLTree::finalInsert(std::string key)
 
     mRoot = insert(tmpStep, mRoot, key);
 
-    beautify(mRealTree, mRoot);
-    tmpStep.mTree = mRealTree;
+    reset(tmpStep.mTree, mRoot);
     // tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     // inCode.close();
@@ -752,9 +793,7 @@ void AVLTree::remove(std::string element)
         }
     }
 
-    beautify(mRealTree, mRoot);
-    for (int i = 0; i < 5; i++)
-        tmpStep.mBucket[i] = mRealBucket[i];
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
@@ -887,7 +926,6 @@ void AVLTree::draw()
     default:
         break;
     }
-    beautify(mRealTree, mRoot);
     // setColor();
     if (mRun == 1 && !mStep.empty())
     {
