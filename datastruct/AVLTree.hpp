@@ -53,7 +53,9 @@ struct AVLTree
     void resetSub(Tree &tree, Node *root, float x, float y, float distance);
 
     int getIndex(Node *root, int indexRoot, std::string key);
+    int findPoint(Tree &tree, std::string key);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
+    int findLine(Tree &tree, float x, float y, float u, float v);
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
