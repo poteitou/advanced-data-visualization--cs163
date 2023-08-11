@@ -889,9 +889,14 @@ void AVLTree::finalInsert(std::string key)
 AVLTree::Node* AVLTree::minValueNode(Step &step, Node* node, float x, float y, float distance)
 {
     if (node->left == NULL)
+    {
+        addPoint(step.mTree, x, y, node->key, true);
+        mStep.push_back(step);
         return node;
+    }
     addPoint(step.mTree, x, y, node->key, true);
     addLine(step.mTree, x, y, x - distance, y + 100, true);
+    mStep.push_back(step);
     return minValueNode(step, node->left, x - distance, y + 100, distance / 2);
 }
 
@@ -903,12 +908,12 @@ AVLTree::Node* AVLTree::remove(Step &step, Node* root, std::string key, float x 
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
+        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
         root->left = remove(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
+        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
         root->right = remove(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else
@@ -923,9 +928,16 @@ AVLTree::Node* AVLTree::remove(Step &step, Node* root, std::string key, float x 
             {
                 temp = root;
                 root = NULL;
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 100, x, y, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 100, x, y, true));
             }
             else // One child case
+            {
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 100, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 100, true));
                 *root = *temp; // Copy the contents of the non-empty child
+            }
+            step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, key));
             delete temp;
             temp = NULL;
         }
@@ -933,12 +945,20 @@ AVLTree::Node* AVLTree::remove(Step &step, Node* root, std::string key, float x 
         {
             // node with two children: Get the inorder
             // successor (smallest in the right subtree)
+            addLine(step.mTree, x, y, x + distance, y + 100, true);
+            mStep.push_back(step);
             Node* temp = minValueNode(step, root->right, x + distance, y + 100, distance / 2);
+            mStep.push_back(step);
  
             // Copy the inorder successor's data to this node
+            resetSub(step.mTree, root, x, y, distance);
+            int id = findPoint(step.mTree, root->key);
             root->key = temp->key;
+            step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), root->key, mFont, true, pallete[mColor]);
+            mStep.push_back(step);
  
             // Delete the inorder successor
+            if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
             root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
         }
     }
