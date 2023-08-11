@@ -512,10 +512,8 @@ AVLTree::Node* AVLTree::rightRotate(Step &step, Node *Y, float x, float y, float
 
 	X->right = Y;
 	Y->left = T2;
-
 	Y->height = std::max(height(Y->left), height(Y->right)) + 1;
 	X->height = std::max(height(X->left), height(X->right)) + 1;
-
 	return X;
 }
 
@@ -546,10 +544,8 @@ AVLTree::Node* AVLTree::leftRotate(Step &step, Node *X, float x, float y, float 
 
     Y->left = X;
     X->right = T2;
-
     X->height = std::max(height(X->left), height(X->right)) + 1;
     Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-
     return Y;
 }
 
@@ -674,21 +670,35 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x 
     int balance = getBalance(root);
 
     resetSub(step.mTree, root, x, y, distance);
+    addPoint(step.mTree, x, y, root->key, true);
+    step.mText = mRealText;
+    step.mText[2].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(step);
 
     // Left Left Problem
     if (balance > 1 && key < root->left->key)
+    {
+        step.mText = mRealText;
+        step.mText[3].setFillColor(sf::Color(230, 100, 140));
         return rightRotate(step, root, x, y, distance);
+    }
     // Right Right Problem
     if (balance < -1 && key > root->right->key)
+    {
+        step.mText = mRealText;
+        step.mText[4].setFillColor(sf::Color(230, 100, 140));
         return leftRotate(step, root, x, y, distance);
+    }
 
     // Left Right Problem
     if (balance > 1 && key > root->left->key)
     {
-
+        step.mText = mRealText;
+        step.mText[5].setFillColor(sf::Color(230, 100, 140));
         root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
         resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
+        step.mText = mRealText;
+        step.mText[6].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
         return rightRotate(step, root, x, y, distance);
     }
@@ -696,8 +706,12 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x 
     // Right Left Problem
     if (balance < -1 && key < root->right->key)
     {
+        step.mText = mRealText;
+        step.mText[7].setFillColor(sf::Color(230, 100, 140));
         root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
         resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
+        step.mText = mRealText;
+        step.mText[8].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
         return leftRotate(step, root, x, y, distance);
     }
@@ -707,7 +721,7 @@ AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x 
 
 void AVLTree::finalInsert(std::string key)
 {
-    // std::ifstream inCode("pseudo/avltree/insert.pseudo");
+    std::ifstream inCode("pseudo/avltree/insert.pseudo");
     if (firstTime == false)
     {
         // inCode.close();
@@ -719,29 +733,31 @@ void AVLTree::finalInsert(std::string key)
     Step tmpStep;
 
     int cnt = 0;
-    // std::string tmp;
-    // while (getline(inCode, tmp))
-    // {
-    //     mRealText[cnt].setString(tmp);
-    //     mRealText[cnt++].setFillColor(sf::Color::Black);
-    // }
+    std::string tmp;
+    while (getline(inCode, tmp))
+    {
+        mRealText[cnt].setString(tmp);
+        mRealText[cnt++].setFillColor(sf::Color::Black);
+    }
 
     tmpStep.cntCode = cnt;
     reset(tmpStep.mTree, mRoot);
     tmpStep.mTime = 0;
-    // tmpStep.mText = mRealText;
-    // tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     step = 0;
     mRun = 1;
 
+    tmpStep.mText = mRealText;
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mRoot = insert(tmpStep, mRoot, key);
 
     reset(tmpStep.mTree, mRoot);
-    // tmpStep.mText = mRealText;
+    tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
-    // inCode.close();
+    inCode.close();
 }
 
 /* 
