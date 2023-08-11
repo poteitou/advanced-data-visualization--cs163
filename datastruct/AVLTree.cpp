@@ -109,6 +109,18 @@ AVLTree::Node* AVLTree::newNode(std::string key)
     return node;
 }
 
+AVLTree::Node* AVLTree::copy(Node* root)
+{
+    if (root == NULL)
+        return NULL;
+    Node* temp = new Node();
+    temp->key = root->key;
+    temp->height = root->height;
+    temp->left = copy(root->left);
+    temp->right = copy(root->right);
+    return temp;
+}
+
 void AVLTree::destroy(Node* &root)
 {
     if (root)
@@ -404,7 +416,7 @@ void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
     switch (mType)
     {
     case 1: // Init
-        // updateInit(mousePress, mousePosition, keyPress);
+        updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
@@ -420,7 +432,6 @@ void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
     }
 }
 
-/* 
 void AVLTree::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[0].mHovered = true;
@@ -442,7 +453,7 @@ void AVLTree::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
         mButton[4].mHovered = true;
         mInputBar[0].update(mousePress, mousePosition, keyPress, 20);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
-            init("data/" + mInputBar[0].mValue);
+            finalInit("data/" + mInputBar[0].mValue);
         else
             firstTime = true;
         break;
@@ -454,7 +465,7 @@ void AVLTree::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
             std::ofstream outFile("data/randomize.data");
             outFile << mInputBar[1].mValue;
             outFile.close();
-            init("data/randomize.data");
+            finalInit("data/randomize.data");
         }
         else
             firstTime = true;
@@ -463,7 +474,6 @@ void AVLTree::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
         break;
     }
 }
- */
 
 void AVLTree::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -475,6 +485,99 @@ void AVLTree::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &ke
         finalInsert(mInputBar[2].mValue);
     else
         firstTime = true;
+}
+
+/* 
+void AVLTree::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+{
+    char tempkeyPress;
+    mButton[2].mHovered = true;
+
+    mInputBar[3].update(mousePress, mousePosition, keyPress, 2);
+    if (mButton[8].setMouseOver(mousePosition) && mousePress && mInputBar[3].mValue != "")
+        remove(mInputBar[3].mValue);
+    else
+        firstTime = true;
+}
+
+void AVLTree::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+{
+    char tempkeyPress;
+    mButton[3].mHovered = true;
+
+    mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
+    if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
+        search(mInputBar[4].mValue);
+    else
+        firstTime = true;
+}
+*/
+
+AVLTree::Node* AVLTree::rightRotate(Node *Y)
+{
+    Node *X = Y->left;
+    Node *T2 = X->right;
+
+    X->right = Y;
+    Y->left = T2;
+
+    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
+    X->height = std::max(height(X->left), height(X->right)) + 1;
+
+    return X;
+}
+
+AVLTree::Node* AVLTree::leftRotate(Node *X)
+{
+    Node *Y = X->right;
+    Node *T2 = Y->left;
+
+    Y->left = X;
+    X->right = T2;
+
+    X->height = std::max(height(X->left), height(X->right)) + 1;
+    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
+
+    return Y;
+}
+
+AVLTree::Node* AVLTree::insert(Node *root, std::string key)
+{
+    if (root == NULL)
+        return newNode(key);
+    if (key < root->key)
+        root->left = insert(root->left, key);
+    else if (key > root->key)
+        root->right = insert(root->right, key);
+    else
+        return root;
+
+    root->height = 1 + std::max(height(root->left), height(root->right));
+    int balance = getBalance(root);
+
+    if (balance > 1 && key < root->left->key)
+        return rightRotate(root);
+    if (balance < -1 && key > root->right->key)
+        return leftRotate(root);
+    if (balance > 1 && key > root->left->key)
+    {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+    if (balance < -1 && key < root->right->key)
+    {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+bool AVLTree::canInsert(std::string key)
+{
+    Node* root = copy(mRoot);
+    root = insert(root, key);
+    return root->height <= 5;
 }
 
 /*
@@ -549,34 +652,62 @@ AVLTree::Node* AVLTree::leftRotate(Step &step, Node *X, float x, float y, float 
     return Y;
 }
 
-/* 
-void AVLTree::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+AVLTree::Node* AVLTree::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
-    char tempkeyPress;
-    mButton[2].mHovered = true;
+    if (root == NULL)
+    {
+        addPoint(step.mTree, x, y, key, true);
+        mStep.push_back(step);
+        return newNode(key);
+    }
 
-    mInputBar[3].update(mousePress, mousePosition, keyPress, 2);
-    if (mButton[8].setMouseOver(mousePosition) && mousePress && mInputBar[3].mValue != "")
-        remove(mInputBar[3].mValue);
-    else
-        firstTime = true;
+    addPoint(step.mTree, x, y, root->key, true);
+    mStep.push_back(step);
+
+    if (stoi(key) < stoi(root->key))
+    {
+        addLine(step.mTree, x, y, x - distance, y + 100, true);
+        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
+    }
+    else if (stoi(key) > stoi(root->key))
+    {
+        addLine(step.mTree, x, y, x + distance, y + 100, true);
+        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
+    }
+    else return root;
+
+    root->height = std::max(height(root->left), height(root->right)) + 1;
+    int balance = getBalance(root);
+
+    resetSub(step.mTree, root, x, y, distance);
+    addPoint(step.mTree, x, y, root->key, true);
+    mStep.push_back(step);
+
+    if (balance > 1 && key < root->left->key)
+        return rightRotate(step, root, x, y, distance);
+    if (balance < -1 && key > root->right->key)
+        return leftRotate(step, root, x, y, distance);
+    if (balance > 1 && key > root->left->key)
+    {
+        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
+        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
+        mStep.push_back(step);
+        return rightRotate(step, root, x, y, distance);
+    }
+    if (balance < -1 && key < root->right->key)
+    {
+        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
+        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
+        mStep.push_back(step);
+        return leftRotate(step, root, x, y, distance);
+    }
+ 
+    return root;
 }
 
-void AVLTree::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+void AVLTree::finalInit(std::string filename)
 {
-    char tempkeyPress;
-    mButton[3].mHovered = true;
-
-    mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
-    if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        search(mInputBar[4].mValue);
-    else
-        firstTime = true;
-}
-
-void AVLTree::init(std::string filename)
-{
-    std::ifstream inFile(filename), inCode("pseudo/hashtable/init.pseudo");
+    std::ifstream inFile(filename), inCode("pseudo/avltree/init.pseudo");
     if (!inFile)
         return;
 
@@ -603,8 +734,7 @@ void AVLTree::init(std::string filename)
     }
 
     tmpStep.cntCode = cnt;
-    for (int i = 0; i < 5; i++)
-        tmpStep.mBucket[i] = mRealBucket[i];
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -614,30 +744,21 @@ void AVLTree::init(std::string filename)
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
 
-    std::string element;
-    while (inFile >> element)
+    std::string key;
+    while (inFile >> key)
     {
-        int index = stoi(element) % 5;
-        if (mRealBucket[index].mPoint.size() == 5)
-            continue;
-        tmpStep.mBucket[index].mLabel.setHighLight(true);
-        mStep.push_back(tmpStep);
-
-        addLine(tmpStep.mBucket[index], index, -1, true);
-        addLine(mRealBucket[index], index, -1, false);
-        addPoint(tmpStep.mBucket[index], index, -1, element, true);
-        addPoint(mRealBucket[index], index, -1, element, false);
+        if (canInsert(key) == false) continue;
+        mRoot = init(tmpStep, mRoot, key);
+        reset(tmpStep.mTree, mRoot);
         mStep.push_back(tmpStep);
     }
-    for (int i = 0; i < 5; i++)
-        tmpStep.mBucket[i] = mRealBucket[i];
+
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
-
     inFile.close();
     inCode.close();
 }
- */
 
 AVLTree::Node* AVLTree::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
@@ -724,7 +845,7 @@ void AVLTree::finalInsert(std::string key)
     std::ifstream inCode("pseudo/avltree/insert.pseudo");
     if (firstTime == false)
     {
-        // inCode.close();
+        inCode.close();
         return;
     }
     firstTime = false;
@@ -752,6 +873,14 @@ void AVLTree::finalInsert(std::string key)
 
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    if (canInsert(key) == false)
+    {
+        mStep.push_back(tmpStep);
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
+        inCode.close();
+        return;
+    }
     mRoot = insert(tmpStep, mRoot, key);
 
     reset(tmpStep.mTree, mRoot);

@@ -45,6 +45,7 @@ struct AVLTree
     int height(Node *node);
     int getBalance(Node *node);
     Node* newNode(std::string key);
+    Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
     void preOrder(Node *root);
@@ -62,13 +63,19 @@ struct AVLTree
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+
+    Node* rightRotate(Node *Y);
+    Node* leftRotate(Node *X);
+    Node* insert(Node* node, std::string key);
+    bool canInsert(std::string key);
     Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
     Node *leftRotate(Step &step, Node *X, float x, float y, float distance);
-    // void init(std::string fileName);
+    Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void finalInit(std::string fileName);
     Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalInsert(std::string key);
     // void remove(std::string element);
