@@ -22,7 +22,7 @@ AVLTree::AVLTree(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
         mNoteText[i].setCharacterSize(20);
     }
 
-    std::ifstream inNote("pseudo/hashtable/hashtable.note");
+    std::ifstream inNote("pseudo/avltree/avltree.note");
     std::string tmp;
     cntNote = 0;
     while (getline(inNote, tmp))
@@ -425,7 +425,7 @@ void AVLTree::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         updateRemove(mousePress, mousePosition, keyPress);
         break;
     case 4: // Search
-        // updateSearch(mousePress, mousePosition, keyPress);
+        updateSearch(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -498,7 +498,7 @@ void AVLTree::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &ke
     else
         firstTime = true;
 }
-/*
+
 void AVLTree::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -506,10 +506,10 @@ void AVLTree::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &ke
 
     mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        search(mInputBar[4].mValue);
+        finalSearch(mInputBar[4].mValue);
     else
         firstTime = true;
-} */
+}
 
 AVLTree::Node* AVLTree::rightRotate(Node *Y)
 {
@@ -706,8 +706,7 @@ AVLTree::Node* AVLTree::init(Step &step, Node* root, std::string key, float x = 
 void AVLTree::finalInit(std::string filename)
 {
     std::ifstream inFile(filename), inCode("pseudo/avltree/init.pseudo");
-    if (!inFile)
-        return;
+    if (!inFile) return;
 
     if (firstTime == false)
     {
@@ -1062,10 +1061,47 @@ void AVLTree::finalRemove(std::string key)
     mStep.push_back(tmpStep);
     inCode.close();
 }
-/*
-void AVLTree::search(std::string key)
+
+void AVLTree::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
-    std::ifstream inCode("pseudo/hashtable/search.pseudo");
+    if (root == NULL) 
+    {
+        step.mText = mRealText;
+        step.mText[2].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(step);
+        return;
+    }
+    addPoint(step.mTree, x, y, root->key, true);
+    mStep.push_back(step);
+
+    if (stoi(key) < stoi(root->key))
+    {
+        step.mText = mRealText;
+        step.mText[4].setFillColor(sf::Color(230, 100, 140));
+        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
+        search(step, root->left, key, x - distance, y + 100, distance / 2);
+    }
+    else if (stoi(key) > stoi(root->key))
+    {
+        step.mText = mRealText;
+        step.mText[5].setFillColor(sf::Color(230, 100, 140));
+        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
+        search(step, root->right, key, x + distance, y + 100, distance / 2);
+    }
+    else
+    {
+        step.mText = mRealText;
+        step.mText[3].setFillColor(sf::Color(230, 100, 140));
+        reset(step.mTree, mRoot);
+        addPoint(step.mTree, x, y, root->key, true);
+        mStep.push_back(step);
+        return;
+    }
+}
+
+void AVLTree::finalSearch(std::string key)
+{
+    std::ifstream inCode("pseudo/avltree/search.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1085,8 +1121,7 @@ void AVLTree::search(std::string key)
     }
 
     tmpStep.cntCode = cnt;
-    for (int i = 0; i < 5; i++)
-        tmpStep.mBucket[i] = mRealBucket[i];
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -1095,44 +1130,17 @@ void AVLTree::search(std::string key)
     step = 0;
     mRun = 1;
 
-    int index = stoi(key) % 5;
-    tmpStep.mBucket[index].mLabel.setHighLight(true);
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
-    for (int i = 0; i < tmpStep.mBucket[index].mPoint.size(); i++)
-    {
-        if (i == 0)
-            tmpStep.mBucket[index].mArrow.setHighLight(true);
-        else
-            tmpStep.mBucket[index].mLine[i - 1].setHighLight(true);
+    search(tmpStep, mRoot, key);
 
-        tmpStep.mBucket[index].mPoint[i].setHighLight(true);
-        tmpStep.mText = mRealText;
-        tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(tmpStep);
-        if (tmpStep.mBucket[index].mPoint[i].mValue == key)
-        {
-            for (int j = 0; j < 5; j++)
-                tmpStep.mBucket[j] = mRealBucket[j];
-            tmpStep.mBucket[index].mPoint[i].setHighLight(true);
-            tmpStep.mText = mRealText;
-            tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
-            tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
-            mStep.push_back(tmpStep);
-            return;
-        }
-    }
-
-    for (int i = 0; i < 5; i++)
-        tmpStep.mBucket[i] = mRealBucket[i];
+    reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
-    tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
     inCode.close();
 }
- */
 
 void AVLTree::draw()
 {

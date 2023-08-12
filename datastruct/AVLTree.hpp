@@ -66,7 +66,7 @@ struct AVLTree
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     Node* rightRotate(Node *Y);
     Node* leftRotate(Node *X);
@@ -81,7 +81,8 @@ struct AVLTree
     Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
     Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
-    // void search(std::string element);
+    void search(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void finalSearch(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;
