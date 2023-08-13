@@ -2,6 +2,7 @@
 #define BLOCK_HPP
 
 #include <SFML/Graphics.hpp>
+#include "Line.hpp"
 
 struct Block
 {
@@ -10,6 +11,7 @@ struct Block
     void setColor(sf::Color Color);
     void setHighLight(bool highLight);
     void setPosition(sf::Vector2f pos);
+    Line getLine(Block block1, Block block2, int kind, sf::Color Color, bool highLight);
     void draw(sf::RenderWindow &mWindow);
 
     sf::Vector2f mPos;

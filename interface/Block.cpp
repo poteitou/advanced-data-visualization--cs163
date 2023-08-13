@@ -56,6 +56,14 @@ void Block::setPosition(sf::Vector2f pos)
     }
 }
 
+Line Block::getLine(Block block1, Block block 2, int kind, sf::Color Color, bool highLight)
+{
+    if (kind == 5)
+        return Line(sf::Vector2f(block1.mPos.x + 3 * block1.mSize / 2, block1.mPos.y + block1.mSize), sf::Vector2f(block2.mPos.x + 3 * block2.mSize / 2, block2.mPos.y), Color, highLight);
+    return Line(sf::Vector2f(block1.mPos.x + kind * block1.mSize, block1.mPos.y + block1.mSize), sf::Vector2f(block2.mPos.x + 3 * block2.mSize / 2, block2.mPos.y), Color, highLight);
+}
+
+
 void Block::draw(sf::RenderWindow &mWindow)
 {
     for (int i = 0; i < 3; i++)
