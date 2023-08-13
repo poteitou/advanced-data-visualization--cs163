@@ -1198,7 +1198,7 @@ void AVLTree::draw()
     default:
         break;
     }
-    // setColor();
+    setColor();
     if (mRun == 1 && !mStep.empty())
     {
         while (step < mStep.size() - 1)
