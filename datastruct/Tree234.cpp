@@ -22,7 +22,7 @@ Tree234::Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
         mNoteText[i].setCharacterSize(20);
     }
 
-    std::ifstream inNote("pseudo/avltree/avltree.note");
+    std::ifstream inNote("pseudo/tree234/tree234.note");
     std::string tmp;
     cntNote = 0;
     while (getline(inNote, tmp))
@@ -705,7 +705,7 @@ Tree234::Node* Tree234::init(Step &step, Node* root, std::string key, float x = 
 
 void Tree234::finalInit(std::string filename)
 {
-    std::ifstream inFile(filename), inCode("pseudo/avltree/init.pseudo");
+    std::ifstream inFile(filename), inCode("pseudo/tree234/init.pseudo");
     if (!inFile) return;
 
     if (firstTime == false)
@@ -838,7 +838,7 @@ Tree234::Node* Tree234::insert(Step &step, Node* root, std::string key, float x 
 
 void Tree234::finalInsert(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/insert.pseudo");
+    std::ifstream inCode("pseudo/tree234/insert.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1021,7 +1021,7 @@ Tree234::Node* Tree234::remove(Step &step, Node* root, std::string key, float x 
 
 void Tree234::finalRemove(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/remove.pseudo");
+    std::ifstream inCode("pseudo/tree234/remove.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1101,7 +1101,7 @@ void Tree234::search(Step &step, Node* root, std::string key, float x = 1100, fl
 
 void Tree234::finalSearch(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/search.pseudo");
+    std::ifstream inCode("pseudo/tree234/search.pseudo");
     if (firstTime == false)
     {
         inCode.close();

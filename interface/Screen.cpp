@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
 Screen::Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode)
-    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode)
+    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode), mTree234(mWindow, mFont, mFontCode)
 {
     mFont1.loadFromFile("resources/fonts/childtitle.ttf");
     textTitle.setFont(mFont1);
@@ -47,9 +47,9 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
     case 2: // AVL tree
         mAVLTree.update(mousePress, mousePosition, keyPress, mData, dt);
         break;
-    // case 3: // 234 tree
-    //     mSinglyLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    case 3: // 234 tree
+        mTree234.update(mousePress, mousePosition, keyPress, mData, dt);
+        break;
     // case 4: // Doubly linked list
     //     mDoublyLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
     //     brea0k;
@@ -83,9 +83,10 @@ void Screen::draw()
         textTitle.setString("AVL tree");
         mAVLTree.draw();
         break;
-    // case 3: // 234 tree
-    //     mSinglyLinkedList.draw();
-    //     break;
+    case 3: // 234 tree
+        textTitle.setString("2-3-4 tree");
+        mTree234.draw();
+        break;
     // case 4: // Doubly linked list
     //     mDoublyLinkedList.draw();
     //     break;

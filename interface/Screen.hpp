@@ -5,7 +5,7 @@
 #include "Menu.hpp"
 #include "../datastruct/HashTable.hpp"
 #include "../datastruct/AVLTree.hpp"
-// #include "../datastruct/SinglyLinkedList.hpp"
+#include "../datastruct/Tree234.hpp"
 // #include "../datastruct/DoublyLinkedList.hpp"
 // #include "../datastruct/CircularLinkedList.hpp"
 // #include "../datastruct/Stack.hpp"
@@ -24,6 +24,7 @@ struct Screen
     Menu mMenu;
     HashTable mHashTable;
     AVLTree mAVLTree;
+    Tree234 mTree234;
     // SinglyLinkedList mSinglyLinkedList;
     // DoublyLinkedList mDoublyLinkedList;
     // CircularLinkedList mCircularLinkedList;
