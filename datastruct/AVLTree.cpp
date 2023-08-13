@@ -952,13 +952,14 @@ AVLTree::Node* AVLTree::remove(Step &step, Node* root, std::string key, float x 
             // Copy the inorder successor's data to this node
             resetSub(step.mTree, root, x, y, distance);
             int id = findPoint(step.mTree, root->key);
-            root->key = temp->key;
+            // root->key = temp->key;
             step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), root->key, mFont, true, pallete[mColor]);
             mStep.push_back(step);
  
             // Delete the inorder successor
             if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
             root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
+            root->key = temp->key;
         }
     }
  
