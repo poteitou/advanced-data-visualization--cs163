@@ -48,7 +48,6 @@ struct Tree234
 
     int height(Node* node);
     int getBalance(Node* node);
-    Node* newNode(std::string key);
     Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);

@@ -154,26 +154,12 @@ int Tree234::getBalance(Node *root)
     return height(root->left) - height(root->right);
 }
 
-Tree234::Node *Tree234::newNode(std::string key)
+Tree234::Node *Tree234::copy(Node* root)
 {
-    Node *node = new Node();
-    node->key = key;
-    node->left = nullptr;
-    node->right = nullptr;
-    node->height = 1; // leaf;
-    return node;
-}
-
-Tree234::Node *Tree234::copy(Node *root)
-{
-    if (root == nullptr)
-        return nullptr;
-    Node *temp = new Node();
+    if (root == nullptr) return nullptr;
+    Node* temp = new Node();
     temp->key = root->key;
-    temp->height = root->height;
-    temp->left = copy(root->left);
-    temp->right = copy(root->right);
-    return temp;
+    
 }
 
 void Tree234::destroy(Node *&root)
