@@ -2,10 +2,9 @@
 
 Block::Block() {}
 
-Block::Block(sf::Vector2f pos, std::string textIn1, std::string textIn2, std::string textIn3, sf::Font &font, bool highLight, sf::Color Color) : mPos(pos), mHighLight(highLight), mColor(Color), mValue{textIn1, textIn2, textIn3}
+Block::Block(int size, sf::Vector2f pos, std::string textIn1, std::string textIn2, std::string textIn3, sf::Font &font, bool highLight, sf::Color Color) : mSize(size), mPos(pos), mHighLight(highLight), mColor(Color), mValue{textIn1, textIn2, textIn3}
 {
-    mSize = 15;
-    mFontSize = 10;
+    mFontSize = mSize;
 
     for (int i = 0; i < 3; i++)
     {

@@ -95,6 +95,7 @@ Tree234::Node::Node()
         child[i] = nullptr;
     }
     child[3] = nullptr;
+    parent = nullptr;
     numKeys = 0;
     numKeyChild = 0;
 }
@@ -187,7 +188,7 @@ int Tree234::addBlock(Tree &tree, float x, float y, std::string keys[3], bool hi
             return i;
         }
     }
-    tree.mBlock.push_back(Block(sf::Vector2f(x, y), keys[0], keys[1], keys[2], mFont, highLight, pallete[mColor]));
+    tree.mBlock.push_back(Block(15, sf::Vector2f(x, y), keys[0], keys[1], keys[2], mFont, highLight, pallete[mColor]));
     return tree.mBlock.size() - 1;
 }
 
@@ -495,12 +496,12 @@ bool Tree234::Node::isLeaf()
     return child[0] == nullptr;
 }
 
-void Tree234::Node::updateParNumKeyChild(int count)
+void Tree234::Node::updateParNumKeyChild(int cnt)
 {
     if (parent)
     {
-        parent->numKeyChild += count;
-        parent->updateParNumKeyChild(count);
+        parent->numKeyChild += cnt;
+        parent->updateParNumKeyChild(cnt);
     }
 }
 
@@ -886,7 +887,7 @@ void Tree234::insert(std::string key)
     Node *cur = mRoot;
     float x = 1100, y = 175, distance = 300;
     while (true)
-    {
+    { 
         addBlock(tmpStep.mTree, x, y, cur->keys, true);
         if (cur->isFull())
         {

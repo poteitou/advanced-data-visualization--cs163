@@ -7,7 +7,7 @@
 struct Block
 {
     Block();
-    Block(sf::Vector2f pos, std::string textIn1, std::string textIn2, std::string textIn3, sf::Font &font, bool highLight, sf::Color Color);
+    Block(int size, sf::Vector2f pos, std::string textIn1, std::string textIn2, std::string textIn3, sf::Font &font, bool highLight, sf::Color Color);
     void setColor(sf::Color Color);
     void setHighLight(bool highLight);
     void setPosition(sf::Vector2f pos);
