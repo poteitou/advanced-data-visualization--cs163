@@ -24,6 +24,7 @@ struct Tree234
         Node* child[4];
         bool isLeaf;
         int numKeys; 
+        int height;
 
         Node();
     };
@@ -47,11 +48,9 @@ struct Tree234
     void split(Node* parent, int childIndex);
 
     int height(Node* node);
-    int getBalance(Node* node);
     Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
-    void preOrder(Node* root);
     void beautify(Tree &tree, Node* root, float x, float y, float distance);
     void reset(Tree &tree, Node* root);
     void resetSub(Tree &tree, Node* root, float x, float y, float distance);

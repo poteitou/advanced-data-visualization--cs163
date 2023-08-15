@@ -97,6 +97,7 @@ Tree234::Node::Node()
     child[3] = nullptr;
     isLeaf = true;
     numKeys = 0;
+    height = 1;
 }
 
 void Tree234::split(Node *parent, int childIndex)
@@ -147,27 +148,26 @@ int Tree234::height(Node *root)
     return root->height;
 }
 
-int Tree234::getBalance(Node *root)
-{
-    if (root == nullptr)
-        return 0;
-    return height(root->left) - height(root->right);
-}
-
 Tree234::Node *Tree234::copy(Node* root)
 {
     if (root == nullptr) return nullptr;
     Node* temp = new Node();
-    temp->key = root->key;
-    
+    for (int i = 0; i < 3; i++)
+        temp->keys[i] = root->keys[i];
+    for (int i = 0; i < 3; i++)
+        temp->child[i] = copy(root->child[i]);
+    temp->isLeaf = root->isLeaf;
+    temp->numKeys = root->numKeys;
+    temp->height = root->height;
+    return temp;
 }
 
 void Tree234::destroy(Node *&root)
 {
     if (root)
     {
-        destroy(root->left);
-        destroy(root->right);
+        for (int i = 0; i < 4; i++)
+            destroy(root->child[i]);
         delete root;
     }
     root = nullptr;
@@ -184,16 +184,6 @@ void Tree234::destroyNode(Tree &tree, Node *&root, float x = 1100, float y = 175
             tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
         destroyNode(tree, root->left, x - distance, y + 100, distance / 2);
         destroyNode(tree, root->right, x + distance, y + 100, distance / 2);
-    }
-}
-
-void Tree234::preOrder(Node *root)
-{
-    if (root != nullptr)
-    {
-        // cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
     }
 }
 
@@ -565,34 +555,6 @@ void Tree234::insertInLeaf(Node *leaf, std::string key)
     }
     leaf->keys[i + 1] = key;
     leaf->numKeys++;
-}
-
-Tree234::Node *Tree234::rightRotate(Node *Y)
-{
-    Node *X = Y->left;
-    Node *T2 = X->right;
-
-    X->right = Y;
-    Y->left = T2;
-
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-
-    return X;
-}
-
-Tree234::Node *Tree234::leftRotate(Node *X)
-{
-    Node *Y = X->right;
-    Node *T2 = Y->left;
-
-    Y->left = X;
-    X->right = T2;
-
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-
-    return Y;
 }
 
 void Tree234::insert(std::string key)

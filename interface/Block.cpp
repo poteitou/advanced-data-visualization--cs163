@@ -16,7 +16,7 @@ Block::Block(sf::Vector2f pos, std::string textIn1, std::string textIn2, std::st
         mRect[i].setOutlineThickness(2.f);
         mRect[i].setOutlineColor(mColor);
 
-        mTextIn[i].setString(textIn);
+        mTextIn[i].setString(mValue[i]);
         mTextIn[i].setFont(font);
         mTextIn[i].setCharacterSize(mFontSize);
         // mTextIn[i].setPosition(mPos.x + i * mSize + (mSize - mTextIn[i].getLocalBounds().width) / 2, mPos.y + (mSize - mFontSize) / 2);
@@ -61,6 +61,15 @@ Line Block::getLine(Block block1, Block block 2, int kind, sf::Color Color, bool
     if (kind == 5)
         return Line(sf::Vector2f(block1.mPos.x, block1.mPos.y + block1.mSize), sf::Vector2f(block2.mPos.x, block2.mPos.y), Color, highLight);
     return Line(sf::Vector2f(block1.mPos.x - 3 * block1.mSize / 2 + kind * block1.mSize, block1.mPos.y + block1.mSize), sf::Vector2f(block2.mPos.x, block2.mPos.y), Color, highLight);
+}
+
+void Block::setText(std::string text1, std::string text2, std::string text3)
+{
+    mValue[0] = text1;
+    mValue[1] = text2;
+    mValue[2] = text3;
+    for (int i = 0; i < 3; i++)
+        mTextIn[i].setString(mValue[i]);
 }
 
 

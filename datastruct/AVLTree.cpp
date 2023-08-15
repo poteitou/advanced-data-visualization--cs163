@@ -575,7 +575,9 @@ bool AVLTree::canInsert(std::string key)
 {
     Node* root = copy(mRoot);
     root = insert(root, key);
-    return root->height <= 5;
+    bool res = root->height <= 5;
+    destroy(root);
+    return res;
 }
 
 /*
