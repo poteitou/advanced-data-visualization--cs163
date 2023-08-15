@@ -21,17 +21,29 @@ struct Tree234
     struct Node
     {
         std::string keys[3];
+        Node* parent;
         Node* child[4];
-        bool isLeaf;
         int numKeys; 
-        int height;
+        int numKeyChild;
 
         Node();
+        bool isFull();
+        bool isLeaf();
+        void updateParNumKeyChild(int count);
+        int insertKey(std::string key);
+        std::string removeKey();
+        void connectChild(int index, Node* nodeChild);
+        Node* disconnectChild(int index);
     };
     Node* mRoot;
+
+    int getNextChild(Node* node, std::string key);
+    void split(Node* &root, Node* node);
+    int height(Node* node);
+    Node* copy(Node* root);
     struct Tree
     {
-        std::vector<Point> mPoint;
+        std::vector<Block> mBlock;
         std::vector<Line> mLine;
         void draw(sf::RenderWindow &mWindow);
     };
@@ -45,19 +57,14 @@ struct Tree234
         void draw(sf::RenderWindow &mWindow);
     };
 
-    void split(Node* parent, int childIndex);
-
-    int height(Node* node);
-    Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
     void beautify(Tree &tree, Node* root, float x, float y, float distance);
     void reset(Tree &tree, Node* root);
     void resetSub(Tree &tree, Node* root, float x, float y, float distance);
 
-    int getIndex(Node* root, int indexRoot, std::string key);
-    int findPoint(Tree &tree, std::string key);
-    int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
+    int findBlock(Tree &tree, std::string keys[3]);
+    int addBlock(Tree &tree, float x, float y, std::string keys[3], bool highLight);
     int findLine(Tree &tree, float x, float y, float u, float v);
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
@@ -65,27 +72,26 @@ struct Tree234
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    void insertInLeaf(Node* leaf, std::string key);
-    Node* rightRotate(Node* Y);
-    Node* leftRotate(Node* X);
-    void insert(std::string key);
+    // void insertInLeaf(Node* leaf, std::string key);
+    // Node* rightRotate(Node* Y);
+    // Node* leftRotate(Node* X);
     bool canInsert(std::string key);
-    Node* rightRotate(Step &step, Node* Y, float x, float y, float distance);
+    /* Node* rightRotate(Step &step, Node* Y, float x, float y, float distance);
     Node* leftRotate(Step &step, Node* X, float x, float y, float distance);
     Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInit(std::string fileName);
-    Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInsert(std::string key);
-    Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
+    void finalInit(std::string fileName); */
+    void insert(std::string key);
+    /* Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
     Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
     void search(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalSearch(std::string key);
+     */
     void draw();
 
     sf::RenderWindow &mWindow;
