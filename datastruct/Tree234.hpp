@@ -27,6 +27,7 @@ struct Tree234
         int numKeyChild;
 
         Node();
+        int num(std::string key);
         bool isFull();
         bool isLeaf();
         void updateParNumKeyChild(int count);
@@ -37,6 +38,7 @@ struct Tree234
     };
     Node* mRoot;
 
+    int num(std::string key);
     int getNextChild(Node* node, std::string key);
     void split(Node* &root, Node* node);
     int height(Node* node);
