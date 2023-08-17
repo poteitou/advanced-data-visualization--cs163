@@ -362,7 +362,7 @@ void Tree234::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         // updateRemove(mousePress, mousePosition, keyPress);
         break;
     case 4: // Search
-        // updateSearch(mousePress, mousePosition, keyPress);
+        updateSearch(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -436,6 +436,7 @@ void Tree234::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &ke
     else
         firstTime = true;
 }
+*/
 
 void Tree234::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -444,11 +445,10 @@ void Tree234::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &ke
 
     mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        finalSearch(mInputBar[4].mValue);
+        search(mInputBar[4].mValue);
     else
         firstTime = true;
 }
- */
 
 bool Tree234::Node::isFull()
 {
@@ -458,6 +458,14 @@ bool Tree234::Node::isFull()
 bool Tree234::Node::isLeaf()
 {
     return child[0] == nullptr;
+}
+
+int Tree234::Node::findKey(std::string key)
+{
+    for (int i = 0; i < numKeys; i++)
+        if (num(key) == num(keys[i]))
+            return i;
+    return -1;
 }
 
 void Tree234::Node::updateParNumKeyChild(int cnt)
@@ -958,6 +966,9 @@ void Tree234::insert(std::string key)
         {
             tmpStep.mText[6].setFillColor(sf::Color(230, 100, 140));
             tmpStep.mText[7].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
             int j = getNextChild(cur, key);
             id = j;
             Block temp = createBlock(cur, 50.f, id, x, y, distance, true);
@@ -1161,46 +1172,9 @@ void Tree234::finalRemove(std::string key)
     inCode.close();
 }
 
-void Tree234::search(Step &step, Node *root, std::string key, float x = 1100, float y = 225, float distance = 800)
-{
-    if (root == nullptr)
-    {
-        step.mText = mRealText;
-        step.mText[2].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return;
-    }
-    addBlock(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
+*/
 
-    if (num(key) < num(root->key))
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left)
-            addLine(step.mTree, x, y, x - distance, y + 100, true);
-        search(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (key > root->key)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right)
-            addLine(step.mTree, x, y, x + distance, y + 100, true);
-        search(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        addBlock(step.mTree, x, y, root->key, true);
-        mStep.push_back(step);
-        return;
-    }
-}
-
-void Tree234::finalSearch(std::string key)
+void Tree234::search(std::string key)
 {
     std::ifstream inCode("pseudo/tree234/search.pseudo");
     if (firstTime == false)
@@ -1231,19 +1205,68 @@ void Tree234::finalSearch(std::string key)
     step = 0;
     mRun = 1;
 
+    if (!mRoot)
+    {
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
+        return;
+    }
+    Node* cur = mRoot;
+    int id = -1;
+    float x = 1100, y = 225, distance = 800, X = 1100, Y = 225, DISTANCE = 800;
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mTree.mBlock.push_back(createBlock(cur, 50.f, id, x, y, distance, true));
     mStep.push_back(tmpStep);
-
-    search(tmpStep, mRoot, key);
+    while(true)
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+        int index = cur->findKey(key);
+        if (index != -1) 
+        {
+            tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
+            break;
+        }
+        else if (!cur->isLeaf())
+        {
+            tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[6].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
+            int j = getNextChild(cur, key);
+            id = j;
+            Block temp = createBlock(cur, 50.f, id, x, y, distance, true);
+            X = x, Y = y;
+            DISTANCE = distance;
+            x = temp.mPos.x, y = temp.mPos.y;
+            distance = DISTANCE / (cur->numKeys + 1);
+            cur = cur->child[j];
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(temp);
+            mStep.push_back(tmpStep);
+        }
+        else
+        {
+            tmpStep.mText[7].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
+            break;
+        }
+    }
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
 }
-
-*/
 
 void Tree234::draw()
 {

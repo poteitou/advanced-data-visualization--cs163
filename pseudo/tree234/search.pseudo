@@ -1,0 +1,9 @@
+input(value)
+Node curNode = root
+while true:
+    if curNode->findKey(value):
+        return FOUND
+    else if not curNode->isLeaf():
+        curNode = curNode->child
+    else: 
+        return NOT_FOUND

@@ -30,6 +30,7 @@ struct Tree234
         int num(std::string key);
         bool isFull();
         bool isLeaf();
+        int findKey(std::string key);
         void updateParNumKeyChild(int count);
         int insertKey(std::string key);
         std::string removeKey();
@@ -73,7 +74,7 @@ struct Tree234
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     // void insertInLeaf(Node* leaf, std::string key);
     // Node* rightRotate(Node* Y);
@@ -87,9 +88,8 @@ struct Tree234
     /* Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
     Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
-    void search(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalSearch(std::string key);
      */
+    void search(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;
