@@ -4,7 +4,7 @@ Block::Block() {}
 
 Block::Block(int size, sf::Vector2f pos, std::string textIn1, std::string textIn2, std::string textIn3, sf::Font &font, bool highLight, sf::Color Color) : mSize(size), mPos(pos), mHighLight(highLight), mColor(Color), mValue{textIn1, textIn2, textIn3}
 {
-    mFontSize = mSize;
+    mFontSize = mSize * 2 / 3;
 
     for (int i = 0; i < 3; i++)
     {
@@ -18,8 +18,7 @@ Block::Block(int size, sf::Vector2f pos, std::string textIn1, std::string textIn
         mTextIn[i].setString(mValue[i]);
         mTextIn[i].setFont(font);
         mTextIn[i].setCharacterSize(mFontSize);
-        // mTextIn[i].setPosition(mPos.x + i * mSize + (mSize - mTextIn[i].getLocalBounds().width) / 2, mPos.y + (mSize - mFontSize) / 2);
-        mTextIn[i].setPosition(mPos.x - 3 * mSize / 2 + i * mSize - mTextIn[i].getLocalBounds().width / 2, mPos.y - mFontSize / 2);
+        mTextIn[i].setPosition(mPos.x - 3 * mSize / 2 + i * mSize + (mSize - mTextIn[i].getLocalBounds().width) / 2, mPos.y + (mSize.y - mFontSize) / 2);
         mTextIn[i].setFillColor(mHighLight ? sf::Color::White : sf::Color::Black);
     }
 }
@@ -51,7 +50,7 @@ void Block::setPosition(sf::Vector2f pos)
     for (int i = 0; i < 3; i++)
     {
         mRect[i].setPosition(sf::Vector2f(mPos.x + i * mSize, mPos.y));
-        mTextIn[i].setPosition(mPos.x - 3 * mSize / 2 + i * mSize - mTextIn[i].getLocalBounds().width / 2, mPos.y - mFontSize / 2);
+        mTextIn[i].setPosition(mPos.x - 3 * mSize / 2 + i * mSize + (mSize - mTextIn[i].getLocalBounds().width) / 2, mPos.y + (mSize.y - mFontSize) / 2);
     }
 }
 
