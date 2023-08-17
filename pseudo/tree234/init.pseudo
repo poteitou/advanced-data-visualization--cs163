@@ -1,0 +1,3 @@
+this 2-3-4Tree = new 2-3-4Tree
+for value in list:
+    insert(value) to this 2-3-4Tree

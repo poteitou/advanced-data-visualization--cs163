@@ -37,11 +37,11 @@ Tree234::Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
-        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 225, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
+        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     // Init bar + OK
-    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 225), mFont, "datafile.data", 2);
-    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 225), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "datafile.data", 2);
+    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, std::to_string(Rand(99)), 0);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
@@ -353,7 +353,7 @@ void Tree234::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
     switch (mType)
     {
     case 1: // Init
-        // updateInit(mousePress, mousePosition, keyPress);
+        updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
@@ -369,7 +369,6 @@ void Tree234::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
     }
 }
 
-/* 
 void Tree234::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[0].mHovered = true;
@@ -391,7 +390,7 @@ void Tree234::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
         mButton[4].mHovered = true;
         mInputBar[0].update(mousePress, mousePosition, keyPress, 20);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
-            finalInit("data/" + mInputBar[0].mValue);
+            init("data/" + mInputBar[0].mValue);
         else
             firstTime = true;
         break;
@@ -403,7 +402,7 @@ void Tree234::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
             std::ofstream outFile("data/randomize.data");
             outFile << mInputBar[1].mValue;
             outFile.close();
-            finalInit("data/randomize.data");
+            init("data/randomize.data");
         }
         else
             firstTime = true;
@@ -412,7 +411,6 @@ void Tree234::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyP
         break;
     }
 }
- */
 
 void Tree234::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -760,8 +758,9 @@ Tree234::Node *Tree234::init(Step &step, Node *root, std::string key, float x = 
 
     return root;
 }
+*/
 
-void Tree234::finalInit(std::string filename)
+void Tree234::init(std::string filename)
 {
     std::ifstream inFile(filename), inCode("pseudo/tree234/init.pseudo");
     if (!inFile)
@@ -806,7 +805,58 @@ void Tree234::finalInit(std::string filename)
     {
         if (canInsert(key) == false)
             continue;
-        mRoot = init(tmpStep, mRoot, key);
+        mKeys.push_back(key);
+        if (!mRoot) mRoot = new Node();
+        Node *cur = mRoot;
+        int id = -1;
+        float x = 1100, y = 225, distance = 800, X = 1100, Y = 225, DISTANCE = 800;
+        tmpStep.mTree.mBlock.push_back(createBlock(cur, 50.f, id, x, y, distance, true));
+        mStep.push_back(tmpStep);
+
+        while (true)
+        {   
+            if (cur->isFull())
+            {
+                reset(tmpStep.mTree, mRoot);
+                tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+                mStep.push_back(tmpStep);
+                split(mRoot, cur);
+
+                cur = cur->parent;
+                int j = getNextChild(cur, key);
+                id = j;
+                Block temp = createBlock(cur, 50.f, id, X, Y, DISTANCE, true);
+                x = temp.mPos.x, y = temp.mPos.y;
+                distance = DISTANCE / (cur->numKeys + 1);
+                cur = cur->child[j];
+                reset(tmpStep.mTree, mRoot);
+                tmpStep.mTree.mBlock.push_back(temp);
+                mStep.push_back(tmpStep);
+            }
+            else if (cur->isLeaf())
+            {
+                mStep.push_back(tmpStep);
+                cur->insertKey(key);
+                reset(tmpStep.mTree, mRoot);
+                tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+                mStep.push_back(tmpStep);
+                break;
+            }
+            else
+            {
+                int j = getNextChild(cur, key);
+                id = j;
+                Block temp = createBlock(cur, 50.f, id, x, y, distance, true);
+                X = x, Y = y;
+                DISTANCE = distance;
+                x = temp.mPos.x, y = temp.mPos.y;
+                distance = DISTANCE / (cur->numKeys + 1);
+                cur = cur->child[j];
+                reset(tmpStep.mTree, mRoot);
+                tmpStep.mTree.mBlock.push_back(temp);
+                mStep.push_back(tmpStep);
+            }
+        }
         reset(tmpStep.mTree, mRoot);
         mStep.push_back(tmpStep);
     }
@@ -817,8 +867,6 @@ void Tree234::finalInit(std::string filename)
     inFile.close();
     inCode.close();
 }
-
- */
 
 void Tree234::insert(std::string key)
 {

@@ -70,7 +70,7 @@ struct Tree234
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
@@ -81,8 +81,8 @@ struct Tree234
     bool canInsert(std::string key);
     /* Node* rightRotate(Step &step, Node* Y, float x, float y, float distance);
     Node* leftRotate(Step &step, Node* X, float x, float y, float distance);
-    Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInit(std::string fileName); */
+    */
+    void init(std::string fileName);
     void insert(std::string key);
     /* Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
     Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
