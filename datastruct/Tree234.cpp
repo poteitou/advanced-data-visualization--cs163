@@ -1258,13 +1258,11 @@ void Tree234::search(std::string key)
             reset(tmpStep.mTree, mRoot);
             tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
             mStep.push_back(tmpStep);
+            reset(tmpStep.mTree, mRoot);
+            mStep.push_back(tmpStep);
             break;
         }
     }
-
-    reset(tmpStep.mTree, mRoot);
-    tmpStep.mText = mRealText;
-    mStep.push_back(tmpStep);
     inCode.close();
 }
 

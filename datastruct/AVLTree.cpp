@@ -1071,6 +1071,7 @@ void AVLTree::search(Step &step, Node* root, std::string key, float x = 1100, fl
     {
         step.mText = mRealText;
         step.mText[2].setFillColor(sf::Color(230, 100, 140));
+        reset(step.mTree, mRoot);
         mStep.push_back(step);
         return;
     }
@@ -1138,10 +1139,6 @@ void AVLTree::finalSearch(std::string key)
     mStep.push_back(tmpStep);
 
     search(tmpStep, mRoot, key);
-
-    reset(tmpStep.mTree, mRoot);
-    tmpStep.mText = mRealText;
-    mStep.push_back(tmpStep);
     inCode.close();
 }
 
