@@ -345,6 +345,7 @@ void Tree234::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         mColor = 0;
         mStep.clear();
         destroy(mRoot);
+        mKeys.clear();
         mButtonImg[11].mHovered = false;
         return;
     }
@@ -608,6 +609,8 @@ bool Tree234::canInsert(std::string key)
 {
     if (!mRoot)
         return true;
+    for (std::string x : mKeys)
+        if (key == x) return false;
     Node* root = copy(mRoot);
     Node* cur = root;
     while (true)
@@ -775,6 +778,7 @@ void Tree234::finalInit(std::string filename)
     mRun = 1;
 
     destroy(mRoot);
+    mKeys.clear();
     mStep.clear();
     Step tmpStep;
 
@@ -849,42 +853,76 @@ void Tree234::insert(std::string key)
 
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    mStep.push_back(tmpStep);
     if (canInsert(key) == false)
     {
-        mStep.push_back(tmpStep);
         tmpStep.mText = mRealText;
         mStep.push_back(tmpStep);
         inCode.close();
         return;
     }
+    mKeys.push_back(key);
     if (!mRoot) mRoot = new Node();
     Node *cur = mRoot;
+    int id = -1;
+    float x = 1100, y = 225, distance = 800, X = 1100, Y = 225, DISTANCE = 800;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mTree.mBlock.push_back(createBlock(cur, 50.f, id, x, y, distance, true));
+    mStep.push_back(tmpStep);
+
     while (true)
-    {
+    {   
+        tmpStep.mText = mRealText;
+        tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
         if (cur->isFull())
         {
+            tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
             split(mRoot, cur);
 
             cur = cur->parent;
             int j = getNextChild(cur, key);
+            id = j;
+            Block temp = createBlock(cur, 50.f, id, X, Y, DISTANCE, true);
+            x = temp.mPos.x, y = temp.mPos.y;
+            distance = DISTANCE / (cur->numKeys + 1);
             cur = cur->child[j];
-
-            tmpStep.mText = mRealText;
             reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(temp);
             mStep.push_back(tmpStep);
         }
         else if (cur->isLeaf())
         {
+            tmpStep.mText = mRealText;
+            tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
+            mStep.push_back(tmpStep);
+            cur->insertKey(key);
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
+            mStep.push_back(tmpStep);
             break;
         }
         else
         {
+            tmpStep.mText[6].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[7].setFillColor(sf::Color(230, 100, 140));
             int j = getNextChild(cur, key);
+            id = j;
+            Block temp = createBlock(cur, 50.f, id, x, y, distance, true);
+            X = x, Y = y;
+            DISTANCE = distance;
+            x = temp.mPos.x, y = temp.mPos.y;
+            distance = DISTANCE / (cur->numKeys + 1);
             cur = cur->child[j];
+            reset(tmpStep.mTree, mRoot);
+            tmpStep.mTree.mBlock.push_back(temp);
+            mStep.push_back(tmpStep);
         }
     }
-    cur->insertKey(key);
-
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);

@@ -37,6 +37,7 @@ struct Tree234
         Node* disconnectChild(int index);
     };
     Node* mRoot;
+    std::vector<std::string> mKeys;
 
     int num(std::string key);
     int getNextChild(Node* node, std::string key);
