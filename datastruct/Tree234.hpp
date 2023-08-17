@@ -60,15 +60,10 @@ struct Tree234
     };
 
     void destroy(Node* &root);
-    void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
-    void beautify(Tree &tree, Node* root, float x, float y, float distance);
+    Block createBlock(Node* node, float size, int id, float x, float y, float distance, bool highLight);
+    Line createLine(Node* node, int id, float x, float y, float distance, bool highLight);
+    void beautify(Tree &tree, Node* root, int id, float x, float y, float distance);
     void reset(Tree &tree, Node* root);
-    void resetSub(Tree &tree, Node* root, float x, float y, float distance);
-
-    int findBlock(Tree &tree, std::string keys[3]);
-    int addBlock(Tree &tree, float x, float y, std::string keys[3], bool highLight);
-    int findLine(Tree &tree, float x, float y, float u, float v);
-    int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
     void randomize();

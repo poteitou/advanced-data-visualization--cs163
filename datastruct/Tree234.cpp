@@ -37,11 +37,11 @@ Tree234::Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
-        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
+        mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 225, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     // Init bar + OK
-    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "datafile.data", 2);
-    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 225), mFont, "datafile.data", 2);
+    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 225), mFont, std::to_string(Rand(99)), 0);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
@@ -123,33 +123,51 @@ void Tree234::destroy(Node *&root)
     root = nullptr;
 }
 
-void Tree234::destroyNode(Tree &tree, Node *&root, float x = 1100, float y = 175, float distance = 300)
+Block Tree234::createBlock(Node* root, float size = 50.f, int id = -1, float x = 1100, float y = 225, float distance = 800, bool highLight = false)
 {
-    if (root)
+    if (id == -1)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            if (root->child[i])
-            {
-                destroyNode(tree, root->child[i], x - distance + i * distance * 2 / 3, y + 200, distance / 4);
-                tree.mLine.erase(tree.mLine.begin() + findLine(tree, x, y, x - distance + i * distance * 2 / 3, y + 200));
-            }
-        }
-        tree.mBlock.erase(tree.mBlock.begin() + findBlock(tree, root->keys));
+        if (root->numKeys == 0)
+            return Block(size, sf::Vector2f(x, y), "", "", "", mFont, highLight, pallete[mColor]);
+        else if (root->numKeys == 1)
+            return Block(size, sf::Vector2f(x, y), "", root->keys[0], "", mFont, highLight, pallete[mColor]);
+        else if (root->numKeys == 2)
+            return Block(size, sf::Vector2f(x, y), root->keys[0], "", root->keys[1], mFont, highLight, pallete[mColor]);
+        else if (root->numKeys == 3)
+            return Block(size, sf::Vector2f(x, y), root->keys[0], root->keys[1], root->keys[2], mFont, highLight, pallete[mColor]);
     }
+    if (root->numKeys == 1)
+        return createBlock(root->child[id], std::min(distance / 2 / 3 - 2, 50.f), -1, x - distance / 4 + id * distance / 2, y + 150, distance / 2, highLight);
+    else if (root->numKeys == 2)
+        return createBlock(root->child[id], std::min(distance / 3 / 3 - 2, 50.f), -1, x - distance / 3 + id * distance / 3, y + 150, distance / 3, highLight);
+    else // if (root->numKeys == 3)
+        return createBlock(root->child[id], std::min(distance / 4 / 3 - 2, 50.f), -1, x - distance / 8 * 3 + id * distance / 4, y + 150, distance / 4, highLight);
 }
 
-void Tree234::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 300)
+Line Tree234::createLine(Node* root, int id, float x = 1100, float y = 225, float distance = 800, bool highLight = false)
+{
+    if (root->numKeys == 1)
+        return Line(sf::Vector2f(x, y), sf::Vector2f(x - distance / 4 + id * distance / 2, y + 150), pallete[mColor], highLight);
+    else if (root->numKeys == 2)
+        return Line(sf::Vector2f(x, y), sf::Vector2f(x - distance / 3 + id * distance / 3, y + 150), pallete[mColor], highLight);
+    else // if (root->numKeys == 3)
+        return Line(sf::Vector2f(x, y), sf::Vector2f(x - distance / 8 * 3 + id * distance / 4, y + 150), pallete[mColor], highLight);
+}
+
+void Tree234::beautify(Tree &tree, Node *root, int id = -1, float x = 1100, float y = 225, float distance = 800)
 {
     if (root)
     {
-        addBlock(tree, x, y, root->keys, false);
+        if (id == -1)
+            tree.mBlock.push_back(createBlock(root, 50.f, id, x, y, distance));
         for (int i = 0; i < 4; i++)
         {
             if (root->child[i])
             {
-                addLine(tree, x, y, x - distance + i * distance * 2 / 3, y + 200, false);
-                beautify(tree, root->child[i], x - distance + i * distance * 2 / 3, y + 200, distance / 4);
+                tree.mLine.push_back(createLine(root, i, x, y, distance));
+                Block temp = createBlock(root, 50.f, i, x, y, distance, false);
+                tree.mBlock.push_back(temp);
+                beautify(tree, root->child[i], i, temp.mPos.x, temp.mPos.y, distance / (root->numKeys + 1));
             }
         }
     }
@@ -162,77 +180,12 @@ void Tree234::reset(Tree &tree, Node *root)
     beautify(tree, root);
 }
 
-void Tree234::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 300)
-{
-    destroyNode(tree, root, x, y, distance);
-    beautify(tree, root, x, y, distance);
-}
-
 void Tree234::Tree::draw(sf::RenderWindow &mWindow)
 {
     for (int i = 0; i < mLine.size(); i++)
         mLine[i].draw(mWindow);
     for (int i = 0; i < mBlock.size(); i++)
         mBlock[i].draw(mWindow);
-}
-
-int Tree234::findBlock(Tree &tree, std::string keys[3])
-{
-    for (int i = 0; i < tree.mBlock.size(); i++)
-    {
-        bool similar = true;
-        for (int j = 0; j < 3; j++)
-            if (tree.mBlock[i].mValue[j] != keys[j])
-                similar = false;
-        if (similar)
-            return i;
-    }
-    return -1;
-}
-
-int Tree234::addBlock(Tree &tree, float x, float y, std::string keys[3], bool highLight)
-{
-    for (int i = 0; i < tree.mBlock.size(); i++)
-    {
-        if (tree.mBlock[i].mPos == sf::Vector2f(x, y))
-        {
-            tree.mBlock[i].setHighLight(highLight);
-            return i;
-        }
-    }
-    tree.mBlock.push_back(Block(20, sf::Vector2f(x, y), keys[0], keys[1], keys[2], mFont, highLight, pallete[mColor]));
-    return tree.mBlock.size() - 1;
-}
-
-int Tree234::findLine(Tree &tree, float x, float y, float u, float v)
-{
-    for (int i = 0; i < tree.mLine.size(); i++)
-    {
-        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v))
-            return i;
-        else if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y))
-            return i;
-    }
-    return -1;
-}
-
-int Tree234::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
-{
-    for (int i = 0; i < tree.mLine.size(); i++)
-    {
-        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v))
-        {
-            tree.mLine[i].setHighLight(highLight);
-            return i;
-        }
-        else if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y))
-        {
-            tree.mLine[i].setHighLight(highLight);
-            return i;
-        }
-    }
-    tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(u, v), pallete[mColor], highLight));
-    return tree.mLine.size() - 1;
 }
 
 void Tree234::Step::draw(sf::RenderWindow &mWindow)
@@ -554,9 +507,9 @@ std::string Tree234::Node::removeKey()
 
 void Tree234::Node::connectChild(int index, Node* nodeChild)
 {
+    child[index] = nodeChild;
     if (nodeChild)
     {
-    child[index] = nodeChild;
         nodeChild->parent = this;
         int delta = (nodeChild->numKeyChild + nodeChild->numKeys);
         numKeyChild += delta;
@@ -573,8 +526,8 @@ Tree234::Node* Tree234::Node::disconnectChild(int index)
         numKeyChild -= delta;
         updateParNumKeyChild(-delta);
         temp->parent = nullptr;
-    }
         child[index] = nullptr;
+    }
     return temp;
 }
 
@@ -633,7 +586,7 @@ int Tree234::height(Node* root)
     return h;
 }
 
-Tree234::Node *Tree234::copy(Node *root)
+Tree234::Node* Tree234::copy(Node *root)
 {
     if (root == nullptr)
         return nullptr;
@@ -641,7 +594,11 @@ Tree234::Node *Tree234::copy(Node *root)
     for (int i = 0; i < 3; i++)
         temp->keys[i] = root->keys[i];
     for (int i = 0; i < 4; i++)
+    {
         temp->child[i] = copy(root->child[i]);
+        if (temp->child[i])
+            temp->child[i]->parent = temp;
+    }
     temp->numKeys = root->numKeys;
     temp->numKeyChild = root->numKeyChild;
     return temp;
@@ -678,6 +635,7 @@ bool Tree234::canInsert(std::string key)
         destroy(root);
         return true;
     }
+    destroy(root);
     return false;
 }
 
@@ -746,7 +704,7 @@ Tree234::Node *Tree234::leftRotate(Step &step, Node *X, float x, float y, float 
     return Y;
 }
 
-Tree234::Node *Tree234::init(Step &step, Node *root, std::string key, float x = 1100, float y = 175, float distance = 300)
+Tree234::Node *Tree234::init(Step &step, Node *root, std::string key, float x = 1100, float y = 225, float distance = 800)
 {
     if (root == nullptr)
     {
@@ -891,34 +849,29 @@ void Tree234::insert(std::string key)
 
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
-    // if (canInsert(key) == false)
-    // {
-    //     mStep.push_back(tmpStep);
-    //     tmpStep.mText = mRealText;
-    //     mStep.push_back(tmpStep);
-    //     inCode.close();
-    //     return;
-    // }
+    if (canInsert(key) == false)
+    {
+        mStep.push_back(tmpStep);
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
+        inCode.close();
+        return;
+    }
     if (!mRoot) mRoot = new Node();
     Node *cur = mRoot;
-    float x = 1100, y = 175, distance = 300;
     while (true)
-    { 
-        // addBlock(tmpStep.mTree, x, y, cur->keys, true);
+    {
         if (cur->isFull())
         {
             split(mRoot, cur);
 
-            // tmpStep.mText = mRealText;
-            // mStep.push_back(tmpStep);
-
             cur = cur->parent;
             int j = getNextChild(cur, key);
             cur = cur->child[j];
-            // x = x - distance + j * distance * 2 / 3;
-            // y = y + 200;
-            // distance = distance / 4;
-            // reset(tmpStep.mTree, mRoot);
+
+            tmpStep.mText = mRealText;
+            reset(tmpStep.mTree, mRoot);
+            mStep.push_back(tmpStep);
         }
         else if (cur->isLeaf())
         {
@@ -928,14 +881,9 @@ void Tree234::insert(std::string key)
         {
             int j = getNextChild(cur, key);
             cur = cur->child[j];
-            // x = x - distance + j * distance * 2 / 3;
-            // y = y + 200;
-            // distance = distance / 4;
         }
     }
-    // addBlock(tmpStep.mTree, x, y, cur->keys, true);
     cur->insertKey(key);
-    // addBlock(tmpStep.mTree, x, y, cur->keys, true);
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
@@ -956,10 +904,10 @@ Tree234::Node *Tree234::minValueNode(Step &step, Node *node, float x, float y, f
     addBlock(step.mTree, x, y, node->key, true);
     addLine(step.mTree, x, y, x - distance, y + 100, true);
     mStep.push_back(step);
-    return minValueNode(step, node->left, x - distance, y + 100, distance / 2);
+    returnValueNode(step, node->left, x - distance, y + 100, distance / 2);
 }
 
-Tree234::Node *Tree234::remove(Step &step, Node *root, std::string key, float x = 1100, float y = 175, float distance = 300)
+Tree234::Node *Tree234::remove(Step &step, Node *root, std::string key, float x = 1100, float y = 225, float distance = 800)
 {
     if (root == nullptr)
         return root;
@@ -1009,7 +957,7 @@ Tree234::Node *Tree234::remove(Step &step, Node *root, std::string key, float x 
             // successor (smallest in the right subtree)
             addLine(step.mTree, x, y, x + distance, y + 100, true);
             mStep.push_back(step);
-            Node *temp = minValueNode(step, root->right, x + distance, y + 100, distance / 2);
+            Node *temp =ValueNode(step, root->right, x + distance, y + 100, distance / 2);
             mStep.push_back(step);
 
             // Copy the inorder successor's data to this node
@@ -1127,7 +1075,7 @@ void Tree234::finalRemove(std::string key)
     inCode.close();
 }
 
-void Tree234::search(Step &step, Node *root, std::string key, float x = 1100, float y = 175, float distance = 300)
+void Tree234::search(Step &step, Node *root, std::string key, float x = 1100, float y = 225, float distance = 800)
 {
     if (root == nullptr)
     {
