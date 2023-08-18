@@ -1,0 +1,6 @@
+input(value)
+
+if node == NULL: return NOT_FOUND
+if value == node->value: return FOUND
+else if value < node->value: search(left)
+else: search(right)

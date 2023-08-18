@@ -1,0 +1,9 @@
+Node temp = new Node(value)
+add(temp) to leaf of this AVLTree
+check balance:
+    case 1: L-L problem -> rightRotate()
+    case 2: R-R problem -> leftRotate()
+    case 3: L-R problem -> leftRotate()
+                        -> rightRotate()
+    case 4: R-L problem -> rightRotate()
+                        -> leftRotate()
