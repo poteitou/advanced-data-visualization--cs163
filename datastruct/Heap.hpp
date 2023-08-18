@@ -18,8 +18,9 @@
 struct Heap
 {
     Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
-    
     std::vector<std::string> mArr;
+    bool mMaxHeap;
+    bool isLess(std::string a, std::string b, bool maxHeap);
     struct Tree
     {
         std::vector<Point> mPoint;
@@ -36,18 +37,11 @@ struct Heap
         void draw(sf::RenderWindow &mWindow);
     };
 
-    int height(Node *node);
-    int getBalance(Node *node);
-    Node* newNode(std::string key);
-    Node* copy(Node* root);
-    void destroy(Node* &root);
-    void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
-    void preOrder(Node *root);
-    void beautify(Tree &tree, Node *root, float x, float y, float distance);
-    void reset(Tree &tree, Node *root);
-    void resetSub(Tree &tree, Node *root, float x, float y, float distance);
+    void destroyNode(Tree &tree, int id, float x, float y, float distance);
+    void beautify(Tree &tree, int id, float x, float y, float distance);
+    void reset(Tree &tree, int id);
+    void resetSub(Tree &tree, int id, float x, float y, float distance);
 
-    int getIndex(Node *root, int indexRoot, std::string key);
     int findPoint(Tree &tree, std::string key);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
     int findLine(Tree &tree, float x, float y, float u, float v);
@@ -58,25 +52,18 @@ struct Heap
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    Node* rightRotate(Node *Y);
-    Node* leftRotate(Node *X);
-    Node* insert(Node* node, std::string key);
-    bool canInsert(std::string key);
-    Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
-    Node *leftRotate(Step &step, Node *X, float x, float y, float distance);
-    Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInit(std::string fileName);
-    Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInsert(std::string key);
-    Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
-    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalRemove(std::string key);
-    void search(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalSearch(std::string key);
+    void heapify(Step &step, int i);
+    void init(std::string fileName);
+    // Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalInsert(std::string key);
+    // Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalRemove(std::string key);
+    // void getTop(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalGetTop(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;

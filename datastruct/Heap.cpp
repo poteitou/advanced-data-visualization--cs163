@@ -32,8 +32,8 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     }
     inNote.close();
 
-    std::string nameButton[] = {"Init", "Insert", "Delete", "Search", "From File", "Randomize", "OK", "OK", "OK", "OK"};
-    for (int i = 0; i < 4; i++) // Init, Insert, Remove, Search
+    std::string nameButton[] = {"Init", "Insert", "Delete", "Get Top", "From File", "Randomize", "OK", "OK", "OK", "OK"};
+    for (int i = 0; i < 4; i++) // Init, Insert, Remove, GetTop
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
@@ -52,7 +52,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), 0);
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
-    // Search bar + OK
+    // GetTop bar + OK
     mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(99)), 0);
     mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
@@ -85,102 +85,63 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
     mArr.clear();
+    mMaxHeap = false;
 }
 
-int Heap::height(Node *root)
+bool Heap::isLess(std::string a, std::string b, bool maxHeap)
 {
-    if (root == NULL) return 0;
-    return root->height;
+    if (maxHeap)
+        return stoi(a) > stoi(b);
+    return stoi(a) < stoi(b);
 }
 
-int Heap::getBalance(Node *root)
+void Heap::destroyNode(Tree &tree, int id = 0, float x = 1100, float y = 175, float distance = 200)
 {
-    if (root == NULL) return 0;
-    return height(root->left) - height(root->right);
-}
-
-Heap::Node* Heap::newNode(std::string key)
-{
-    Node* node = new Node();
-    node->key = key;
-    node->left = NULL;
-    node->right = NULL;
-    node->height = 1; // leaf;
-    return node;
-}
-
-Heap::Node* Heap::copy(Node* root)
-{
-    if (root == NULL)
-        return NULL;
-    Node* temp = new Node();
-    temp->key = root->key;
-    temp->height = root->height;
-    temp->left = copy(root->left);
-    temp->right = copy(root->right);
-    return temp;
-}
-
-void Heap::destroy(Node* &root)
-{
-    if (root)
+    if (id < (int)mArr.size())
     {
-        destroy(root->left);
-        destroy(root->right);
-        delete root;
-    }
-    root = NULL;
-}
-
-void Heap::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root)
-    {
-        tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, root->key, false));
-        if (root->left)
+        tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, mArr[id], false));
+        if (id * 2 + 1 < (int)mArr.size())
+        {
             tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, false));
-        if (root->right)
+            destroyNode(tree, id * 2 + 1, x - distance, y + 100, distance / 2);
+        }
+        if (id * 2 + 2 < (int)mArr.size())
+        {
             tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
-        destroyNode(tree, root->left, x - distance, y + 100, distance / 2);
-        destroyNode(tree, root->right, x + distance, y + 100, distance / 2);
+            destroyNode(tree, id * 2 + 2, x + distance, y + 100, distance / 2);
+        }
     }
 }
 
-void Heap::preOrder(Node *root)
+void Heap::beautify(Tree &tree, int id = 0, float x = 1100, float y = 175, float distance = 200)
 {
-    if (root != NULL)
+    if (id < (int)mArr.size())
     {
-        // cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
-    }
-}
-
-void Heap::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root)
-    {
-        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, false, pallete[mColor]));
-        if (root->left)
+        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), mArr[id], mFont, false, pallete[mColor]));
+        if (id * 2 + 1 < (int)mArr.size())
+        {
             tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100), pallete[mColor], false));
-        if (root->right)
+            beautify(tree, id * 2 + 1, x - distance, y + 100, distance / 2);
+        }
+        if (id * 2 + 2 < (int)mArr.size())
+        {
             tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100), pallete[mColor], false));
-        beautify(tree, root->left, x - distance, y + 100, distance / 2);
-        beautify(tree, root->right, x + distance, y + 100, distance / 2);
+            beautify(tree, id * 2 + 2, x + distance, y + 100, distance / 2);
+        }
     }
 }
 
-void Heap::reset(Tree &tree, Node *root)
+void Heap::reset(Tree &tree, int id = 0)
 {
     tree.mPoint.clear();
     tree.mLine.clear();
-    beautify(tree, root);
+    beautify(tree, id);
 }
 
-void Heap::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
+void Heap::resetSub(Tree &tree, int id = 0, float x = 1100, float y = 175, float distance = 200)
 {
-    destroyNode(tree, root, x, y, distance);
-    beautify(tree, root, x, y, distance);
+    destroyNode(tree, id, x, y, distance);
+    beautify(tree, id, x, y, distance);
 }
 
 void Heap::Tree::draw(sf::RenderWindow &mWindow)
@@ -189,17 +150,6 @@ void Heap::Tree::draw(sf::RenderWindow &mWindow)
         mLine[i].draw(mWindow);
     for (int i = 0; i < mPoint.size(); i++)
         mPoint[i].draw(mWindow);
-}
-
-int Heap::getIndex(Node *root, int indexRoot, std::string key)
-{
-    if (root == NULL)
-        return indexRoot;
-    if (stoi(key) < stoi(root->key))
-        return getIndex(root->left, indexRoot * 2 + 1, key);
-    else if (stoi(key) > stoi(root->key))
-        return getIndex(root->right, indexRoot * 2 + 2, key);
-    return indexRoot;
 }
 
 int Heap::findPoint(Tree &tree, std::string key)
@@ -407,8 +357,9 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         mRun = mSpeed = 1;
         mType = mSmallType = mData = 0;
         mColor = 0;
+        mArr.clear();
+        mMaxHeap = false;
         mStep.clear();
-        destroy(mRoot);
         mButtonImg[11].mHovered = false;
         return;
     }
@@ -419,13 +370,13 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
-        updateInsert(mousePress, mousePosition, keyPress);
+        // updateInsert(mousePress, mousePosition, keyPress);
         break;
     case 3: // Remove
-        updateRemove(mousePress, mousePosition, keyPress);
+        // updateRemove(mousePress, mousePosition, keyPress);
         break;
-    case 4: // Search
-        updateSearch(mousePress, mousePosition, keyPress);
+    case 4: // GetTop
+        // updateGetTop(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -453,7 +404,7 @@ void Heap::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         mButton[4].mHovered = true;
         mInputBar[0].update(mousePress, mousePosition, keyPress, 20);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
-            finalInit("data/" + mInputBar[0].mValue);
+            init("data/" + mInputBar[0].mValue);
         else
             firstTime = true;
         break;
@@ -465,7 +416,7 @@ void Heap::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
             std::ofstream outFile("data/randomize.data");
             outFile << mInputBar[1].mValue;
             outFile.close();
-            finalInit("data/randomize.data");
+            init("data/randomize.data");
         }
         else
             firstTime = true;
@@ -475,6 +426,7 @@ void Heap::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
     }
 }
 
+/*
 void Heap::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -499,213 +451,90 @@ void Heap::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPr
         firstTime = true;
 }
 
-void Heap::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+void Heap::updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[3].mHovered = true;
 
     mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        finalSearch(mInputBar[4].mValue);
+        finalGetTop(mInputBar[4].mValue);
     else
         firstTime = true;
 }
 
-Heap::Node* Heap::rightRotate(Node *Y)
+*/
+
+void Heap::heapify(Step &step, int i)
 {
-    Node *X = Y->left;
-    Node *T2 = X->right;
+    int smallest = i; // Initialize smallest as root
+    int l = 2 * i + 1; // left = 2*i + 1
+    int r = 2 * i + 2; // right = 2*i + 2
+ 
+    // If left child is larger than root
+    if (l < (int)mArr.size() && isLess(mArr[l], mArr[smallest], mMaxHeap))
+        smallest = l;
+ 
+    // If right child is larger than smallest so far
+    if (r < (int)mArr.size() && isLess(mArr[r], mArr[smallest], mMaxHeap))
+        smallest = r;
+    
+    reset(step.mTree, 0);
+    int id1 = findPoint(step.mTree, mArr[i]);
+    step.mTree.mPoint[id1].setHighLight(true);
+    mStep.push_back(step);
+    int id2 = findPoint(step.mTree, mArr[smallest]);
+    step.mTree.mPoint[id2].setHighLight(true);
+    if (id1 != id2) mStep.push_back(step);
 
-    X->right = Y;
-    Y->left = T2;
-
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-
-    return X;
-}
-
-Heap::Node* Heap::leftRotate(Node *X)
-{
-    Node *Y = X->right;
-    Node *T2 = Y->left;
-
-    Y->left = X;
-    X->right = T2;
-
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-
-    return Y;
-}
-
-Heap::Node* Heap::insert(Node *root, std::string key)
-{
-    if (root == NULL)
-        return newNode(key);
-    if (key < root->key)
-        root->left = insert(root->left, key);
-    else if (key > root->key)
-        root->right = insert(root->right, key);
-    else
-        return root;
-
-    root->height = 1 + std::max(height(root->left), height(root->right));
-    int balance = getBalance(root);
-
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(root);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(root);
-    if (balance > 1 && key > root->left->key)
+    // If smallest is not root
+    if (smallest != i) 
     {
-        root->left = leftRotate(root->left);
-        return rightRotate(root);
+        swap(mArr[i], mArr[smallest]);
+        reset(step.mTree, 0);
+        id1 = findPoint(step.mTree, mArr[i]);
+        step.mTree.mPoint[id1].setHighLight(true);
+        id2 = findPoint(step.mTree, mArr[smallest]);
+        step.mTree.mPoint[id2].setHighLight(true);
+        mStep.push_back(step);
+        heapify(step, smallest);
     }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(root->right);
-        return leftRotate(root);
-    }
-
-    return root;
-}
-
-bool Heap::canInsert(std::string key)
-{
-    Node* root = copy(mRoot);
-    root = insert(root, key);
-    bool res = root->height <= 5;
-    destroy(root);
-    return res;
 }
 
 /*
-     y                               x
-    / \     Right Rotation          / \
-   x   T3   - - - - - - - >        T1  y 
-  / \       < - - - - - - -           / \
- T1  T2     Left Rotation           T2  T3  
+void Heap::insert(std::string Key)
+{
+    mArr.push_back(key);
+ 
+    // Heapify the new node following a
+    // Bottom-up approach
+    int i = (int)mArr.size() - 1;
+    while (i != 0 && isLess(mArr[i], mArr[(i - 1) / 2], mMaxHeap))
+    {
+        swap(mArr[i], mArr[(i - 1) / 2]);
+        i = (i - 1) / 2;
+    }
+}
+
+void Heap::remove()
+{
+    if (mArr.empty()) return;
+
+    // Replace root with last element
+    mArr[0] = mArr[(int)mArr.size() - 1];
+    mArr.pop_back();
+    heapify(0);
+}
+
+void Heap::getTop()
+{
+    if (mArr.empty()) return;
+    std::cout << mArr[0] << '\n';
+}
+
 */
 
-Heap::Node* Heap::rightRotate(Step &step, Node *Y, float x, float y, float distance)
-{
-    addPoint(step.mTree, x, y, Y->key, true);
-	Node *X = Y->left;
-    addPoint(step.mTree, x - distance, y + 100, X->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
-	Node *T2 = X->right;
-    if (T2) 
-    {
-        addPoint(step.mTree, x - distance + distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true);
-    }
-    mStep.push_back(step);
-    if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
-    mStep.push_back(step);
-    if (T2)
-    {
-        addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true);
-        mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true));
-    }
-    destroyNode(step.mTree, Y, x, y, distance);
-
-	X->right = Y;
-	Y->left = T2;
-	Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-	X->height = std::max(height(X->left), height(X->right)) + 1;
-	return X;
-}
-
-Heap::Node* Heap::leftRotate(Step &step, Node *X, float x, float y, float distance)
-{
-    addPoint(step.mTree, x, y, X->key, true);
-    Node *Y = X->right;
-    addPoint(step.mTree, x + distance, y + 100, Y->key, true);
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
-    Node *T2 = Y->left;
-    if (T2) 
-    {
-        addPoint(step.mTree, x + distance - distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true);
-    }
-    mStep.push_back(step);
-    if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
-    mStep.push_back(step);
-    if (T2)
-    {
-        addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true);
-        mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true));
-    }
-    destroyNode(step.mTree, X, x, y, distance);
-
-    Y->left = X;
-    X->right = T2;
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-    return Y;
-}
-
-Heap::Node* Heap::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else return root;
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(step, root, x, y, distance);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(step, root, x, y, distance);
-    if (balance > 1 && key > root->left->key)
-    {
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
-
-void Heap::finalInit(std::string filename)
+void Heap::init(std::string filename)
 {
     std::ifstream inFile(filename), inCode("pseudo/heap/init.pseudo");
     if (!inFile) return;
@@ -720,7 +549,7 @@ void Heap::finalInit(std::string filename)
     step = 0;
     mRun = 1;
 
-    destroy(mRoot);
+    mArr.clear();
     mStep.clear();
     Step tmpStep;
 
@@ -733,7 +562,7 @@ void Heap::finalInit(std::string filename)
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -746,97 +575,26 @@ void Heap::finalInit(std::string filename)
     std::string key;
     while (inFile >> key)
     {
-        if (canInsert(key) == false) continue;
-        mRoot = init(tmpStep, mRoot, key);
-        reset(tmpStep.mTree, mRoot);
-        mStep.push_back(tmpStep);
+        if (std::find(mArr.begin(), mArr.end(), key) != mArr.end() || (int)mArr.size() >= 31) continue;
+        mArr.push_back(key);
     }
+    reset(tmpStep.mTree, 0);
+    mStep.push_back(tmpStep);
 
-    reset(tmpStep.mTree, mRoot);
+
+    tmpStep.mText = mRealText;
+    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+    for (int i = (int)mArr.size() / 2 - 1; i >= 0; i--)
+        heapify(tmpStep, i);
+
+    reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inFile.close();
     inCode.close();
 }
 
-Heap::Node* Heap::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else // Equal keys are not allowed in BST
-    {
-        return root;
-    }
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    step.mText = mRealText;
-    step.mText[2].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(step);
-
-    // Left Left Problem
-    if (balance > 1 && key < root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        return rightRotate(step, root, x, y, distance);
-    }
-    // Right Right Problem
-    if (balance < -1 && key > root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        return leftRotate(step, root, x, y, distance);
-    }
-
-    // Left Right Problem
-    if (balance > 1 && key > root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[6].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-
-    // Right Left Problem
-    if (balance < -1 && key < root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[8].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
+/*
 
 void Heap::finalInsert(std::string key)
 {
@@ -860,7 +618,7 @@ void Heap::finalInsert(std::string key)
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -881,38 +639,24 @@ void Heap::finalInsert(std::string key)
     }
     mRoot = insert(tmpStep, mRoot, key);
 
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
 }
 
-Heap::Node* Heap::minValueNode(Step &step, Node* node, float x, float y, float distance)
-{
-    if (node->left == NULL)
-    {
-        addPoint(step.mTree, x, y, node->key, true);
-        mStep.push_back(step);
-        return node;
-    }
-    addPoint(step.mTree, x, y, node->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
-    mStep.push_back(step);
-    return minValueNode(step, node->left, x - distance, y + 100, distance / 2);
-}
-
 Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     if (root == NULL) return root;
-    addPoint(step.mTree, x, y, root->key, true);
+    addPoint(step.mTree, x, y, mArr[id], true);
     mStep.push_back(step);
 
-    if (stoi(key) < stoi(root->key))
+    if (stoi(key) < stoi(mArr[id]))
     {
         if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
         root->left = remove(step, root->left, key, x - distance, y + 100, distance / 2);
     }
-    else if (stoi(key) > stoi(root->key))
+    else if (stoi(key) > stoi(mArr[id]))
     {
         if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
         root->right = remove(step, root->right, key, x + distance, y + 100, distance / 2);
@@ -953,15 +697,15 @@ Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100
  
             // Copy the inorder successor's data to this node
             resetSub(step.mTree, root, x, y, distance);
-            int id = findPoint(step.mTree, root->key);
-            // root->key = temp->key;
-            step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), root->key, mFont, true, pallete[mColor]);
+            int id = findPoint(step.mTree, mArr[id]);
+            // mArr[id] = temp->key;
+            step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), mArr[id], mFont, true, pallete[mColor]);
             mStep.push_back(step);
  
             // Delete the inorder successor
             if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
             root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
-            root->key = temp->key;
+            mArr[id] = temp->key;
         }
     }
  
@@ -972,7 +716,7 @@ Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100
     int balance = getBalance(root);
 
     resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
+    addPoint(step.mTree, x, y, mArr[id], true);
     step.mText = mRealText;
     step.mText[2].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(step);
@@ -1044,7 +788,7 @@ void Heap::finalRemove(std::string key)
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -1059,13 +803,13 @@ void Heap::finalRemove(std::string key)
 
     mRoot = remove(tmpStep, mRoot, key);
 
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
 }
 
-void Heap::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+void Heap::getTop(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     if (root == NULL) 
     {
@@ -1075,37 +819,37 @@ void Heap::search(Step &step, Node* root, std::string key, float x = 1100, float
         mStep.push_back(step);
         return;
     }
-    addPoint(step.mTree, x, y, root->key, true);
+    addPoint(step.mTree, x, y, mArr[id], true);
     mStep.push_back(step);
 
-    if (stoi(key) < stoi(root->key))
+    if (stoi(key) < stoi(mArr[id]))
     {
         step.mText = mRealText;
         step.mText[4].setFillColor(sf::Color(230, 100, 140));
         if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
-        search(step, root->left, key, x - distance, y + 100, distance / 2);
+        getTop(step, root->left, key, x - distance, y + 100, distance / 2);
     }
-    else if (stoi(key) > stoi(root->key))
+    else if (stoi(key) > stoi(mArr[id]))
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
         if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-        search(step, root->right, key, x + distance, y + 100, distance / 2);
+        getTop(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else
     {
         step.mText = mRealText;
         step.mText[3].setFillColor(sf::Color(230, 100, 140));
         reset(step.mTree, mRoot);
-        addPoint(step.mTree, x, y, root->key, true);
+        addPoint(step.mTree, x, y, mArr[id], true);
         mStep.push_back(step);
         return;
     }
 }
 
-void Heap::finalSearch(std::string key)
+void Heap::finalGetTop(std::string key)
 {
-    std::ifstream inCode("pseudo/heap/search.pseudo");
+    std::ifstream inCode("pseudo/heap/getTop.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1125,7 +869,7 @@ void Heap::finalSearch(std::string key)
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, mRoot);
+    reset(tmpStep.mTree, 0);
     tmpStep.mTime = 0;
     tmpStep.mText = mRealText;
     tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
@@ -1138,10 +882,11 @@ void Heap::finalSearch(std::string key)
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
-    search(tmpStep, mRoot, key);
+    getTop(tmpStep, mRoot, key);
     inCode.close();
 }
 
+*/
 void Heap::draw()
 {
     sf::Text textImple;
@@ -1191,7 +936,7 @@ void Heap::draw()
         mInputBar[3].draw(mWindow);
         mButton[8].draw(mWindow);
         break;
-    case 4: // Search
+    case 4: // GetTop
         mInputBar[4].draw(mWindow);
         mButton[9].draw(mWindow);
         break;

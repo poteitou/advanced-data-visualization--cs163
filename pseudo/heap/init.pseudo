@@ -1,3 +1,4 @@
-this AVLTree = new AVLTree
+this Heap = new Heap()
 for value in list:
-    insert(value) to this AVLTree
+    push(value) to this Heap
+heapify(this Heap)
