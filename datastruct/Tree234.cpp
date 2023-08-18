@@ -631,7 +631,7 @@ void Tree234::split(Node* &root, Node* node)
     parent->connectChild(itemIndex + 1, newRight);
 }
 
-bool Tree234::rotate(Node* &node)
+bool Tree234::rotate(Node* node)
 {
     Node* parent = node->parent;
     int index = getIndexInPar(node);
@@ -670,7 +670,7 @@ bool Tree234::rotate(Node* &node)
     return false;
 }
 
-bool Tree234::merge(Node* &node)
+bool Tree234::merge(Node* node)
 {
     Node* parent = node->parent;
     if (parent->parent == nullptr)
@@ -719,7 +719,7 @@ bool Tree234::merge(Node* &node)
     return true;
 }
 
-void Tree234::shrink(Node* &root, Node* &node)
+void Tree234::shrink(Node* &root, Node* node)
 {
     Node* parent = node->parent;
     int index = getIndexInPar(node);
@@ -1114,15 +1114,11 @@ void Tree234::finalRemove(std::string key)
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
-    for (std::string x : mKeys)
+    if (std::find(mKeys.begin(), mKeys.end(), key) != mKeys.end())
     {
-        if (key == x)
-        {
-            remove(tmpStep, mRoot, key);
-            break;
-        }
+        remove(tmpStep, mRoot, key);
+        mKeys.erase(std::find(mKeys.begin(), mKeys.end(), key));
     }
-    mKeys.erase(std::find(mKeys.begin(), mKeys.end(), key));
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;

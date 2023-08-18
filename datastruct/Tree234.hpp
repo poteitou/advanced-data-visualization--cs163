@@ -45,9 +45,9 @@ struct Tree234
     std::string successor(std::string key, Node *node);
     bool swapSuccessor(std::string key, Node* &node, std::string value);
     void split(Node* &root, Node* node);
-    bool rotate(Node* &node);
-    bool merge(Node* &node);
-    void shrink(Node* &root, Node* &node);
+    bool rotate(Node* node);
+    bool merge(Node* node);
+    void shrink(Node* &root, Node* node);
     int height(Node* node);
     Node* copy(Node* root);
     struct Tree
