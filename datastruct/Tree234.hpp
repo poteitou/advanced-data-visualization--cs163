@@ -24,16 +24,15 @@ struct Tree234
         Node* parent;
         Node* child[4];
         int numKeys; 
-        int numKeyChild;
 
         Node();
         int num(std::string key);
         bool isFull();
         bool isLeaf();
         int findKey(std::string key);
-        void updateParNumKeyChild(int count);
         int insertKey(std::string key);
         std::string removeKey();
+        void removeKeyAtIndex(int index);
         void connectChild(int index, Node* nodeChild);
         Node* disconnectChild(int index);
     };
@@ -42,7 +41,13 @@ struct Tree234
 
     int num(std::string key);
     int getNextChild(Node* node, std::string key);
+    int getIndexInPar(Node* node);
+    std::string successor(std::string key, Node *node);
+    bool swapSuccessor(std::string key, Node* &node, std::string value);
     void split(Node* &root, Node* node);
+    bool rotate(Node* &node);
+    bool merge(Node* &node);
+    void shrink(Node* &root, Node* &node);
     int height(Node* node);
     Node* copy(Node* root);
     struct Tree
@@ -73,22 +78,14 @@ struct Tree234
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    // void insertInLeaf(Node* leaf, std::string key);
-    // Node* rightRotate(Node* Y);
-    // Node* leftRotate(Node* X);
     bool canInsert(std::string key);
-    /* Node* rightRotate(Step &step, Node* Y, float x, float y, float distance);
-    Node* leftRotate(Step &step, Node* X, float x, float y, float distance);
-    */
     void init(std::string fileName);
     void insert(std::string key);
-    /* Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
-    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void remove(Step &step, Node* &root, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
-     */
     void search(std::string key);
     void draw();
 
