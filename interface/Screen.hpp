@@ -6,7 +6,7 @@
 #include "../datastruct/HashTable.hpp"
 #include "../datastruct/AVLTree.hpp"
 #include "../datastruct/Tree234.hpp"
-// #include "../datastruct/DoublyLinkedList.hpp"
+#include "../datastruct/Heap.hpp"
 // #include "../datastruct/CircularLinkedList.hpp"
 // #include "../datastruct/Stack.hpp"
 // #include "../datastruct/Queue.hpp"
@@ -25,7 +25,7 @@ struct Screen
     HashTable mHashTable;
     AVLTree mAVLTree;
     Tree234 mTree234;
-    // SinglyLinkedList mSinglyLinkedList;
+    Heap mHeap;
     // DoublyLinkedList mDoublyLinkedList;
     // CircularLinkedList mCircularLinkedList;
     // Stack mStack;
