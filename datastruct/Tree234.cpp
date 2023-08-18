@@ -5,15 +5,15 @@ Tree234::Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
     mButton.resize(10);
     mInputBar.resize(5);
     mButtonImg.resize(12);
-    mRealText.resize(9);
+    mRealText.resize(10);
     mNoteText.resize(3);
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
     {
-        mRealText[i].setCharacterSize(19);
+        mRealText[i].setCharacterSize(18);
         mRealText[i].setFont(mFontCode);
         mRealText[i].setFillColor(sf::Color::Black);
-        mRealText[i].setPosition(120, 525 + i * 35 - 19 / 2);
+        mRealText[i].setPosition(120, 525 + i * 32 - 18 / 2);
     }
     for (int i = 0; i < 3; i++)
     {
@@ -147,6 +147,33 @@ void Tree234::destroy(Node *&root)
         delete root;
     }
     root = nullptr;
+}
+
+void Tree234::highLigthtBlock(Tree &tree, Node* node)
+{
+    for (int i = 0; i < tree.mBlock.size(); i++)
+    {
+        int cnt = 0;
+        if (node->numKeys == 0)
+        {
+            for (int j = 0; j < 3; j++)
+                if (tree.mBlock[i].mValue[j] == "") cnt++;
+            if (cnt == 3)
+            {
+                tree.mBlock[i].setHighLight(true);
+                break;
+            }
+        }
+        else
+        {
+            for (int j = 0; j < node->numKeys; j++) for (int k = 0; k < 3; k++)
+                if (node->keys[j] != nullptr && tree.mBlock[i].mValue[k] == *node->keys[j]) 
+                {
+                    tree.mBlock[i].setHighLight(true);
+                    return;
+                }
+        }
+    }
 }
 
 Block Tree234::createBlock(Node* root, float size = 50.f, int id = -1, float x = 1100, float y = 225, float distance = 800, bool highLight = false)
@@ -1064,36 +1091,79 @@ void Tree234::insert(std::string key)
     inCode.close();
 }
 
-void Tree234::remove(Step &step, Node* node, std::string key, float x = 1100, float y = 225, float distance = 800)
+void Tree234::remove(Step &step, Node* node, std::string key)
 {
-    if (node->numKeys == 1 && node->parent != nullptr)
-    {
-        if (rotate(node));
-        else if (merge(node));
-        else shrink(node);
-    }
+    reset(step.mTree, mRoot);
+    highLigthtBlock(step.mTree, node);
+    step.mText = mRealText;
+    step.mText[2].setFillColor(sf::Color(230, 100, 140));
+    mStep.push_back(step);
+
     if (node->isLeaf())
     {
+        step.mText = mRealText;
+        step.mText[7].setFillColor(sf::Color(230, 100, 140));
+        reset(step.mTree, mRoot);
+        highLigthtBlock(step.mTree, node);
+        mStep.push_back(step);
         int index = node->findKey(key);
         node->removeKeyAtIndex(index);
+
+        reset(step.mTree, mRoot);
+        highLigthtBlock(step.mTree, node);
+        mStep.push_back(step);
         return;
     }
-    // if (node->numKeys == 1 && node->parent != nullptr)
-    // {
-    //     if (rotate(node));
-    //     else if (merge(node));
-    //     else shrink(node);
-    // }
+    if (node->numKeys == 1 && node->parent != nullptr)
+    {
+        step.mText = mRealText;
+        step.mText[3].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(step);
+        if (rotate(node))
+        {
+            step.mText[4].setFillColor(sf::Color(230, 100, 140));
+            reset(step.mTree, mRoot);
+            highLigthtBlock(step.mTree, node);
+            mStep.push_back(step);
+        }
+        else if (merge(node))
+        {
+            step.mText[5].setFillColor(sf::Color(230, 100, 140));
+            reset(step.mTree, mRoot);
+            highLigthtBlock(step.mTree, node);
+            mStep.push_back(step);
+        }
+        else 
+        {
+            shrink(node);
+            step.mText[6].setFillColor(sf::Color(230, 100, 140));
+            reset(step.mTree, mRoot);
+            highLigthtBlock(step.mTree, node);
+            mStep.push_back(step);
+        }
+    }
     for (int j = 0; j < node->numKeys; j++)
     {
+        step.mText = mRealText;
+        step.mText[8].setFillColor(sf::Color(230, 100, 140));
+        reset(step.mTree, mRoot);
+        highLigthtBlock(step.mTree, node);
+        mStep.push_back(step);
         std::string* temp = node->keys[j];
         if (num(temp) == num(key))
         {
             std::string* nxt = successor(key, node);
+            step.mText[9].setFillColor(sf::Color(230, 100, 140));
+            reset(step.mTree, mRoot);
+            highLigthtBlock(step.mTree, node);
+            mStep.push_back(step);
             if (nxt == nullptr)
             {
                 node->removeKeyAtIndex(j);
                 node->disconnectChild(j + 1);
+                reset(step.mTree, mRoot);
+                highLigthtBlock(step.mTree, node);
+                mStep.push_back(step);
                 return;
             }
             else
@@ -1101,6 +1171,9 @@ void Tree234::remove(Step &step, Node* node, std::string key, float x = 1100, fl
                 std::string x = *nxt;
                 *nxt = *temp;
                 *temp = x;
+                reset(step.mTree, mRoot);
+                highLigthtBlock(step.mTree, node);
+                mStep.push_back(step);
             }
         }
         else if (num(temp) > num(key))

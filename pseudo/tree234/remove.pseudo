@@ -1,9 +1,10 @@
 input(value)
 Check remove condition (exist)
+Go from node to leaves
 if node->isLeaf(): delete(value) in node->keys
-else: if node->numKeys == 1:
-        if rotate(node)
-        else if merge(node)
-        else shrink(node)
-    for key in node->keys: if key == value: swap(key, successor)
-    
+if node->numKeys == 1:
+    if rotate(node)
+    else if merge(node)
+    else shrink(node)
+for key in node->keys: 
+    if key == value: swap(key, suitableSuccessor)

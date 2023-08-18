@@ -69,6 +69,7 @@ struct Tree234
     };
 
     void destroy(Node* &root);
+    void highLigthtBlock(Tree &tree, Node* node);
     Block createBlock(Node* node, float size, int id, float x, float y, float distance, bool highLight);
     Line createLine(Node* node, int id, float x, float y, float distance, bool highLight);
     void beautify(Tree &tree, Node* root, int id, float x, float y, float distance);
@@ -86,7 +87,7 @@ struct Tree234
     bool canInsert(std::string key);
     void init(std::string fileName);
     void insert(std::string key);
-    void remove(Step &step, Node* node, std::string key, float x, float y, float distance);
+    void remove(Step &step, Node* node, std::string key);
     void finalRemove(std::string key);
     void search(std::string key);
     void draw();
