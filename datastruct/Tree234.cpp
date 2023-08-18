@@ -197,7 +197,7 @@ Block Tree234::createBlock(Node* root, float size = 50.f, int id = -1, float x =
         return createBlock(root->child[id], std::min(distance / 4 / 3 - 2, 50.f), -1, x - distance / 8 * 3 + id * distance / 4, y + 150, distance / 4, highLight);
 }
 
-Line Tree234::createLine(Node* root, int id, float x = 1100, float y = 225, float distance = 800, bool highLight = false)
+Line Tree234::createLine(Node* root, int id, float x = 1100, float y = 225, float distance = 800, bool highLight = true)
 {
     if (root->numKeys == 1)
         return Line(sf::Vector2f(x, y), sf::Vector2f(x - distance / 4 + id * distance / 2, y + 150), pallete[mColor], highLight);
@@ -279,10 +279,7 @@ void Tree234::setColor()
     for (int i = 0; i < mStep.size(); i++)
     {
         for (int id = 0; id < mStep[i].mTree.mLine.size(); id++)
-        {
-            if (mStep[i].mTree.mLine[id].mColor != sf::Color::Black)
-                mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
-        }
+            mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
         for (int id = 0; id < mStep[i].mTree.mBlock.size(); id++)
         {
             if (mStep[i].mTree.mBlock[id].mColor != sf::Color::Black)
