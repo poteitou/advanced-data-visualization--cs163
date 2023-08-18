@@ -18,14 +18,8 @@
 struct Heap
 {
     Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
-    struct Node
-    {
-        std::string key;
-        Node *left;
-        Node *right;
-        int height;
-    };
-    Node *mRoot;
+    
+    std::vector<std::string> mArr;
     struct Tree
     {
         std::vector<Point> mPoint;

@@ -22,7 +22,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
         mNoteText[i].setCharacterSize(20);
     }
 
-    std::ifstream inNote("pseudo/avltree/avltree.note");
+    std::ifstream inNote("pseudo/heap/heap.note");
     std::string tmp;
     cntNote = 0;
     while (getline(inNote, tmp))
@@ -32,7 +32,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     }
     inNote.close();
 
-    std::string nameButton[] = {"Init", "Insert", "Remove", "Search", "From File", "Randomize", "OK", "OK", "OK", "OK"};
+    std::string nameButton[] = {"Init", "Insert", "Delete", "Search", "From File", "Randomize", "OK", "OK", "OK", "OK"};
     for (int i = 0; i < 4; i++) // Init, Insert, Remove, Search
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
@@ -84,7 +84,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     step = -1;
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
-    mRoot = NULL;
+    mArr.clear();
 }
 
 int Heap::height(Node *root)
@@ -707,7 +707,7 @@ Heap::Node* Heap::init(Step &step, Node* root, std::string key, float x = 1100, 
 
 void Heap::finalInit(std::string filename)
 {
-    std::ifstream inFile(filename), inCode("pseudo/avltree/init.pseudo");
+    std::ifstream inFile(filename), inCode("pseudo/heap/init.pseudo");
     if (!inFile) return;
 
     if (firstTime == false)
@@ -840,7 +840,7 @@ Heap::Node* Heap::insert(Step &step, Node* root, std::string key, float x = 1100
 
 void Heap::finalInsert(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/insert.pseudo");
+    std::ifstream inCode("pseudo/heap/insert.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1024,7 +1024,7 @@ Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100
 
 void Heap::finalRemove(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/remove.pseudo");
+    std::ifstream inCode("pseudo/heap/remove.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1105,7 +1105,7 @@ void Heap::search(Step &step, Node* root, std::string key, float x = 1100, float
 
 void Heap::finalSearch(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/search.pseudo");
+    std::ifstream inCode("pseudo/heap/search.pseudo");
     if (firstTime == false)
     {
         inCode.close();
