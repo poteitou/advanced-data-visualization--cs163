@@ -34,6 +34,7 @@ struct Tree234
         int insertKey(std::string* key);
         std::string* removeKey();
         void removeKeyAtIndex(int index);
+        void insertChild(int index, Node* nodeChild);
         void connectChild(int index, Node* nodeChild);
         Node* disconnectChild(int index);
     };
@@ -48,7 +49,7 @@ struct Tree234
     void split(Node* &root, Node* node);
     bool rotate(Node* node);
     bool merge(Node* node);
-    void shrink(Node* &root, Node* node);
+    void shrink(Node* node);
     int height(Node* node);
     Node* copy(Node* root);
     struct Tree

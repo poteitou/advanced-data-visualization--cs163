@@ -484,27 +484,25 @@ int Tree234::Node::findKey(std::string key)
 
 int Tree234::Node::insertKey(std::string* key)
 {
+    numKeys++;
     for (int j = 2; j >= 0; j--)
     {
         if (keys[j] == nullptr)
             continue;
-        if (num(key) < num(keys[j]))
-        {
-            keys[j + 1] = keys[j];
-        }
-        else if (num(key) > num(keys[j]))
-        {
-            keys[j + 1] = key;
-            numKeys++;
-            return j + 1;
-        }
         else
         {
-            return -1;
+            if (num(key) < num(keys[j]))
+            {
+                keys[j + 1] = keys[j];
+            }
+            else 
+            {
+                keys[j + 1] = key;
+                return j + 1;
+            }
         }
     }
     keys[0] = key;
-    numKeys++;
     return 0;
 }
 
@@ -518,9 +516,12 @@ std::string* Tree234::Node::removeKey()
 
 void Tree234::Node::removeKeyAtIndex(int index)
 {
+    keys[index] = nullptr;
     for (int i = index; i < numKeys - 1; i++)
+    {
         keys[i] = keys[i + 1];
-    keys[numKeys - 1] = nullptr;
+        keys[i + 1] = nullptr;
+    }
     for (int i = 0; i < numKeys; i++) 
     {
         if(child[i] == nullptr) 
@@ -532,21 +533,37 @@ void Tree234::Node::removeKeyAtIndex(int index)
     numKeys--;
 }
 
+void Tree234::Node::insertChild(int index, Node* nodeChild)
+{
+    if (nodeChild != nullptr)
+    {
+        if (child[index]==NULL) connectChild(index, nodeChild);
+        else
+        {
+            for(int j = numKeys; j >= index; j--)
+            {
+                child[j + 1] = child[j];
+            }
+            connectChild(index, nodeChild);
+        }
+    }
+}
+
 void Tree234::Node::connectChild(int index, Node* nodeChild)
 {
-    child[index] = nodeChild;
-    if (nodeChild)
+    if (nodeChild != nullptr)
+    {
+        child[index] = nodeChild;
         nodeChild->parent = this;
+    }
 }
 
 Tree234::Node* Tree234::Node::disconnectChild(int index)
 {
     Node* temp = child[index];
-    if (temp)
-    {
+    if (temp != nullptr)
         temp->parent = nullptr;
-        child[index] = nullptr;
-    }
+    child[index] = nullptr;
     return temp;
 }
 
@@ -563,12 +580,15 @@ int Tree234::getNextChild(Node* node, std::string key)
 
 int Tree234::getIndexInPar(Node* node)
 {
-    Node *parent = node->parent;
+    Node* parent = node->parent;
     int index = 0;
     for (int i = 0; i <= parent->numKeys; i++)
         if (parent->child[i] == node)
-            return i;
-    return -1;
+        {
+            index = i;
+            break;
+        }
+    return index;
 }
 
 std::string* Tree234::successor(std::string key, Node *node)
@@ -589,10 +609,16 @@ std::string* Tree234::successor(std::string key, Node *node)
             std::string* succ = successor(key, node->child[j]);
             if (succ != nullptr)
                 return succ;
-            return node->keys[j];
+            else
+            {
+                if (num(node->keys[j]) > num(key))
+                    return node->keys[j];
+            }
         }
     }
-    return successor(key, node->child[node->numKeys]);
+    std::string* succ = successor(key, node->child[node->numKeys]);
+    if (succ != nullptr) return succ;
+    return nullptr;
 }
 
 void Tree234::split(Node* &root, Node* node)
@@ -622,10 +648,10 @@ void Tree234::split(Node* &root, Node* node)
         Node* temp = parent->disconnectChild(j);
         parent->connectChild(j + 1, temp);
     }
+    parent->connectChild(itemIndex + 1, newRight);
     newRight->insertKey(itemC);
     newRight->connectChild(0, child2);
     newRight->connectChild(1, child3);
-    parent->connectChild(itemIndex + 1, newRight);
 }
 
 bool Tree234::rotate(Node* node)
@@ -644,7 +670,7 @@ bool Tree234::rotate(Node* node)
             left->removeKeyAtIndex(left->numKeys - 1);
             node->insertKey(smallestKeyInRoot);
             parent->insertKey(highestKeyInSibling);
-            node->connectChild(0, child);
+            node->insertChild(0, child);
             return true;
         }
     }
@@ -716,7 +742,7 @@ bool Tree234::merge(Node* node)
     return true;
 }
 
-void Tree234::shrink(Node* &root, Node* node)
+void Tree234::shrink(Node* node)
 {
     Node* parent = node->parent;
     int index = getIndexInPar(node);
@@ -747,7 +773,7 @@ void Tree234::shrink(Node* &root, Node* node)
         newRoot->connectChild(2, node->child[0]);
         newRoot->connectChild(3, node->child[1]);
     }
-    root = newRoot;
+    mRoot = newRoot;
 }
 
 int Tree234::height(Node* root)
@@ -1040,45 +1066,49 @@ void Tree234::insert(std::string key)
 
 void Tree234::remove(Step &step, Node* node, std::string key, float x = 1100, float y = 225, float distance = 800)
 {
+    if (node->numKeys == 1 && node->parent != nullptr)
+    {
+        if (rotate(node));
+        else if (merge(node));
+        else shrink(node);
+    }
     if (node->isLeaf())
     {
         int index = node->findKey(key);
         node->removeKeyAtIndex(index);
+        return;
     }
-    else
+    // if (node->numKeys == 1 && node->parent != nullptr)
+    // {
+    //     if (rotate(node));
+    //     else if (merge(node));
+    //     else shrink(node);
+    // }
+    for (int j = 0; j < node->numKeys; j++)
     {
-        if (node->numKeys == 1 && node->parent != nullptr)
+        std::string* temp = node->keys[j];
+        if (num(temp) == num(key))
         {
-            if (rotate(node));
-            else if (merge(node));
-            else shrink(mRoot, node);
-        }
-        for (int j = 0; j < node->numKeys; j++)
-        {
-            std::string* temp = node->keys[j];
-            if (num(temp) == num(key))
+            std::string* nxt = successor(key, node);
+            if (nxt == nullptr)
             {
-                std::string* nxt = successor(key, node);
-                if (nxt == nullptr)
-                {
-                    node->removeKeyAtIndex(j);
-                    node->disconnectChild(j + 1);
-                    return;
-                }
-                else
-                {
-                    std::string x = *nxt;
-                    *nxt = *temp;
-                    *temp = x;
-                }
+                node->removeKeyAtIndex(j);
+                node->disconnectChild(j + 1);
+                return;
             }
-            else if (num(temp) > num(key))
+            else
             {
-                return remove(step, node->child[j], key);
+                std::string x = *nxt;
+                *nxt = *temp;
+                *temp = x;
             }
         }
-        return remove(step, node->child[node->numKeys], key);
+        else if (num(temp) > num(key))
+        {
+            return remove(step, node->child[j], key);
+        }
     }
+    return remove(step, node->child[node->numKeys], key);
 }
 
 void Tree234::finalRemove(std::string key)
