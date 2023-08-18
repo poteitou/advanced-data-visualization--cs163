@@ -370,7 +370,7 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
-        // updateInsert(mousePress, mousePosition, keyPress);
+        updateInsert(mousePress, mousePosition, keyPress);
         break;
     case 3: // Remove
         // updateRemove(mousePress, mousePosition, keyPress);
@@ -426,7 +426,6 @@ void Heap::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
     }
 }
 
-/*
 void Heap::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -434,11 +433,12 @@ void Heap::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPr
 
     mInputBar[2].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-        finalInsert(mInputBar[2].mValue);
+        insert(mInputBar[2].mValue);
     else
         firstTime = true;
 }
 
+/*
 void Heap::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -502,20 +502,6 @@ void Heap::heapify(Step &step, int i)
 }
 
 /*
-void Heap::insert(std::string Key)
-{
-    mArr.push_back(key);
- 
-    // Heapify the new node following a
-    // Bottom-up approach
-    int i = (int)mArr.size() - 1;
-    while (i != 0 && isLess(mArr[i], mArr[(i - 1) / 2], mMaxHeap))
-    {
-        swap(mArr[i], mArr[(i - 1) / 2]);
-        i = (i - 1) / 2;
-    }
-}
-
 void Heap::remove()
 {
     if (mArr.empty()) return;
@@ -594,9 +580,7 @@ void Heap::init(std::string filename)
     inCode.close();
 }
 
-/*
-
-void Heap::finalInsert(std::string key)
+void Heap::insert(std::string key)
 {
     std::ifstream inCode("pseudo/heap/insert.pseudo");
     if (firstTime == false)
@@ -629,7 +613,7 @@ void Heap::finalInsert(std::string key)
 
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
-    if (canInsert(key) == false)
+    if (std::find(mArr.begin(), mArr.end(), key) != mArr.end() || (int)mArr.size() >= 31)
     {
         mStep.push_back(tmpStep);
         tmpStep.mText = mRealText;
@@ -637,7 +621,49 @@ void Heap::finalInsert(std::string key)
         inCode.close();
         return;
     }
-    mRoot = insert(tmpStep, mRoot, key);
+    mStep.push_back(tmpStep);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    mArr.push_back(key);
+    reset(tmpStep.mTree, 0);
+    int id = findPoint(tmpStep.mTree, key);
+    tmpStep.mTree.mPoint[id].setHighLight(true);
+    mStep.push_back(tmpStep);
+    
+    int i = (int)mArr.size() - 1;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+    reset(tmpStep.mTree, 0);
+    int x = findPoint(tmpStep.mTree, mArr[i]);
+    tmpStep.mTree.mPoint[x].setHighLight(true);
+    mStep.push_back(tmpStep);
+    while (i != 0 && isLess(mArr[i], mArr[(i - 1) / 2], mMaxHeap))
+    {
+        tmpStep.mText = mRealText;
+        for (int id = 3; id < 7; id++)
+            tmpStep.mText[id].setFillColor(sf::Color(230, 100, 140));
+        reset(tmpStep.mTree, 0);
+        int id1 = findPoint(tmpStep.mTree, mArr[i]);
+        tmpStep.mTree.mPoint[id1].setHighLight(true);
+        int id2 = findPoint(tmpStep.mTree, mArr[(i - 1) / 2]);
+        tmpStep.mTree.mPoint[id2].setHighLight(true);
+        mStep.push_back(tmpStep);
+        swap(mArr[i], mArr[(i - 1) / 2]);
+        reset(tmpStep.mTree, 0);
+        id1 = findPoint(tmpStep.mTree, mArr[i]);
+        tmpStep.mTree.mPoint[id1].setHighLight(true);
+        id2 = findPoint(tmpStep.mTree, mArr[(i - 1) / 2]);
+        tmpStep.mTree.mPoint[id2].setHighLight(true);
+        mStep.push_back(tmpStep);
+        i = (i - 1) / 2;
+        tmpStep.mText = mRealText;
+        for (int id = 3; id < 8; id++) if (id != 6)
+            tmpStep.mText[id].setFillColor(sf::Color(230, 100, 140));
+        reset(tmpStep.mTree, 0);
+        id1 = findPoint(tmpStep.mTree, mArr[i]);
+        tmpStep.mTree.mPoint[id1].setHighLight(true);
+        mStep.push_back(tmpStep);
+    }
 
     reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
@@ -645,6 +671,7 @@ void Heap::finalInsert(std::string key)
     inCode.close();
 }
 
+/*
 Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     if (root == NULL) return root;
