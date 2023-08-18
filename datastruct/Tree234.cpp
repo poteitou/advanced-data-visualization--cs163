@@ -87,10 +87,28 @@ Tree234::Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) :
     mRoot = nullptr;
 }
 
+Tree234::Node::Node()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        keys[i] = nullptr;
+        child[i] = nullptr;
+    }
+    child[3] = nullptr;
+    parent = nullptr;
+    numKeys = 0;
+}
+
 int Tree234::num(std::string key)
 {
     if (key == "") return -1;
     return stoi(key);
+}
+
+int Tree234::num(std::string* key)
+{
+    if (key == nullptr) return -1;
+    return stoi(*key);
 }
 
 int Tree234::Node::num(std::string key)
@@ -99,16 +117,20 @@ int Tree234::Node::num(std::string key)
     return stoi(key);
 }
 
-Tree234::Node::Node()
+int Tree234::Node::num(std::string* key)
 {
-    for (int i = 0; i < 3; i++)
-    {
-        keys[i] = "";
-        child[i] = nullptr;
-    }
-    child[3] = nullptr;
-    parent = nullptr;
-    numKeys = 0;
+    if (key == nullptr) return -1;
+    return stoi(*key);
+}
+
+bool Tree234::Node::isFull()
+{
+    return numKeys == 3;
+}
+
+bool Tree234::Node::isLeaf()
+{
+    return child[0] == nullptr;
 }
 
 void Tree234::destroy(Node *&root)
@@ -117,6 +139,11 @@ void Tree234::destroy(Node *&root)
     {
         for (int i = 0; i <= root->numKeys; i++)
             destroy(root->child[i]);
+        for (int i = 0; i < root->numKeys; i++)
+        {
+            delete root->keys[i];
+            root->keys[i] = nullptr;
+        }
         delete root;
     }
     root = nullptr;
@@ -129,11 +156,11 @@ Block Tree234::createBlock(Node* root, float size = 50.f, int id = -1, float x =
         if (root->numKeys == 0)
             return Block(size, sf::Vector2f(x, y), "", "", "", mFont, highLight, pallete[mColor]);
         else if (root->numKeys == 1)
-            return Block(size, sf::Vector2f(x, y), "", root->keys[0], "", mFont, highLight, pallete[mColor]);
+            return Block(size, sf::Vector2f(x, y), "", *root->keys[0], "", mFont, highLight, pallete[mColor]);
         else if (root->numKeys == 2)
-            return Block(size, sf::Vector2f(x, y), root->keys[0], "", root->keys[1], mFont, highLight, pallete[mColor]);
+            return Block(size, sf::Vector2f(x, y), *root->keys[0], "", *root->keys[1], mFont, highLight, pallete[mColor]);
         else if (root->numKeys == 3)
-            return Block(size, sf::Vector2f(x, y), root->keys[0], root->keys[1], root->keys[2], mFont, highLight, pallete[mColor]);
+            return Block(size, sf::Vector2f(x, y), *root->keys[0], *root->keys[1], *root->keys[2], mFont, highLight, pallete[mColor]);
     }
     if (root->numKeys == 1)
         return createBlock(root->child[id], std::min(distance / 2 / 3 - 2, 50.f), -1, x - distance / 4 + id * distance / 2, y + 150, distance / 2, highLight);
@@ -447,16 +474,6 @@ void Tree234::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &ke
         firstTime = true;
 }
 
-bool Tree234::Node::isFull()
-{
-    return numKeys == 3;
-}
-
-bool Tree234::Node::isLeaf()
-{
-    return child[0] == nullptr;
-}
-
 int Tree234::Node::findKey(std::string key)
 {
     for (int i = 0; i < numKeys; i++)
@@ -465,11 +482,11 @@ int Tree234::Node::findKey(std::string key)
     return -1;
 }
 
-int Tree234::Node::insertKey(std::string key)
+int Tree234::Node::insertKey(std::string* key)
 {
     for (int j = 2; j >= 0; j--)
     {
-        if (keys[j] == "")
+        if (keys[j] == nullptr)
             continue;
         if (num(key) < num(keys[j]))
         {
@@ -491,10 +508,10 @@ int Tree234::Node::insertKey(std::string key)
     return 0;
 }
 
-std::string Tree234::Node::removeKey()
+std::string* Tree234::Node::removeKey()
 {
-    std::string temp = keys[numKeys - 1];
-    keys[numKeys - 1] = "";
+    std::string* temp = keys[numKeys - 1];
+    keys[numKeys - 1] = nullptr;
     numKeys--;
     return temp;
 }
@@ -503,7 +520,15 @@ void Tree234::Node::removeKeyAtIndex(int index)
 {
     for (int i = index; i < numKeys - 1; i++)
         keys[i] = keys[i + 1];
-    keys[numKeys - 1] = "";
+    keys[numKeys - 1] = nullptr;
+    for (int i = 0; i < numKeys; i++) 
+    {
+        if(child[i] == nullptr) 
+        {
+            child[i] = child[i + 1];
+            child[i + 1] = nullptr;
+        }
+    }
     numKeys--;
 }
 
@@ -536,7 +561,7 @@ int Tree234::getNextChild(Node* node, std::string key)
     return j;
 }
 
-int Tree234::getIndexInPar(Node *node)
+int Tree234::getIndexInPar(Node* node)
 {
     Node *parent = node->parent;
     int index = 0;
@@ -546,7 +571,7 @@ int Tree234::getIndexInPar(Node *node)
     return -1;
 }
 
-std::string Tree234::successor(std::string key, Node *node)
+std::string* Tree234::successor(std::string key, Node *node)
 {
     if (node->isLeaf())
     {
@@ -555,14 +580,14 @@ std::string Tree234::successor(std::string key, Node *node)
             if (num(node->keys[j]) > num(key))
                 return node->keys[j];
         }
-        return "";
+        return nullptr;
     }
     for (int j = 0; j < node->numKeys; j++)
     {
         if (num(key) < num(node->keys[j]))
         {
-            std::string succ = successor(key, node->child[j]);
-            if (succ != "")
+            std::string* succ = successor(key, node->child[j]);
+            if (succ != nullptr)
                 return succ;
             return node->keys[j];
         }
@@ -570,40 +595,12 @@ std::string Tree234::successor(std::string key, Node *node)
     return successor(key, node->child[node->numKeys]);
 }
 
-
-bool Tree234::swapSuccessor(std::string key, Node* &node, std::string value)
-{
-    if (node->isLeaf())
-    {
-        for (int j = 0; j < node->numKeys; j++)
-        {
-            if (num(node->keys[j]) > num(key))
-            {
-                node->keys[j] = value;
-                return true;
-            }
-        }
-        return false;
-    }
-    for (int j = 0; j < node->numKeys; j++)
-    {
-        if (num(key) < num(node->keys[j]))
-        {
-            if (swapSuccessor(key, node->child[j], value))
-                return true;
-            node->keys[j] = value;
-            return true;
-        }
-    }
-    return swapSuccessor(key, node->child[node->numKeys], value);
-}
-
 void Tree234::split(Node* &root, Node* node)
 {
     Node* parent;
     int itemIndex;
-    std::string itemC = node->removeKey();
-    std::string itemB = node->removeKey();
+    std::string* itemC = node->removeKey();
+    std::string* itemB = node->removeKey();
     Node* child2 = node->disconnectChild(2);
     Node* child3 = node->disconnectChild(3);
 
@@ -640,9 +637,9 @@ bool Tree234::rotate(Node* node)
         Node* left = parent->child[index - 1];
         if (left->numKeys > 1)
         {
-            std::string smallestKeyInRoot = parent->keys[0];
+            std::string* smallestKeyInRoot = parent->keys[0];
             parent->removeKeyAtIndex(0);
-            std::string highestKeyInSibling = left->keys[left->numKeys - 1];
+            std::string* highestKeyInSibling = left->keys[left->numKeys - 1];
             Node* child = left->disconnectChild(left->numKeys);
             left->removeKeyAtIndex(left->numKeys - 1);
             node->insertKey(smallestKeyInRoot);
@@ -656,9 +653,9 @@ bool Tree234::rotate(Node* node)
         Node* right = parent->child[index + 1];
         if (right->numKeys > 1)
         {
-            std::string highestKeyInRoot = parent->keys[parent->numKeys - 1];
+            std::string* highestKeyInRoot = parent->keys[parent->numKeys - 1];
             parent->removeKeyAtIndex(parent->numKeys - 1);
-            std::string smallestKeyInSibling = right->keys[0];
+            std::string* smallestKeyInSibling = right->keys[0];
             Node* child = right->disconnectChild(0);
             right->removeKeyAtIndex(0);
             node->insertKey(highestKeyInRoot);
@@ -682,9 +679,9 @@ bool Tree234::merge(Node* node)
         Node* right = parent->child[index + 1];
 
         Node* newNode = new Node();
-        std::string parentKey = parent->removeKey();
-        std::string nodeKey = node->keys[0];
-        std::string siblingKey = right->keys[0];
+        std::string* parentKey = parent->removeKey();
+        std::string* nodeKey = node->keys[0];
+        std::string* siblingKey = right->keys[0];
         newNode->insertKey(parentKey);
         newNode->insertKey(nodeKey);
         newNode->insertKey(siblingKey);
@@ -701,9 +698,9 @@ bool Tree234::merge(Node* node)
     {
         Node* left = parent->child[index - 1];
         Node* newNode = new Node();
-        std::string parentKey = parent->removeKey();
-        std::string nodeKey = node->keys[0];
-        std::string siblingKey = left->keys[0];
+        std::string* parentKey = parent->removeKey();
+        std::string* nodeKey = node->keys[0];
+        std::string* siblingKey = left->keys[0];
         newNode->insertKey(parentKey);
         newNode->insertKey(nodeKey);
         newNode->insertKey(siblingKey);
@@ -729,9 +726,9 @@ void Tree234::shrink(Node* &root, Node* node)
     else sibling = parent->child[0];
     Node* newRoot = new Node();
 
-    std::string parentKey = parent->keys[0];
-    std::string siblingKey = sibling->keys[0];
-    std::string nodeKey = node->keys[0];
+    std::string* parentKey = parent->keys[0];
+    std::string* siblingKey = sibling->keys[0];
+    std::string* nodeKey = node->keys[0];
     newRoot->insertKey(parentKey);
     newRoot->insertKey(siblingKey);
     newRoot->insertKey(nodeKey);
@@ -768,8 +765,8 @@ Tree234::Node* Tree234::copy(Node *root)
     if (root == nullptr)
         return nullptr;
     Node *temp = new Node();
-    for (int i = 0; i < 3; i++)
-        temp->keys[i] = root->keys[i];
+    for (int i = 0; i < root->numKeys; i++)
+        temp->keys[i] = new std::string(*root->keys[i]);
     for (int i = 0; i < 4; i++)
     {
         temp->child[i] = copy(root->child[i]);
@@ -788,6 +785,7 @@ bool Tree234::canInsert(std::string key)
         if (key == x) return false;
     Node* root = copy(mRoot);
     Node* cur = root;
+    std::string* keyPtr = new std::string(key);
     while (true)
     {
         if (cur->isFull())
@@ -807,7 +805,7 @@ bool Tree234::canInsert(std::string key)
             cur = cur->child[j];
         }
     }
-    cur->insertKey(key);
+    cur->insertKey(keyPtr);
     if (height(root) <= 3)
     {
         destroy(root);
@@ -862,6 +860,7 @@ void Tree234::init(std::string filename)
     {
         if (canInsert(key) == false)
             continue;
+        std::string* keyPtr = new std::string(key);
         mKeys.push_back(key);
         if (!mRoot) mRoot = new Node();
         Node *cur = mRoot;
@@ -893,7 +892,7 @@ void Tree234::init(std::string filename)
             else if (cur->isLeaf())
             {
                 mStep.push_back(tmpStep);
-                cur->insertKey(key);
+                cur->insertKey(keyPtr);
                 reset(tmpStep.mTree, mRoot);
                 tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
                 mStep.push_back(tmpStep);
@@ -917,6 +916,7 @@ void Tree234::init(std::string filename)
         reset(tmpStep.mTree, mRoot);
         mStep.push_back(tmpStep);
     }
+
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
@@ -975,6 +975,7 @@ void Tree234::insert(std::string key)
     tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
     tmpStep.mTree.mBlock.push_back(createBlock(cur, 50.f, id, x, y, distance, true));
     mStep.push_back(tmpStep);
+    std::string* keyPtr = new std::string(key);
 
     while (true)
     {   
@@ -1005,7 +1006,7 @@ void Tree234::insert(std::string key)
             tmpStep.mText = mRealText;
             tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
             mStep.push_back(tmpStep);
-            cur->insertKey(key);
+            cur->insertKey(keyPtr);
             reset(tmpStep.mTree, mRoot);
             tmpStep.mTree.mBlock.push_back(createBlock(id == -1 ? cur : cur->parent, 50.f, id, X, Y, DISTANCE, true));
             mStep.push_back(tmpStep);
@@ -1037,45 +1038,46 @@ void Tree234::insert(std::string key)
     inCode.close();
 }
 
-void Tree234::remove(Step &step, Node* &root, std::string key, float x = 1100, float y = 225, float distance = 800)
+void Tree234::remove(Step &step, Node* node, std::string key, float x = 1100, float y = 225, float distance = 800)
 {
-    if (root->isLeaf())
+    if (node->isLeaf())
     {
-        int index = root->findKey(key);
-        root->removeKeyAtIndex(index);
+        int index = node->findKey(key);
+        node->removeKeyAtIndex(index);
     }
     else
     {
-        if (root->numKeys == 1 && root->parent != nullptr)
+        if (node->numKeys == 1 && node->parent != nullptr)
         {
-            if (rotate(root));
-            else if (merge(root));
-            else shrink(mRoot, root);
+            if (rotate(node));
+            else if (merge(node));
+            else shrink(mRoot, node);
         }
-        for (int j = 0; j < root->numKeys; j++)
+        for (int j = 0; j < node->numKeys; j++)
         {
-            std::string temp = root->keys[j];
+            std::string* temp = node->keys[j];
             if (num(temp) == num(key))
             {
-                std::string nxt = successor(key, root);
-                if (nxt == "")
+                std::string* nxt = successor(key, node);
+                if (nxt == nullptr)
                 {
-                    root->removeKeyAtIndex(j);
-                    root->disconnectChild(j + 1);
+                    node->removeKeyAtIndex(j);
+                    node->disconnectChild(j + 1);
                     return;
                 }
                 else
                 {
-                    swapSuccessor(key, root, temp);
-                    root->keys[j] = nxt;
+                    std::string x = *nxt;
+                    *nxt = *temp;
+                    *temp = x;
                 }
             }
             else if (num(temp) > num(key))
             {
-                return remove(step, root->child[j], key);
+                return remove(step, node->child[j], key);
             }
         }
-        return remove(step, root->child[root->numKeys], key);
+        return remove(step, node->child[node->numKeys], key);
     }
 }
 

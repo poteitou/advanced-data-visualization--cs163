@@ -20,18 +20,19 @@ struct Tree234
     Tree234(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     struct Node
     {
-        std::string keys[3];
+        std::string* keys[3];
         Node* parent;
         Node* child[4];
         int numKeys; 
 
         Node();
         int num(std::string key);
+        int num(std::string* key);
         bool isFull();
         bool isLeaf();
         int findKey(std::string key);
-        int insertKey(std::string key);
-        std::string removeKey();
+        int insertKey(std::string* key);
+        std::string* removeKey();
         void removeKeyAtIndex(int index);
         void connectChild(int index, Node* nodeChild);
         Node* disconnectChild(int index);
@@ -40,10 +41,10 @@ struct Tree234
     std::vector<std::string> mKeys;
 
     int num(std::string key);
+    int num(std::string* key);
     int getNextChild(Node* node, std::string key);
     int getIndexInPar(Node* node);
-    std::string successor(std::string key, Node *node);
-    bool swapSuccessor(std::string key, Node* &node, std::string value);
+    std::string* successor(std::string key, Node *node);
     void split(Node* &root, Node* node);
     bool rotate(Node* node);
     bool merge(Node* node);
@@ -84,7 +85,7 @@ struct Tree234
     bool canInsert(std::string key);
     void init(std::string fileName);
     void insert(std::string key);
-    void remove(Step &step, Node* &root, std::string key, float x, float y, float distance);
+    void remove(Step &step, Node* node, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
     void search(std::string key);
     void draw();
