@@ -3,7 +3,7 @@
 Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWindow(window), mFont(font), mFontCode(fontCode), mType(0), mSmallType(0)
 {
     mButton.resize(10);
-    mInputBar.resize(5);
+    mInputBar.resize(3);
     mButtonImg.resize(12);
     mRealText.resize(9);
     mNoteText.resize(3);
@@ -49,12 +49,10 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Pop bar + OK
-    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), 0);
-    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
+    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(225, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // GetTop bar + OK
-    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(99)), 0);
-    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
+    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(225, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
     std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause", "blue", "purple", "pink", "home"};
@@ -274,8 +272,6 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
             mSmallType = 0;
             firstTime = true;
             mInputBar[2].reset(std::to_string(Rand(99)));
-            mInputBar[3].reset(std::to_string(Rand(99)));
-            mInputBar[4].reset(std::to_string(Rand(99)));
         }
 
     if (mousePress && mButtonImg[5].mHovered)
@@ -455,9 +451,8 @@ void Heap::updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPr
     char tempkeyPress;
     mButton[3].mHovered = true;
 
-    mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
-    if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        finalGetTop(mInputBar[4].mValue);
+    if (mButton[9].setMouseOver(mousePosition) && mousePress)
+        finalGetTop();
     else
         firstTime = true;
 }
@@ -712,9 +707,7 @@ void Heap::pop()
     mStep.push_back(tmpStep);
     mArr[0] = mArr[(int)mArr.size() - 1];
     reset(tmpStep.mTree, 0);
-    id1 = findPoint(tmpStep.mTree, mArr[0]);
     tmpStep.mTree.mPoint[id1].setHighLight(true);
-    id2 = findPoint(tmpStep.mTree, mArr[(int)mArr.size() - 1]);
     tmpStep.mTree.mPoint[id2].setHighLight(true);
     mStep.push_back(tmpStep);
     mArr.pop_back();
@@ -724,7 +717,7 @@ void Heap::pop()
     mStep.push_back(tmpStep);
     tmpStep.mText = mRealText;
     tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
-    // heapify(0);
+    heapify(tmpStep, 0);
 
     reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
@@ -732,6 +725,7 @@ void Heap::pop()
     inCode.close();
 }
 
+/*
 void Heap::getTop(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     if (root == NULL) 
@@ -769,7 +763,6 @@ void Heap::getTop(Step &step, Node* root, std::string key, float x = 1100, float
         return;
     }
 }
-
 void Heap::finalGetTop(std::string key)
 {
     std::ifstream inCode("pseudo/heap/getTop.pseudo");
@@ -856,11 +849,9 @@ void Heap::draw()
         mButton[7].draw(mWindow);
         break;
     case 3: // Pop
-        mInputBar[3].draw(mWindow);
         mButton[8].draw(mWindow);
         break;
     case 4: // GetTop
-        mInputBar[4].draw(mWindow);
         mButton[9].draw(mWindow);
         break;
     default:
