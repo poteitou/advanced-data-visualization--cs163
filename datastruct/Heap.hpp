@@ -52,16 +52,15 @@ struct Heap
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updatePush(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updatePop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     void heapify(Step &step, int i);
     void init(std::string fileName);
-    void insert(std::string key);
+    void push(std::string key);
     void pop();
-    // void getTop(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalGetTop(std::string key);
+    void getTop();
     void draw();
 
     sf::RenderWindow &mWindow;

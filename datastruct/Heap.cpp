@@ -32,8 +32,8 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     }
     inNote.close();
 
-    std::string nameButton[] = {"Init", "Push", "Pop", "Get Top", "From File", "Randomize", "OK", "OK", "OK", "OK"};
-    for (int i = 0; i < 4; i++) // Init, Insert, Pop, GetTop
+    std::string nameButton[] = {"Init", "Push", "Pop", "Top", "From File", "Randomize", "OK", "OK", "OK", "OK"};
+    for (int i = 0; i < 4; i++) // Init, Push, Pop, GetTop
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
@@ -44,7 +44,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, std::to_string(Rand(99)), 0);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
-    // Insert bar + OK
+    // Push bar + OK
     mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
@@ -365,14 +365,14 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     case 1: // Init
         updateInit(mousePress, mousePosition, keyPress);
         break;
-    case 2: // Insert
-        updateInsert(mousePress, mousePosition, keyPress);
+    case 2: // Push
+        updatePush(mousePress, mousePosition, keyPress);
         break;
     case 3: // Pop
         updatePop(mousePress, mousePosition, keyPress);
         break;
     case 4: // GetTop
-        // updateGetTop(mousePress, mousePosition, keyPress);
+        updateGetTop(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -422,14 +422,14 @@ void Heap::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
     }
 }
 
-void Heap::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+void Heap::updatePush(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[1].mHovered = true;
 
     mInputBar[2].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-        insert(mInputBar[2].mValue);
+        push(mInputBar[2].mValue);
     else
         firstTime = true;
 }
@@ -445,19 +445,16 @@ void Heap::updatePop(bool mousePress, sf::Vector2i mousePosition, char &keyPress
         firstTime = true;
 }
 
-/*
 void Heap::updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[3].mHovered = true;
 
     if (mButton[9].setMouseOver(mousePosition) && mousePress)
-        finalGetTop();
+        getTop();
     else
         firstTime = true;
 }
-
-*/
 
 void Heap::heapify(Step &step, int i)
 {
@@ -494,15 +491,6 @@ void Heap::heapify(Step &step, int i)
         heapify(step, smallest);
     }
 }
-/*
-
-void Heap::getTop()
-{
-    if (mArr.empty()) return;
-    std::cout << mArr[0] << '\n';
-}
-
-*/
 
 void Heap::init(std::string filename)
 {
@@ -564,9 +552,9 @@ void Heap::init(std::string filename)
     inCode.close();
 }
 
-void Heap::insert(std::string key)
+void Heap::push(std::string key)
 {
-    std::ifstream inCode("pseudo/heap/insert.pseudo");
+    std::ifstream inCode("pseudo/heap/push.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -725,45 +713,7 @@ void Heap::pop()
     inCode.close();
 }
 
-/*
-void Heap::getTop(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL) 
-    {
-        step.mText = mRealText;
-        step.mText[2].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        mStep.push_back(step);
-        return;
-    }
-    addPoint(step.mTree, x, y, mArr[id], true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(mArr[id]))
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
-        getTop(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(mArr[id]))
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-        getTop(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        addPoint(step.mTree, x, y, mArr[id], true);
-        mStep.push_back(step);
-        return;
-    }
-}
-void Heap::finalGetTop(std::string key)
+void Heap::getTop()
 {
     std::ifstream inCode("pseudo/heap/getTop.pseudo");
     if (firstTime == false)
@@ -785,24 +735,31 @@ void Heap::finalGetTop(std::string key)
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, 0);
-    tmpStep.mTime = 0;
-    tmpStep.mText = mRealText;
-    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(tmpStep);
 
     step = 0;
     mRun = 1;
 
+    if (mArr.empty()) 
+    {
+        reset(tmpStep.mTree, 0);
+        tmpStep.mTime = 0;
+        tmpStep.mText = mRealText;
+        tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
+        inCode.close();
+        return;
+    }
+    reset(tmpStep.mTree, 0);
+    int id1 = findPoint(tmpStep.mTree, mArr[0]);
+    tmpStep.mTree.mPoint[id1].setHighLight(true);
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
-
-    getTop(tmpStep, mRoot, key);
     inCode.close();
 }
 
-*/
 void Heap::draw()
 {
     sf::Text textImple;
@@ -844,7 +801,7 @@ void Heap::draw()
             break;
         }
         break;
-    case 2: // Insert
+    case 2: // Push
         mInputBar[2].draw(mWindow);
         mButton[7].draw(mWindow);
         break;

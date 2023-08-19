@@ -1,0 +1,2 @@
+if this Heap->empty(): return
+return this->arr[0]
