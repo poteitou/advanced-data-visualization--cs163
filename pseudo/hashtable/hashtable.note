@@ -1,2 +1,3 @@
 Notes:  Value domain: 0 -> 99
 Max number of nodes in a LinkedList: 5
+Max size of HashTable: 25
