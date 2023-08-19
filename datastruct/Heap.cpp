@@ -57,11 +57,11 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     // Play button
     std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause", "blue", "purple", "pink", "home"};
     for (int i = 0; i < 5; i++)
-        mButtonImg[i] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + i * 55, 350), nameImg[i] + ".png", nameImg[i] + "Hover.png");
+        mButtonImg[i] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + i * 55, 405), nameImg[i] + ".png", nameImg[i] + "Hover.png");
 
-    mButtonImg[5] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 6 * 55, 350), nameImg[5] + ".png", nameImg[5] + "Hover.png");
-    mButtonImg[6] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 9 * 55 - 5, 350), nameImg[6] + ".png", nameImg[6] + "Hover.png");
-    mButtonImg[7] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + 2 * 55, 350), nameImg[7] + ".png", nameImg[7] + "Hover.png");
+    mButtonImg[5] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 6 * 55, 405), nameImg[5] + ".png", nameImg[5] + "Hover.png");
+    mButtonImg[6] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(115 + 9 * 55 - 5, 405), nameImg[6] + ".png", nameImg[6] + "Hover.png");
+    mButtonImg[7] = ButtonImg(sf::Vector2f(50, 50), sf::Vector2f(100 + 2 * 55, 405), nameImg[7] + ".png", nameImg[7] + "Hover.png");
 
     // Color button
     pallete[0] = sf::Color(50, 140, 200);
@@ -76,7 +76,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     // speed image
     mTexture.loadFromFile("resources/images/speed" + std::to_string(1) + ".png");
     mSpriteSpeed.setTexture(mTexture, true);
-    mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 350));
+    mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 405));
 
     firstTime = firstTimeSpeed = true;
     step = -1;
@@ -763,7 +763,7 @@ void Heap::draw()
     textImple.setStyle(sf::Text::Bold);
     textImple.setFont(mFont);
     textImple.setFillColor(sf::Color(230, 100, 140));
-    textImple.setPosition(100 + 555 / 2 - textImple.getLocalBounds().width / 2, 450 - 35 / 2);
+    textImple.setPosition(100 + 555 / 2 - textImple.getLocalBounds().width / 2, 505 - 35 / 2);
     mWindow.draw(textImple);
 
     for (int i = 0; i < cntNote; i++)

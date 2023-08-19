@@ -69,6 +69,16 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
 
 void Screen::draw()
 {
+    if (mData == 4)
+    {
+        mRect[1].setSize(sf::Vector2f(555, 295));
+        mRect[1].setPosition(sf::Vector2f(100, 555));
+    }
+    else
+    {
+        mRect[1].setSize(sf::Vector2f(555, 350));
+        mRect[1].setPosition(sf::Vector2f(100, 500));
+    }
     if (mData != 0) for (int i = 0; i < 3; i++) mWindow.draw(mRect[i]);
     switch(mData)
     {
