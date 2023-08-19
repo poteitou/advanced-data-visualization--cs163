@@ -110,12 +110,12 @@ void Heap::destroyNode(Tree &tree, int id = 0, float x = 1100, float y = 175, fl
         tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, mArr[id], false));
         if (id * 2 + 1 < (int)mArr.size())
         {
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, false));
+            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, true));
             destroyNode(tree, id * 2 + 1, x - distance, y + 100, distance / 2);
         }
         if (id * 2 + 2 < (int)mArr.size())
         {
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
+            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, true));
             destroyNode(tree, id * 2 + 2, x + distance, y + 100, distance / 2);
         }
     }
@@ -128,12 +128,12 @@ void Heap::beautify(Tree &tree, int id = 0, float x = 1100, float y = 175, float
         tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), mArr[id], mFont, false, pallete[mColor]));
         if (id * 2 + 1 < (int)mArr.size())
         {
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100), pallete[mColor], false));
+            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100), pallete[mColor], true));
             beautify(tree, id * 2 + 1, x - distance, y + 100, distance / 2);
         }
         if (id * 2 + 2 < (int)mArr.size())
         {
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100), pallete[mColor], false));
+            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100), pallete[mColor], true));
             beautify(tree, id * 2 + 2, x + distance, y + 100, distance / 2);
         }
     }
@@ -179,16 +179,6 @@ int Heap::addPoint(Tree &tree, float x, float y, std::string key, bool highLight
     }
     tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), key, mFont, highLight, pallete[mColor]));
     return tree.mPoint.size() - 1;
-}
-
-int Heap::findLine(Tree &tree, float x, float y, float u, float v)
-{
-    for (int i = 0; i < tree.mLine.size(); i++)
-    {
-        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v)) return i;
-        else if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y)) return i;
-    }
-    return -1;
 }
 
 int Heap::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
@@ -248,10 +238,7 @@ void Heap::setColor()
     for (int i = 0; i < mStep.size(); i++)
     {
         for (int id = 0; id < mStep[i].mTree.mLine.size(); id++)
-        {
-            if (mStep[i].mTree.mLine[id].mColor != sf::Color::Black)
-                mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
-        }
+            mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
         for (int id = 0; id < mStep[i].mTree.mPoint.size(); id++)
         {
             if (mStep[i].mTree.mPoint[id].mColor != sf::Color::Black)
@@ -372,6 +359,7 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         mType = mSmallType = mData = 0;
         mColor = 0;
         mArr.clear();
+        mNoteText[0].setString("");
         mMaxHeap = false;
         mStep.clear();
         mButtonImg[11].mHovered = false;
@@ -550,7 +538,7 @@ void Heap::init(std::string filename)
     firstTime = false;
     step = 0;
     mRun = 1;
-
+    
     mArr.clear();
     mStep.clear();
     Step tmpStep;

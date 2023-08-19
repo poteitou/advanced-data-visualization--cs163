@@ -44,7 +44,6 @@ struct Heap
 
     int findPoint(Tree &tree, std::string key);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
-    int findLine(Tree &tree, float x, float y, float u, float v);
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
