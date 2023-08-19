@@ -742,10 +742,12 @@ void Heap::pop()
     tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
     reset(tmpStep.mTree, 0);
     mStep.push_back(tmpStep);
-    
-    tmpStep.mText = mRealText;
-    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
-    heapify(tmpStep, 0);
+    if (!mArr.empty())
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+        heapify(tmpStep, 0);
+    }
 
     reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
