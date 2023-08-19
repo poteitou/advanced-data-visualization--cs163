@@ -1,4 +1,3 @@
-input(value)
 if this Heap->empty(): return
 this->arr[0] = this->arr[this->size() - 1];
 this->arr->pop_back()

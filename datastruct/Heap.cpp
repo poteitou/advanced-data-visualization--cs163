@@ -665,11 +665,6 @@ void Heap::pop()
     }
 
     tmpStep.cntCode = cnt;
-    reset(tmpStep.mTree, 0);
-    tmpStep.mTime = 0;
-    tmpStep.mText = mRealText;
-    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(tmpStep);
 
     step = 0;
     mRun = 1;
@@ -677,7 +672,7 @@ void Heap::pop()
     if (mArr.empty()) 
     {
         tmpStep.mText = mRealText;
-        tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+        tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(tmpStep);
         reset(tmpStep.mTree, 0);
         tmpStep.mText = mRealText;
@@ -686,7 +681,7 @@ void Heap::pop()
         return;
     }
     tmpStep.mText = mRealText;
-    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     reset(tmpStep.mTree, 0);
     int id1 = findPoint(tmpStep.mTree, mArr[0]);
     tmpStep.mTree.mPoint[id1].setHighLight(true);
@@ -700,11 +695,11 @@ void Heap::pop()
     mStep.push_back(tmpStep);
     mArr.pop_back();
     tmpStep.mText = mRealText;
-    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
     reset(tmpStep.mTree, 0);
     mStep.push_back(tmpStep);
     tmpStep.mText = mRealText;
-    tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
     heapify(tmpStep, 0);
 
     reset(tmpStep.mTree, 0);
