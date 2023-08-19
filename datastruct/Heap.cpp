@@ -32,8 +32,8 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     }
     inNote.close();
 
-    std::string nameButton[] = {"Init", "Insert", "Delete", "Get Top", "From File", "Randomize", "OK", "OK", "OK", "OK"};
-    for (int i = 0; i < 4; i++) // Init, Insert, Remove, GetTop
+    std::string nameButton[] = {"Init", "Push", "Pop", "Get Top", "From File", "Randomize", "OK", "OK", "OK", "OK"};
+    for (int i = 0; i < 4; i++) // Init, Insert, Pop, GetTop
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
@@ -48,7 +48,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
-    // Remove bar + OK
+    // Pop bar + OK
     mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), 0);
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
@@ -372,8 +372,8 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
         break;
-    case 3: // Remove
-        // updateRemove(mousePress, mousePosition, keyPress);
+    case 3: // Pop
+        updatePop(mousePress, mousePosition, keyPress);
         break;
     case 4: // GetTop
         // updateGetTop(mousePress, mousePosition, keyPress);
@@ -438,19 +438,18 @@ void Heap::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPr
         firstTime = true;
 }
 
-/*
-void Heap::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
+void Heap::updatePop(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[2].mHovered = true;
 
-    mInputBar[3].update(mousePress, mousePosition, keyPress, 2);
-    if (mButton[8].setMouseOver(mousePosition) && mousePress && mInputBar[3].mValue != "")
-        finalRemove(mInputBar[3].mValue);
+    if (mButton[8].setMouseOver(mousePosition) && mousePress)
+        pop();
     else
         firstTime = true;
 }
 
+/*
 void Heap::updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -500,17 +499,7 @@ void Heap::heapify(Step &step, int i)
         heapify(step, smallest);
     }
 }
-
 /*
-void Heap::remove()
-{
-    if (mArr.empty()) return;
-
-    // Replace root with last element
-    mArr[0] = mArr[(int)mArr.size() - 1];
-    mArr.pop_back();
-    heapify(0);
-}
 
 void Heap::getTop()
 {
@@ -640,7 +629,7 @@ void Heap::insert(std::string key)
     while (i != 0 && isLess(mArr[i], mArr[(i - 1) / 2], mMaxHeap))
     {
         tmpStep.mText = mRealText;
-        for (int id = 3; id < 7; id++)
+        for (int id = 4; id < 7; id++)
             tmpStep.mText[id].setFillColor(sf::Color(230, 100, 140));
         reset(tmpStep.mTree, 0);
         int id1 = findPoint(tmpStep.mTree, mArr[i]);
@@ -657,7 +646,7 @@ void Heap::insert(std::string key)
         mStep.push_back(tmpStep);
         i = (i - 1) / 2;
         tmpStep.mText = mRealText;
-        for (int id = 3; id < 8; id++) if (id != 6)
+        for (int id = 4; id < 8; id++) if (id != 6)
             tmpStep.mText[id].setFillColor(sf::Color(230, 100, 140));
         reset(tmpStep.mTree, 0);
         id1 = findPoint(tmpStep.mTree, mArr[i]);
@@ -671,131 +660,9 @@ void Heap::insert(std::string key)
     inCode.close();
 }
 
-/*
-Heap::Node* Heap::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+void Heap::pop()
 {
-    if (root == NULL) return root;
-    addPoint(step.mTree, x, y, mArr[id], true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(mArr[id]))
-    {
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = remove(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(mArr[id]))
-    {
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = remove(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else
-    {
-        // node with only one child or no child
-        if((root->left == NULL) || (root->right == NULL))
-        {
-            Node *temp = root->left ? root->left : root->right;
- 
-            // No child case
-            if (temp == NULL)
-            {
-                temp = root;
-                root = NULL;
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 100, x, y, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 100, x, y, true));
-            }
-            else // One child case
-            {
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 100, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 100, true));
-                *root = *temp; // Copy the contents of the non-empty child
-            }
-            step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, key));
-            delete temp;
-            temp = NULL;
-        }
-        else
-        {
-            // node with two children: Get the inorder
-            // successor (smallest in the right subtree)
-            addLine(step.mTree, x, y, x + distance, y + 100, true);
-            mStep.push_back(step);
-            Node* temp = minValueNode(step, root->right, x + distance, y + 100, distance / 2);
-            mStep.push_back(step);
- 
-            // Copy the inorder successor's data to this node
-            resetSub(step.mTree, root, x, y, distance);
-            int id = findPoint(step.mTree, mArr[id]);
-            // mArr[id] = temp->key;
-            step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), mArr[id], mFont, true, pallete[mColor]);
-            mStep.push_back(step);
- 
-            // Delete the inorder successor
-            if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-            root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
-            mArr[id] = temp->key;
-        }
-    }
- 
-    // If the tree had only one node then return
-    if (root == NULL) return root;
- 
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, mArr[id], true);
-    step.mText = mRealText;
-    step.mText[2].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(step);
- 
-    // Left Left Case
-    if (balance > 1 && getBalance(root->left) >= 0)
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        return rightRotate(step, root, x, y, distance);
-    }
- 
-    // Right Right Case
-    if (balance < -1 && getBalance(root->right) <= 0)
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        return leftRotate(step, root, x, y, distance);
-    }
-
-    // Left Right Case
-    if (balance > 1 && getBalance(root->left) < 0)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[6].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
- 
-    // Right Left Case
-    if (balance < -1 && getBalance(root->right) > 0)
-    {
-        step.mText = mRealText;
-        step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[8].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
-
-void Heap::finalRemove(std::string key)
-{
-    std::ifstream inCode("pseudo/heap/remove.pseudo");
+    std::ifstream inCode("pseudo/heap/pop.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -824,11 +691,40 @@ void Heap::finalRemove(std::string key)
     step = 0;
     mRun = 1;
 
+    if (mArr.empty()) 
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+        reset(tmpStep.mTree, 0);
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
+        inCode.close();
+        return;
+    }
     tmpStep.mText = mRealText;
-    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    reset(tmpStep.mTree, 0);
+    int id1 = findPoint(tmpStep.mTree, mArr[0]);
+    tmpStep.mTree.mPoint[id1].setHighLight(true);
+    int id2 = findPoint(tmpStep.mTree, mArr[(int)mArr.size() - 1]);
+    tmpStep.mTree.mPoint[id2].setHighLight(true);
     mStep.push_back(tmpStep);
-
-    mRoot = remove(tmpStep, mRoot, key);
+    mArr[0] = mArr[(int)mArr.size() - 1];
+    reset(tmpStep.mTree, 0);
+    id1 = findPoint(tmpStep.mTree, mArr[0]);
+    tmpStep.mTree.mPoint[id1].setHighLight(true);
+    id2 = findPoint(tmpStep.mTree, mArr[(int)mArr.size() - 1]);
+    tmpStep.mTree.mPoint[id2].setHighLight(true);
+    mStep.push_back(tmpStep);
+    mArr.pop_back();
+    tmpStep.mText = mRealText;
+    tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+    reset(tmpStep.mTree, 0);
+    mStep.push_back(tmpStep);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+    // heapify(0);
 
     reset(tmpStep.mTree, 0);
     tmpStep.mText = mRealText;
@@ -959,7 +855,7 @@ void Heap::draw()
         mInputBar[2].draw(mWindow);
         mButton[7].draw(mWindow);
         break;
-    case 3: // Remove
+    case 3: // Pop
         mInputBar[3].draw(mWindow);
         mButton[8].draw(mWindow);
         break;

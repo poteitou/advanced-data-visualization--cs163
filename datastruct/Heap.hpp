@@ -53,14 +53,13 @@ struct Heap
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updatePop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     void heapify(Step &step, int i);
     void init(std::string fileName);
     void insert(std::string key);
-    // Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalRemove(std::string key);
+    void pop();
     // void getTop(Step &step, Node* root, std::string key, float x, float y, float distance);
     // void finalGetTop(std::string key);
     void draw();

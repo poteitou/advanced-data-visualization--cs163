@@ -1,4 +1,4 @@
 this Heap = new Heap()
 for value in list:
     push(value) to this
-heapify(this)
+this->heapify()
