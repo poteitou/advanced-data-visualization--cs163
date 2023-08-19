@@ -55,12 +55,14 @@ struct Heap
     void updatePush(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updatePop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateGetTop(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateGetSize(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     void heapify(Step &step, int i);
     void init(std::string fileName);
     void push(std::string key);
     void pop();
     void getTop();
+    void getSize();
     void draw();
 
     sf::RenderWindow &mWindow;
