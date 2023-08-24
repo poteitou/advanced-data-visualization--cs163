@@ -855,13 +855,20 @@ void Heap::changeType()
     step = 0;
     mRun = 1;
 
+    std::string tmp = "Change type of this Heap (min heap <-> max heap)";
+    mRealText[0].setString(tmp);
+    mRealText[0].setFillColor(sf::Color::Black);
+    tmpStep.mTime = 0;
+    tmpStep.cntCode = 1;
+    tmpStep.mText = mRealText;
+    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
+    mStep.push_back(tmpStep);
+
     mMaxHeap = !mMaxHeap;
     for (int i = (int)mArr.size() / 2 - 1; i >= 0; i--)
         heapify(tmpStep, i);
 
     reset(tmpStep.mTree, 0);
-    tmpStep.mTime = 0;
-    tmpStep.cntCode = 0;
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
 }
