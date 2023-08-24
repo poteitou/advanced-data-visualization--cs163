@@ -2,7 +2,7 @@
 
 Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWindow(window), mFont(font), mFontCode(fontCode), mType(0), mSmallType(0)
 {
-    mButton.resize(12);
+    mButton.resize(13);
     mInputBar.resize(3);
     mButtonImg.resize(12);
     mRealText.resize(9);
@@ -38,7 +38,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     }
     inNote.close();
 
-    std::string nameButton[] = {"Init", "Push", "Pop", "Top", "From File", "Randomize", "OK", "OK", "OK", "OK", "Size", "OK"};
+    std::string nameButton[] = {"Init", "Push", "Pop", "Top", "From File", "Randomize", "OK", "OK", "OK", "OK", "Size", "OK", "Change Type"};
     for (int i = 0; i < 4; i++) // Init, Push, Pop, GetTop, GetSize
         mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
     mButton[10] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + 4 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[10], mFont, 22);
@@ -64,6 +64,9 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     // GetSize bar + OK
     mButton[11] = Button(sf::Vector2f(75, 50), sf::Vector2f(225, 100 + 4 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[11], mFont, 22);
 
+    // ChangeType bar + OK
+    mButton[12] = Button(sf::Vector2f(210, 50), sf::Vector2f(115 + 6 * 55, 100 + 4 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[12], mFont, 22);
+
     // Play button
     std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause", "blue", "purple", "pink", "home"};
     for (int i = 0; i < 5; i++)
@@ -88,7 +91,7 @@ Heap::Heap(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mSpriteSpeed.setTexture(mTexture, true);
     mSpriteSpeed.setPosition(sf::Vector2f(115 + 7 * 55, 405));
 
-    firstTime = firstTimeSpeed = true;
+    firstTime = firstTimeSpeed = firstTimeChange = true;
     step = -1;
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
@@ -253,6 +256,7 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     for (int i = 0; i < 4; i++)
         mButton[i].setMouseOver(mousePosition);
     mButton[10].setMouseOver(mousePosition);
+    mButton[12].setMouseOver(mousePosition);
     for (int i = 0; i < 7; i++)
         mButtonImg[i].setMouseOver(mousePosition);
     if (mRun == 0)
@@ -278,6 +282,17 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         firstTime = true;
         mInputBar[2].reset(std::to_string(Rand(99)));
     }
+
+    if (mousePress && mButton[12].mHovered)
+    {
+        mType = 5 + 1;
+        mSmallType = 0;
+        mInputBar[2].reset(std::to_string(Rand(99)));
+        mNoteText[0].setString("");
+        changeType();
+    }
+    else
+        firstTimeChange = true;
 
     if (mousePress && mButtonImg[5].mHovered)
     {
@@ -353,7 +368,7 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
 
     if (mousePress && mButtonImg[11].mHovered)
     {
-        firstTime = firstTimeSpeed = true;
+        firstTime = firstTimeSpeed = firstTimeChange = true;
         step = -1;
         mRun = mSpeed = 1;
         mType = mSmallType = mData = 0;
@@ -382,6 +397,8 @@ void Heap::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         break;
     case 5: // GetSize
         updateGetSize(mousePress, mousePosition, keyPress);
+        break;
+    case 6: // ChangeType
         break;
     default:
         break;
@@ -826,6 +843,29 @@ void Heap::getSize()
     inCode.close();
 }
 
+void Heap::changeType()
+{
+    if (firstTime == false)
+        return;
+    firstTime = false;
+
+    mStep.clear();
+    Step tmpStep;
+
+    step = 0;
+    mRun = 1;
+
+    mMaxHeap = !mMaxHeap;
+    for (int i = (int)mArr.size() / 2 - 1; i >= 0; i--)
+        heapify(tmpStep, i);
+
+    reset(tmpStep.mTree, 0);
+    tmpStep.mTime = 0;
+    tmpStep.cntCode = 0;
+    tmpStep.mText = mRealText;
+    mStep.push_back(tmpStep);
+}
+
 void Heap::draw()
 {
     sf::Text textImple;
@@ -842,6 +882,7 @@ void Heap::draw()
     for (int i = 0; i < 4; i++)
         mButton[i].draw(mWindow);
     mButton[10].draw(mWindow);
+    mButton[12].draw(mWindow);
     for (int i = 0; i < 7; i++)
         mButtonImg[i].draw(mWindow);
     if (mRun == 0)
@@ -880,6 +921,9 @@ void Heap::draw()
         break;
     case 5: // GetSize
         mButton[11].draw(mWindow);
+        break;
+    case 6: // ChangeType
+        mButton[12].draw(mWindow);
         break;
     default:
         break;

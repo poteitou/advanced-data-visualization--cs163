@@ -62,6 +62,7 @@ struct Heap
     void pop();
     void getTop();
     void getSize();
+    void changeType();
     void draw();
 
     sf::RenderWindow &mWindow;
@@ -81,7 +82,7 @@ struct Heap
     int mRun, mSpeed;
     int mType, mSmallType;
     float mDt;
-    bool firstTime, firstTimeSpeed;
+    bool firstTime, firstTimeSpeed, firstTimeChange;
 };
 
 #endif // HEAP_HPP
