@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
 Screen::Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode)
-    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode), mTree234(mWindow, mFont, mFontCode), mHeap(mWindow, mFont, mFontCode)
+    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode), mTree234(mWindow, mFont, mFontCode), mHeap(mWindow, mFont, mFontCode), mTrie(mWindow, mFont, mFontCode)
 {
     mFont1.loadFromFile("resources/fonts/childtitle.ttf");
     textTitle.setFont(mFont1);
@@ -53,9 +53,9 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
     case 4: // Heap
         mHeap.update(mousePress, mousePosition, keyPress, mData, dt);
         break;
-    // case 5: // Circular linked list
-    //     mCircularLinkedList.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    case 5: // Trie
+        mTrie.update(mousePress, mousePosition, keyPress, mData, dt);
+        break;
     // case 6: // Stack
     //     mStack.update(mousePress, mousePosition, keyPress, mData, dt);
     //     break;
@@ -101,9 +101,10 @@ void Screen::draw()
         textTitle.setString("Heap");
         mHeap.draw();
         break;
-    // case 5: // Circular linked list
-    //     mCircularLinkedList.draw();
-    //     break;
+    case 5: // Trie
+        textTitle.setString("Trie");
+        mTrie.draw();
+        break;
     // case 6: // Stack
     //     mStack.draw();
     //     break;

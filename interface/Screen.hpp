@@ -7,8 +7,7 @@
 #include "../datastruct/AVLTree.hpp"
 #include "../datastruct/Tree234.hpp"
 #include "../datastruct/Heap.hpp"
-// #include "../datastruct/CircularLinkedList.hpp"
-// #include "../datastruct/Stack.hpp"
+#include "../datastruct/Trie.hpp"
 // #include "../datastruct/Queue.hpp"
 
 struct Screen
@@ -26,9 +25,7 @@ struct Screen
     AVLTree mAVLTree;
     Tree234 mTree234;
     Heap mHeap;
-    // DoublyLinkedList mDoublyLinkedList;
-    // CircularLinkedList mCircularLinkedList;
-    // Stack mStack;
+    Trie mTrie;
     // Queue mQueue;
     int mData;
 };
