@@ -20,10 +20,10 @@ struct Trie
     Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     struct Node
     {
+        Node* child[26];
         std::string key;
-        Node *left;
-        Node *right;
-        int height;
+        bool isEndOfWord;
+        int height, numChild;
     };
     Node *mRoot;
     struct Tree
@@ -43,18 +43,15 @@ struct Trie
     };
 
     int height(Node *node);
-    int getBalance(Node *node);
-    Node* newNode(std::string key);
+    Node* newNode();
     Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
-    void preOrder(Node *root);
     void beautify(Tree &tree, Node *root, float x, float y, float distance);
     void reset(Tree &tree, Node *root);
     void resetSub(Tree &tree, Node *root, float x, float y, float distance);
 
-    int getIndex(Node *root, int indexRoot, std::string key);
-    int findPoint(Tree &tree, std::string key);
+    int findPoint(Tree &tree, float x, float y);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
     int findLine(Tree &tree, float x, float y, float u, float v);
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
@@ -68,9 +65,7 @@ struct Trie
     void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    Node* rightRotate(Node *Y);
-    Node* leftRotate(Node *X);
-    Node* insert(Node* node, std::string key);
+    void* insert(Node* root, std::string key);
     bool canInsert(std::string key);
     Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
     Node *leftRotate(Step &step, Node *X, float x, float y, float distance);

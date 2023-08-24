@@ -93,80 +93,72 @@ int Trie::height(Node *root)
     return root->height;
 }
 
-int Trie::getBalance(Node *root)
-{
-    if (root == NULL) return 0;
-    return height(root->left) - height(root->right);
-}
-
-Trie::Node* Trie::newNode(std::string key)
+Trie::Node* Trie::newNode()
 {
     Node* node = new Node();
-    node->key = key;
-    node->left = NULL;
-    node->right = NULL;
-    node->height = 1; // leaf;
-    return node;
+	node->isEndOfWord = false;
+    node->height = 1;
+    node->numChild = 0;
+    node->key = "";
+
+	for (int i = 0; i < 26; i++)
+		node->child[i] = NULL;
+    
+	return node;
 }
 
 Trie::Node* Trie::copy(Node* root)
 {
-    if (root == NULL)
-        return NULL;
-    Node* temp = new Node();
-    temp->key = root->key;
-    temp->height = root->height;
-    temp->left = copy(root->left);
-    temp->right = copy(root->right);
-    return temp;
+    if (root == NULL) return NULL;
+    Node* node = newNode();
+    node->isEndOfWord = root->isEndOfWord;
+    node->height = root->height;
+    node->numChild = root->numChild;
+    node->key = root->key;
+    for (int i = 0; i < 26; i++)
+        node->child[i] = copy(root->child[i]);
+    return node;
 }
 
 void Trie::destroy(Node* &root)
 {
     if (root)
     {
-        destroy(root->left);
-        destroy(root->right);
+        for (int i = 0; i < 26; i++)
+            destroy(root->child[i]);
         delete root;
     }
     root = NULL;
 }
 
-void Trie::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, float distance = 200)
+void Trie::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, float distance = 800)
 {
     if (root)
     {
         tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, root->key, false));
-        if (root->left)
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, false));
-        if (root->right)
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
-        destroyNode(tree, root->left, x - distance, y + 100, distance / 2);
-        destroyNode(tree, root->right, x + distance, y + 100, distance / 2);
+
+        for (int i = 0, j = 0; i < 26; i++)
+            if (root->child[i])
+            {
+                tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance + j * distance / numChild + distance / numChild / 2, y + 50, false));
+                destroyNode(tree, root->child[i], x - distance + j * distance / numChild + distance / numChild / 2, y + 50, distance / 2);
+                j++;
+            }
     }
 }
 
-void Trie::preOrder(Node *root)
-{
-    if (root != NULL)
-    {
-        // cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
-    }
-}
-
-void Trie::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
+void Trie::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 800)
 {
     if (root)
     {
         tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, false, pallete[mColor]));
-        if (root->left)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100), pallete[mColor], false));
-        if (root->right)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100), pallete[mColor], false));
-        beautify(tree, root->left, x - distance, y + 100, distance / 2);
-        beautify(tree, root->right, x + distance, y + 100, distance / 2);
+        for (int i = 0, j = 0; i < 26; i++)
+            if (root->child[i])
+            {
+                tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance + j * distance / numChild + distance / numChild / 2, y + 50), pallete[mColor], false));
+                beautify(tree, root->child[i], x - distance + j * distance / numChild + distance / numChild / 2, y + 50, distance / 2);
+                j++;
+            }
     }
 }
 
@@ -177,7 +169,7 @@ void Trie::reset(Tree &tree, Node *root)
     beautify(tree, root);
 }
 
-void Trie::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
+void Trie::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 800)
 {
     destroyNode(tree, root, x, y, distance);
     beautify(tree, root, x, y, distance);
@@ -191,21 +183,10 @@ void Trie::Tree::draw(sf::RenderWindow &mWindow)
         mPoint[i].draw(mWindow);
 }
 
-int Trie::getIndex(Node *root, int indexRoot, std::string key)
-{
-    if (root == NULL)
-        return indexRoot;
-    if (stoi(key) < stoi(root->key))
-        return getIndex(root->left, indexRoot * 2 + 1, key);
-    else if (stoi(key) > stoi(root->key))
-        return getIndex(root->right, indexRoot * 2 + 2, key);
-    return indexRoot;
-}
-
-int Trie::findPoint(Tree &tree, std::string key)
+int Trie::findPoint(Tree &tree, float x, float y)
 {
     for (int i = 0; i < tree.mPoint.size(); i++)
-        if (tree.mPoint[i].mValue == key) return i;
+        if (tree.mPoint[i].mPos.x == x && tree.mPoint[i].mPos.y == y) return i;
     return -1;
 }
 
@@ -213,7 +194,7 @@ int Trie::addPoint(Tree &tree, float x, float y, std::string key, bool highLight
 {
     for (int i = 0; i < tree.mPoint.size(); i++)
     {
-        if (tree.mPoint[i].mValue == key)
+        if (tree.mPoint[i].mPos.x == x && tree.mPoint[i].mPos.y == y)
         {
             tree.mPoint[i].setHighLight(highLight);
             return i;
@@ -539,120 +520,32 @@ Trie::Node* Trie::leftRotate(Node *X)
     return Y;
 }
 
-Trie::Node* Trie::insert(Node *root, std::string key)
+void::Node* Trie::insert(Node* root, std::string key)
 {
-    if (root == NULL)
-        return newNode(key);
-    if (key < root->key)
-        root->left = insert(root->left, key);
-    else if (key > root->key)
-        root->right = insert(root->right, key);
-    else
-        return root;
+    struct Node* pTemp = root;
 
-    root->height = 1 + std::max(height(root->left), height(root->right));
-    int balance = getBalance(root);
+	for (int i = 0; i < key.length(); i++) {
+		int index = key[i] - 'a';
+		if (!pTemp->child[index])
+			pTemp->child[index] = newNode();
 
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(root);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(root);
-    if (balance > 1 && key > root->left->key)
-    {
-        root->left = leftRotate(root->left);
-        return rightRotate(root);
-    }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(root->right);
-        return leftRotate(root);
-    }
+		pTemp = pTemp->child[index];
+	}
 
-    return root;
+	// mark last node as leaf
+	pTemp->isEndOfWord = true;
 }
 
 bool Trie::canInsert(std::string key)
 {
     Node* root = copy(mRoot);
     root = insert(root, key);
-    bool res = root->height <= 5;
+    bool res = root->height <= 10;
     destroy(root);
     return res;
 }
 
-/*
-     y                               x
-    / \     Right Rotation          / \
-   x   T3   - - - - - - - >        T1  y 
-  / \       < - - - - - - -           / \
- T1  T2     Left Rotation           T2  T3  
-*/
-
-Trie::Node* Trie::rightRotate(Step &step, Node *Y, float x, float y, float distance)
-{
-    addPoint(step.mTree, x, y, Y->key, true);
-	Node *X = Y->left;
-    addPoint(step.mTree, x - distance, y + 100, X->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
-	Node *T2 = X->right;
-    if (T2) 
-    {
-        addPoint(step.mTree, x - distance + distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true);
-    }
-    mStep.push_back(step);
-    if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
-    mStep.push_back(step);
-    if (T2)
-    {
-        addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true);
-        mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true));
-    }
-    destroyNode(step.mTree, Y, x, y, distance);
-
-	X->right = Y;
-	Y->left = T2;
-	Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-	X->height = std::max(height(X->left), height(X->right)) + 1;
-	return X;
-}
-
-Trie::Node* Trie::leftRotate(Step &step, Node *X, float x, float y, float distance)
-{
-    addPoint(step.mTree, x, y, X->key, true);
-    Node *Y = X->right;
-    addPoint(step.mTree, x + distance, y + 100, Y->key, true);
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
-    Node *T2 = Y->left;
-    if (T2) 
-    {
-        addPoint(step.mTree, x + distance - distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true);
-    }
-    mStep.push_back(step);
-    if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
-    mStep.push_back(step);
-    if (T2)
-    {
-        addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true);
-        mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true));
-    }
-    destroyNode(step.mTree, X, x, y, distance);
-
-    Y->left = X;
-    X->right = T2;
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-    return Y;
-}
-
-Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL)
     {
@@ -666,13 +559,13 @@ Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, 
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
+        addLine(step.mTree, x, y, x - distance, y + 50, true);
+        root->left = insert(step, root->left, key, x - distance, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
+        addLine(step.mTree, x, y, x + distance, y + 50, true);
+        root->right = insert(step, root->right, key, x + distance, y + 50, distance / 2);
     }
     else return root;
 
@@ -689,15 +582,15 @@ Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, 
         return leftRotate(step, root, x, y, distance);
     if (balance > 1 && key > root->left->key)
     {
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
+        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
         mStep.push_back(step);
         return rightRotate(step, root, x, y, distance);
     }
     if (balance < -1 && key < root->right->key)
     {
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
+        root->right = rightRotate(step, root->right, x + distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->right, x + distance, y + 50, distance / 2);
         mStep.push_back(step);
         return leftRotate(step, root, x, y, distance);
     }
@@ -759,7 +652,7 @@ void Trie::finalInit(std::string filename)
     inCode.close();
 }
 
-Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL)
     {
@@ -772,13 +665,13 @@ Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
+        addLine(step.mTree, x, y, x - distance, y + 50, true);
+        root->left = insert(step, root->left, key, x - distance, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
+        addLine(step.mTree, x, y, x + distance, y + 50, true);
+        root->right = insert(step, root->right, key, x + distance, y + 50, distance / 2);
     }
     else // Equal keys are not allowed in BST
     {
@@ -814,8 +707,8 @@ Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
+        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
         step.mText = mRealText;
         step.mText[6].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
@@ -827,8 +720,8 @@ Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100
     {
         step.mText = mRealText;
         step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
+        root->right = rightRotate(step, root->right, x + distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->right, x + distance, y + 50, distance / 2);
         step.mText = mRealText;
         step.mText[8].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
@@ -896,12 +789,12 @@ Trie::Node* Trie::minValueNode(Step &step, Node* node, float x, float y, float d
         return node;
     }
     addPoint(step.mTree, x, y, node->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
+    addLine(step.mTree, x, y, x - distance, y + 50, true);
     mStep.push_back(step);
-    return minValueNode(step, node->left, x - distance, y + 100, distance / 2);
+    return minValueNode(step, node->left, x - distance, y + 50, distance / 2);
 }
 
-Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL) return root;
     addPoint(step.mTree, x, y, root->key, true);
@@ -909,13 +802,13 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
 
     if (stoi(key) < stoi(root->key))
     {
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = remove(step, root->left, key, x - distance, y + 100, distance / 2);
+        if (root->left) addLine(step.mTree, x, y, x - distance, y + 50, true);
+        root->left = remove(step, root->left, key, x - distance, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = remove(step, root->right, key, x + distance, y + 100, distance / 2);
+        if (root->right) addLine(step.mTree, x, y, x + distance, y + 50, true);
+        root->right = remove(step, root->right, key, x + distance, y + 50, distance / 2);
     }
     else
     {
@@ -929,16 +822,16 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
             {
                 temp = root;
                 root = NULL;
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 100, x, y, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 100, x, y, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 50, x, y, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 50, x, y, true));
             }
             else // One child case
             {
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 100, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 100, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 50, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 50, true));
                 *root = *temp; // Copy the contents of the non-empty child
             }
-            step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, key));
+            step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, x, y));
             delete temp;
             temp = NULL;
         }
@@ -946,21 +839,21 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
         {
             // node with two children: Get the inorder
             // successor (smallest in the right subtree)
-            addLine(step.mTree, x, y, x + distance, y + 100, true);
+            addLine(step.mTree, x, y, x + distance, y + 50, true);
             mStep.push_back(step);
-            Node* temp = minValueNode(step, root->right, x + distance, y + 100, distance / 2);
+            Node* temp = minValueNode(step, root->right, x + distance, y + 50, distance / 2);
             mStep.push_back(step);
  
             // Copy the inorder successor's data to this node
             resetSub(step.mTree, root, x, y, distance);
-            int id = findPoint(step.mTree, root->key);
+            int id = findPoint(step.mTree, x, y);
             // root->key = temp->key;
             step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), root->key, mFont, true, pallete[mColor]);
             mStep.push_back(step);
  
             // Delete the inorder successor
-            if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-            root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
+            if (root->right) addLine(step.mTree, x, y, x + distance, y + 50, true);
+            root->right = remove(step, root->right, temp->key, x + distance, y + 50, distance / 2);
             root->key = temp->key;
         }
     }
@@ -998,8 +891,8 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
+        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
         step.mText = mRealText;
         step.mText[6].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
@@ -1011,8 +904,8 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
     {
         step.mText = mRealText;
         step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
+        root->right = rightRotate(step, root->right, x + distance, y + 50, distance / 2);
+        resetSub(step.mTree, root->right, x + distance, y + 50, distance / 2);
         step.mText = mRealText;
         step.mText[8].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
@@ -1065,7 +958,7 @@ void Trie::finalRemove(std::string key)
     inCode.close();
 }
 
-void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
+void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL) 
     {
@@ -1082,15 +975,15 @@ void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float
     {
         step.mText = mRealText;
         step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
-        search(step, root->left, key, x - distance, y + 100, distance / 2);
+        if (root->left) addLine(step.mTree, x, y, x - distance, y + 50, true);
+        search(step, root->left, key, x - distance, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
-        search(step, root->right, key, x + distance, y + 100, distance / 2);
+        if (root->right) addLine(step.mTree, x, y, x + distance, y + 50, true);
+        search(step, root->right, key, x + distance, y + 50, distance / 2);
     }
     else
     {
