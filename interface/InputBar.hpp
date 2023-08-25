@@ -20,7 +20,7 @@ struct InputBar
     sf::Color mDefaultColor;
     sf::Color mHoveredColor;
     sf::Color mSelectedColor;
-    int mType; // 0: number, 1: digit, 2: filename
+    int mType; // 0: number, 1: digit, 2: filename, 3: trie
     bool mHovered;
     bool mSelected;
     int mFontSize;

@@ -70,13 +70,13 @@ void InputBar::update(bool mousePress, sf::Vector2i mousePosition, char &keyPres
     }
     else if ((int)mValue.size() < capacity)
     {
-        if (keyPress == ' ' && (mType == 2 || capacity <= 2 || mValue.empty() || mValue.back() == ' '))
+        if (keyPress == ' ' && (mType >= 2 || capacity <= 10 || mValue.empty() || mValue.back() == ' '))
         {
-            // Do not allow the first character to be a space or 2 spaces, space in filename mode, space in 2-digit mode
+            // Do not allow the first character to be a space or 2 spaces, space in filename mode, trie mode, space in 2-digit mode
             keyPress = '$';
             return;
         }
-        if (keyPress == '.' && mType <= 1)
+        if (keyPress == '.' && mType != 2)
         {
             // '.' in !filename mode
             keyPress = '$';
@@ -85,6 +85,12 @@ void InputBar::update(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         if (mType == 0 && !(('0' <= keyPress && keyPress <= '9') || keyPress == ' '))
         {
             // only digit in digit mode
+            keyPress = '$';
+            return;
+        }
+        if (mType == 3 && !(('a' <= keyPress && keyPress <= 'z') || keyPress == ' '))
+        {
+            // only lowercase in trie mode
             keyPress = '$';
             return;
         }

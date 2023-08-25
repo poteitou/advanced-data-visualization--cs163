@@ -41,19 +41,19 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
 
     // Init bar + OK
     mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "datafile.data", 2);
-    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, randString(0), 3);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, randString(0), 2);
+    mInputBar[2] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, randString(0), 3);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Remove bar + OK
-    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(0), 0);
+    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(0), 3);
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // Search bar + OK
-    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(0), 0);
+    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(0), 3);
     mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
