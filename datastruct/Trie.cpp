@@ -45,15 +45,15 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[2] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, randString(10), 2);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Remove bar + OK
-    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(10), 0);
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // Search bar + OK
-    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(10), 0);
     mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
@@ -254,6 +254,15 @@ int Trie::Rand(int MAX)
     return rand() % MAX;
 }
 
+std::string Trie::randString(int size = 0)
+{
+    if (!size) size = Rand(10);
+    std::string res = "";
+    for (int i = 0; i < size; i++)
+        res += char(Rand(26) + 97);
+    return res;
+}
+
 void Trie::randomize()
 {
     std::ofstream outFile("data/randomize.data");
@@ -312,9 +321,9 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
             mType = i + 1;
             mSmallType = 0;
             firstTime = true;
-            mInputBar[2].reset(std::to_string(Rand(99)));
-            mInputBar[3].reset(std::to_string(Rand(99)));
-            mInputBar[4].reset(std::to_string(Rand(99)));
+            mInputBar[2].reset(randString(10));
+            mInputBar[3].reset(randString(10));
+            mInputBar[4].reset(randString(10));
         }
 
     if (mousePress && mButtonImg[5].mHovered)
@@ -509,7 +518,7 @@ bool Trie::insert(Node* root, std::string key)
     Node* pTemp = root;
 
     float distance = 800;
-    if ((int)key.size() > 10) return false;
+    if ((int)key.size() >= 10) return false;
 	for (int i = 0; i < key.size(); i++) 
     {
 		int index = key[i] - 'a';
@@ -647,7 +656,7 @@ void Trie::finalInit(std::string filename)
 
 void Trie::insert(std::string key)
 {
-    std::ifstream inCode("pseudo/trie/insert.pseudo");
+    std::ifstream inCode("pseudo/avl/insert.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -657,6 +666,7 @@ void Trie::insert(std::string key)
 
     mStep.clear();
     Step tmpStep;
+    if (!mRoot) mRoot = newNode();
 
     int cnt = 0;
     std::string tmp;
@@ -675,7 +685,6 @@ void Trie::insert(std::string key)
 
     step = 0;
     mRun = 1;
-
     tmpStep.mText = mRealText;
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     if (canInsert(key) == false)
@@ -693,22 +702,25 @@ void Trie::insert(std::string key)
 	for (int i = 0; i < key.size(); i++) 
     {
 		int index = key[i] - 'a';
-        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
 		if (!pTemp->child[index])
 		{
             pTemp->child[index] = newNode();
             pTemp->numChild++;
         }
+        reset(tmpStep.mTree, mRoot);
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        addLine(tmpStep.mTree, x, y, x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 50, true);
         int cnt = -1;
         for (int j = 0; j <= index; j++)
             if (pTemp->child[j]) cnt++;
-        addLine(tmpStep.mTree, x, y, x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 50, true);
         x = x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
         y = y + 50;
         distance = distance / (pTemp->numChild);
 		pTemp = pTemp->child[index];
         pTemp->key = key[i];
         addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        tmpStep.mText = mRealText;
+        mStep.push_back(tmpStep);
 	}
 	pTemp->isEndOfWord = true;
 

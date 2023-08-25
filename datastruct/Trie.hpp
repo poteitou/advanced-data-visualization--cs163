@@ -58,6 +58,7 @@ struct Trie
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
+    std::string randString(int size);
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
