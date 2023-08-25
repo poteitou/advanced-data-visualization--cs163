@@ -52,7 +52,7 @@ Graph::Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWi
     mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(225, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // Dijkstra bar + OK
-    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, std::to_string(Rand(10)), 0);
     mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
@@ -231,8 +231,8 @@ void Graph::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, 
             mSmallType = 0;
             firstTime = true;
             mInputBar[2].reset(std::to_string(Rand(10)));
-            mInputBar[3].reset(std::to_string(Rand(99)));
-            mInputBar[4].reset(std::to_string(Rand(99)));
+            mInputBar[3].reset(std::to_string(Rand(10)));
+            mInputBar[4].reset(std::to_string(Rand(10)));
         }
 
     if (mousePress && mButtonImg[5].mHovered)
@@ -332,7 +332,7 @@ void Graph::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, 
         updateMst(mousePress, mousePosition, keyPress);
         break;
     case 4: // Dijkstra
-        // updateDijkstra(mousePress, mousePosition, keyPress);
+        updateDijkstra(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -401,20 +401,17 @@ void Graph::updateMst(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         firstTime = true;
 }
 
-/*
 void Graph::updateDijkstra(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[3].mHovered = true;
 
-    mInputBar[4].update(mousePress, mousePosition, keyPress, 2);
+    mInputBar[4].update(mousePress, mousePosition, keyPress, 1);
     if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        finalDijkstra(mInputBar[4].mValue);
+        dijkstra(mInputBar[4].mValue);
     else
         firstTime = true;
 }
-
-*/
 
 void Graph::init(std::string filename)
 {
@@ -611,46 +608,7 @@ void Graph::mst()
     inCode.close();
 }
 
-/*
-void Graph::dijkstra(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL) 
-    {
-        step.mText = mRealText;
-        step.mText[2].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        mStep.push_back(step);
-        return;
-    }
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addEdge(step.mTree, x, y, x - distance, y + 100, true);
-        dijkstra(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right) addEdge(step.mTree, x, y, x + distance, y + 100, true);
-        dijkstra(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        addPoint(step.mTree, x, y, root->key, true);
-        mStep.push_back(step);
-        return;
-    }
-}
-
-void Graph::finalDijkstra(std::string key)
+void Graph::dijkstra(std::string key)
 {
     std::ifstream inCode("pseudo/graph/dijkstra.pseudo");
     if (firstTime == false)
@@ -664,32 +622,55 @@ void Graph::finalDijkstra(std::string key)
     Step tmpStep;
 
     int cnt = 0;
-    std::string tmp;
-    while (getline(inCode, tmp))
-    {
-        mRealText[cnt].setString(tmp);
-        mRealText[cnt++].setFillColor(sf::Color::Black);
-    }
 
-    tmpStep.cntCode = cnt;
     reset(tmpStep.mTree);
     tmpStep.mTime = 0;
-    tmpStep.mText = mRealText;
-    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     step = 0;
     mRun = 1;
 
-    tmpStep.mText = mRealText;
-    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    int s = stoi(key);
+    if (!(0 <= s && s < mVertex))
+    {
+        inCode.close();
+        return;
+    }
+    int d[mVertex];
+    for (int i = 0; i < mVertex; i++)
+        d[i] = 1000000000;
+ 
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int> >, std::greater<std::pair<int, int> > > pq;
+ 
+    addPoint(tmpStep.mTree, s, true);
     mStep.push_back(tmpStep);
+    d[s] = 0;
+    pq.push(std::make_pair(0, s));
+    while (!pq.empty()) 
+    {
+        std::pair<int, int> u = pq.top();
+        pq.pop();
 
-    dijkstra(tmpStep, mRoot, key);
+        if (d[u.second] != u.first) continue;
+ 
+        for (int i = 0; i < mAdj[u.second].size(); i++) 
+        {
+            int v = mAdj[u.second][i].second;
+            int w = mAdj[u.second][i].first;
+            if (d[v] > d[u.second] + w) 
+            {
+                addPoint(tmpStep.mTree, u.second, true);
+                addPoint(tmpStep.mTree, v, true);
+                addEdge(tmpStep.mTree, u.second, v, w, true);
+                mStep.push_back(tmpStep);
+                d[v] = d[u.second] + w;
+                pq.push(std::make_pair(d[v], v));
+            }
+        }
+    }
     inCode.close();
 }
 
-*/ 
 void Graph::draw()
 {
     sf::Text textImple;

@@ -53,14 +53,14 @@ struct Graph
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateConnected(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateMst(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateDijkstra(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateDijkstra(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     void init(std::string fileName);
     void connected(std::string key);
     int findLab(int u);
     bool join(int u, int v);
     void mst();
-    // void dijkstra(std::string key);
+    void dijkstra(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;
