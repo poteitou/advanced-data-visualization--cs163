@@ -212,20 +212,20 @@ void Heap::Step::draw(sf::RenderWindow &mWindow)
 
 int Heap::Rand(int MAX)
 {
-    srand(time(NULL));
-    return rand() % MAX;
+    std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    return rng() % MAX;
 }
 
 void Heap::randomize()
 {
     std::ofstream outFile("data/randomize.data");
 
-    srand(time(NULL));
-    int randSize = rand() % 9 + 1;
+    std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    int randSize = rng() % 9 + 1;
     std::string temp = "";
     for (int i = 0; i < randSize; i++)
     {
-        std::string value = std::to_string(rand() % 100);
+        std::string value = std::to_string(rng() % 100);
         outFile << value << ' ';
         temp += value;
         if (i < randSize - 1)

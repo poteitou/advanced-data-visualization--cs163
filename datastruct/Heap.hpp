@@ -11,6 +11,8 @@
 #include <string.h>
 #include <fstream>
 #include <ctime>
+#include <random>
+#include <chrono>
 #include <cstdlib>
 #include <utility>
 #include <iostream>

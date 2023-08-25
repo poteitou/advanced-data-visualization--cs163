@@ -46,15 +46,15 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
 
     // Insert bar + OK
     mInputBar[2] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, randString(10), 2);
-    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
+    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Remove bar + OK
     mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(10), 0);
-    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
+    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // Search bar + OK
     mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(10), 0);
-    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
+    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
     std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause", "blue", "purple", "pink", "home"};
@@ -148,8 +148,8 @@ void Trie::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, f
         for (int i = 0, j = 0; i < 26; i++)
             if (root->child[i])
             {
-                tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, false));
-                destroyNode(tree, root->child[i], x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
+                tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance / 2 + j * distance / root->numChild + distance / root->numChild / 2, y + 50, false));
+                destroyNode(tree, root->child[i], x - distance / 2 + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
                 j++;
             }
     }
@@ -163,8 +163,8 @@ void Trie::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float
         for (int i = 0, j = 0; i < 26; i++)
             if (root->child[i])
             {
-                tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50), pallete[mColor], false));
-                beautify(tree, root->child[i], x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
+                tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance / 2 + j * distance / root->numChild + distance / root->numChild / 2, y + 50), pallete[mColor], false));
+                beautify(tree, root->child[i], x - distance / 2 + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
                 j++;
             }
     }
@@ -250,8 +250,8 @@ void Trie::Step::draw(sf::RenderWindow &mWindow)
 
 int Trie::Rand(int MAX)
 {
-    srand(time(NULL));
-    return rand() % MAX;
+    std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+    return rng() % MAX;
 }
 
 std::string Trie::randString(int size = 0)
@@ -560,8 +560,8 @@ Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, 
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 50, true);
-        root->left = insert(step, root->left, key, x - distance, y + 50, distance / 2);
+        addLine(step.mTree, x, y, x - distance / 2, y + 50, true);
+        root->left = insert(step, root->left, key, x - distance / 2, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
@@ -583,8 +583,8 @@ Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, 
         return leftRotate(step, root, x, y, distance);
     if (balance > 1 && key > root->left->key)
     {
-        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
+        root->left = leftRotate(step, root->left, x - distance / 2, y + 50, distance / 2);
+        resetSub(step.mTree, root->left, x - distance / 2, y + 50, distance / 2);
         mStep.push_back(step);
         return rightRotate(step, root, x, y, distance);
     }
@@ -709,11 +709,11 @@ void Trie::insert(std::string key)
         }
         reset(tmpStep.mTree, mRoot);
         addPoint(tmpStep.mTree, x, y, pTemp->key, true);
-        addLine(tmpStep.mTree, x, y, x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 50, true);
+        addLine(tmpStep.mTree, x, y, x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 50, true);
         int cnt = -1;
         for (int j = 0; j <= index; j++)
             if (pTemp->child[j]) cnt++;
-        x = x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
+        x = x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
         y = y + 50;
         distance = distance / (pTemp->numChild);
 		pTemp = pTemp->child[index];
@@ -739,8 +739,8 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
 
     if (stoi(key) < stoi(root->key))
     {
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 50, true);
-        root->left = remove(step, root->left, key, x - distance, y + 50, distance / 2);
+        if (root->left) addLine(step.mTree, x, y, x - distance / 2, y + 50, true);
+        root->left = remove(step, root->left, key, x - distance / 2, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
@@ -759,12 +759,12 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
             {
                 temp = root;
                 root = NULL;
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 50, x, y, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance / 2 * 2, y - 50, x, y, true));
                 step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 50, x, y, true));
             }
             else // One child case
             {
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 50, true));
+                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance / 2, y + 50, true));
                 step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 50, true));
                 *root = *temp; // Copy the contents of the non-empty child
             }
@@ -828,8 +828,8 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
+        root->left = leftRotate(step, root->left, x - distance / 2, y + 50, distance / 2);
+        resetSub(step.mTree, root->left, x - distance / 2, y + 50, distance / 2);
         step.mText = mRealText;
         step.mText[6].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
@@ -912,8 +912,8 @@ void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float
     {
         step.mText = mRealText;
         step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 50, true);
-        search(step, root->left, key, x - distance, y + 50, distance / 2);
+        if (root->left) addLine(step.mTree, x, y, x - distance / 2, y + 50, true);
+        search(step, root->left, key, x - distance / 2, y + 50, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
