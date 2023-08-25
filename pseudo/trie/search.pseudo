@@ -7,3 +7,4 @@ for i in [0, size(key) - 1]:
         return NOT_FOUND
     temp = temp->child[index]
 if temp and pTemp->isEndWord: return FOUND
+else: return NOT_FOUND

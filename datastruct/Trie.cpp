@@ -926,6 +926,13 @@ void Trie::search(std::string key)
         tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(tmpStep);
     }
+    else
+    {
+        reset(tmpStep.mTree, mRoot);
+        tmpStep.mText = mRealText;
+        tmpStep.mText[9].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+    }
     inCode.close();
 }
 
