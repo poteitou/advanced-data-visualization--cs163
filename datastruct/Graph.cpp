@@ -83,41 +83,7 @@ Graph::Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWi
     step = -1;
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
-    mRoot = NULL;
-}
-
-int Graph::height(Node *root)
-{
-    if (root == NULL) return 0;
-    return root->height;
-}
-
-int Graph::getBalance(Node *root)
-{
-    if (root == NULL) return 0;
-    return height(root->left) - height(root->right);
-}
-
-Graph::Node* Graph::newNode(std::string key)
-{
-    Node* node = new Node();
-    node->key = key;
-    node->left = NULL;
-    node->right = NULL;
-    node->height = 1; // leaf;
-    return node;
-}
-
-Graph::Node* Graph::copy(Node* root)
-{
-    if (root == NULL)
-        return NULL;
-    Node* temp = new Node();
-    temp->key = root->key;
-    temp->height = root->height;
-    temp->left = copy(root->left);
-    temp->right = copy(root->right);
-    return temp;
+    mVertex = mEdge = 0;
 }
 
 void Graph::destroy(Node* &root)
@@ -137,43 +103,37 @@ void Graph::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, 
     {
         tree.mPoint.erase(tree.mPoint.begin() + addPoint(tree, x, y, root->key, false));
         if (root->left)
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance, y + 100, false));
+            tree.mEdge.erase(tree.mEdge.begin() + addEdge(tree, x, y, x - distance, y + 100, false));
         if (root->right)
-            tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x + distance, y + 100, false));
+            tree.mEdge.erase(tree.mEdge.begin() + addEdge(tree, x, y, x + distance, y + 100, false));
         destroyNode(tree, root->left, x - distance, y + 100, distance / 2);
         destroyNode(tree, root->right, x + distance, y + 100, distance / 2);
     }
 }
 
-void Graph::preOrder(Node *root)
-{
-    if (root != NULL)
-    {
-        // cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
-    }
-}
-
-void Graph::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root)
-    {
-        tree.mPoint.push_back(Point(23, sf::Vector2f(x, y), root->key, mFont, false, pallete[mColor]));
-        if (root->left)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance, y + 100), pallete[mColor], false));
-        if (root->right)
-            tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x + distance, y + 100), pallete[mColor], false));
-        beautify(tree, root->left, x - distance, y + 100, distance / 2);
-        beautify(tree, root->right, x + distance, y + 100, distance / 2);
-    }
-}
-
-void Graph::reset(Tree &tree, Node *root)
+void Graph::reset(Tree &tree)
 {
     tree.mPoint.clear();
-    tree.mLine.clear();
-    beautify(tree, root);
+    tree.mEdge.clear();
+    float PI = std::acos(-1);
+    float R = 300;
+    for (int i = 0; i < mVertex; i++)
+    {
+        float x = 1100 + R * std::sin(i * 2 * PI / mVertex);
+        float y = 400 - R * (1 - std::cos(i * 2 * PI / mVertex));
+        tree.mPoint.push_back(Point(25, sf::Vector2f(x, y), std::to_string(i), mFont, false, pallete[mColor]));
+        for (int j = 0; j < mAdj[i].size(); j++)
+        {
+            int u = i;
+            int v = mAdj[i][j].second;
+            int w = mAdj[i][j].first;
+            float x1 = 1100 + R * std::sin(u * 2 * PI / mVertex);
+            float y1 = 400 - R * (1 - std::cos(u * 2 * PI / mVertex));
+            float x2 = 1100 + R * std::sin(v * 2 * PI / mVertex);
+            float y2 = 400 - R * (1 - std::cos(v * 2 * PI / mVertex));
+            tree.mEdge.push_back(Edge(sf::Vector2f(x1, y1), sf::Vector2f(x2, y2), std::to_string(w), mFont, pallete[mColor], false));
+        }
+    }
 }
 
 void Graph::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, float distance = 200)
@@ -184,8 +144,8 @@ void Graph::resetSub(Tree &tree, Node *root, float x = 1100, float y = 175, floa
 
 void Graph::Tree::draw(sf::RenderWindow &mWindow)
 {
-    for (int i = 0; i < mLine.size(); i++)
-        mLine[i].draw(mWindow);
+    for (int i = 0; i < mEdge.size(); i++)
+        mEdge[i].draw(mWindow);
     for (int i = 0; i < mPoint.size(); i++)
         mPoint[i].draw(mWindow);
 }
@@ -222,33 +182,33 @@ int Graph::addPoint(Tree &tree, float x, float y, std::string key, bool highLigh
     return tree.mPoint.size() - 1;
 }
 
-int Graph::findLine(Tree &tree, float x, float y, float u, float v)
+int Graph::findEdge(Tree &tree, float x, float y, float u, float v)
 {
-    for (int i = 0; i < tree.mLine.size(); i++)
+    for (int i = 0; i < tree.mEdge.size(); i++)
     {
-        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v)) return i;
-        else if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y)) return i;
+        if (tree.mEdge[i].mPosBegin == sf::Vector2f(x, y) && tree.mEdge[i].mPosEnd == sf::Vector2f(u, v)) return i;
+        else if (tree.mEdge[i].mPosBegin == sf::Vector2f(u, v) && tree.mEdge[i].mPosEnd == sf::Vector2f(x, y)) return i;
     }
     return -1;
 }
 
-int Graph::addLine(Tree &tree, float x, float y, float u, float v, bool highLight)
+int Graph::addEdge(Tree &tree, float x, float y, float u, float v, bool highLight)
 {
-    for (int i = 0; i < tree.mLine.size(); i++)
+    for (int i = 0; i < tree.mEdge.size(); i++)
     {
-        if (tree.mLine[i].mPosBegin == sf::Vector2f(x, y) && tree.mLine[i].mPosEnd == sf::Vector2f(u, v))
+        if (tree.mEdge[i].mPosBegin == sf::Vector2f(x, y) && tree.mEdge[i].mPosEnd == sf::Vector2f(u, v))
         {
-            tree.mLine[i].setHighLight(highLight);
+            tree.mEdge[i].setHighLight(highLight);
             return i;
         }
-        else if (tree.mLine[i].mPosBegin == sf::Vector2f(u, v) && tree.mLine[i].mPosEnd == sf::Vector2f(x, y))
+        else if (tree.mEdge[i].mPosBegin == sf::Vector2f(u, v) && tree.mEdge[i].mPosEnd == sf::Vector2f(x, y))
         {
-            tree.mLine[i].setHighLight(highLight);
+            tree.mEdge[i].setHighLight(highLight);
             return i;
         }
     }
-    tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(u, v), pallete[mColor], highLight));
-    return tree.mLine.size() - 1;
+    tree.mEdge.push_back(Edge(sf::Vector2f(x, y), sf::Vector2f(u, v), pallete[mColor], highLight));
+    return tree.mEdge.size() - 1;
 }
 
 void Graph::Step::draw(sf::RenderWindow &mWindow)
@@ -286,10 +246,10 @@ void Graph::setColor()
 {
     for (int i = 0; i < mStep.size(); i++)
     {
-        for (int id = 0; id < mStep[i].mTree.mLine.size(); id++)
+        for (int id = 0; id < mStep[i].mTree.mEdge.size(); id++)
         {
-            if (mStep[i].mTree.mLine[id].mColor != sf::Color::Black)
-                mStep[i].mTree.mLine[id].setColor(pallete[mColor]);
+            if (mStep[i].mTree.mEdge[id].mColor != sf::Color::Black)
+                mStep[i].mTree.mEdge[id].setColor(pallete[mColor]);
         }
         for (int id = 0; id < mStep[i].mTree.mPoint.size(); id++)
         {
@@ -586,23 +546,23 @@ Graph::Node* Graph::rightRotate(Step &step, Node *Y, float x, float y, float dis
     addPoint(step.mTree, x, y, Y->key, true);
 	Node *X = Y->left;
     addPoint(step.mTree, x - distance, y + 100, X->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
+    addEdge(step.mTree, x, y, x - distance, y + 100, true);
 	Node *T2 = X->right;
     if (T2) 
     {
         addPoint(step.mTree, x - distance + distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true);
+        addEdge(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true);
     }
     mStep.push_back(step);
     if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
+        step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x - distance, y + 100, x - distance + distance / 2, y + 2 * 100, true));
+    addEdge(step.mTree, x, y, x - distance, y + 100, true);
     mStep.push_back(step);
     if (T2)
     {
-        addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true);
+        addEdge(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true);
         mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true));
+        step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x, y, x - distance + distance / 2, y + 2 * 100, true));
     }
     destroyNode(step.mTree, Y, x, y, distance);
 
@@ -618,23 +578,23 @@ Graph::Node* Graph::leftRotate(Step &step, Node *X, float x, float y, float dist
     addPoint(step.mTree, x, y, X->key, true);
     Node *Y = X->right;
     addPoint(step.mTree, x + distance, y + 100, Y->key, true);
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
+    addEdge(step.mTree, x, y, x + distance, y + 100, true);
     Node *T2 = Y->left;
     if (T2) 
     {
         addPoint(step.mTree, x + distance - distance / 2, y + 2 * 100, T2->key, true);
-        addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true);
+        addEdge(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true);
     }
     mStep.push_back(step);
     if (T2)
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true));
-    addLine(step.mTree, x, y, x + distance, y + 100, true);
+        step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x + distance, y + 100, x + distance - distance / 2, y + 2 * 100, true));
+    addEdge(step.mTree, x, y, x + distance, y + 100, true);
     mStep.push_back(step);
     if (T2)
     {
-        addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true);
+        addEdge(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true);
         mStep.push_back(step);
-        step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true));
+        step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x, y, x + distance - distance / 2, y + 2 * 100, true));
     }
     destroyNode(step.mTree, X, x, y, distance);
 
@@ -643,59 +603,6 @@ Graph::Node* Graph::leftRotate(Step &step, Node *X, float x, float y, float dist
     X->height = std::max(height(X->left), height(X->right)) + 1;
     Y->height = std::max(height(Y->left), height(Y->right)) + 1;
     return Y;
-}
-
-Graph::Node* Graph::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else return root;
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(step, root, x, y, distance);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(step, root, x, y, distance);
-    if (balance > 1 && key > root->left->key)
-    {
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
 }
 
 void Graph::finalInit(std::string filename)
@@ -736,13 +643,23 @@ void Graph::finalInit(std::string filename)
     tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
     tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
 
-    std::string key;
-    while (inFile >> key)
+    inFile >> mVertex >> mEdge;
+
+    for (int i = 0; i < mEdge; i++)
     {
-        if (canInsert(key) == false) continue;
-        mRoot = init(tmpStep, mRoot, key);
-        reset(tmpStep.mTree, mRoot);
+        int u, v, w;
+        inFile >> u >> v >> w;
+        if (mVertex > 10 || !(0 <= u && u < mVertex) || !(0 <= v && v < mVertex) || u == v || !(0 < w && w <= 99)) continue;
+        mAdj[u].push_back(make_pair(v, w));
+        mAdj[v].push_back(make_pair(u, w));
+        reset(tmpStep.mTree);
         mStep.push_back(tmpStep);
+    }
+    if (mVertex > 10)
+    {
+        inFile.close();
+        inCode.close();
+        return;
     }
 
     reset(tmpStep.mTree, mRoot);
@@ -765,12 +682,12 @@ Graph::Node* Graph::insert(Step &step, Node* root, std::string key, float x = 11
 
     if (stoi(key) < stoi(root->key))
     {
-        addLine(step.mTree, x, y, x - distance, y + 100, true);
+        addEdge(step.mTree, x, y, x - distance, y + 100, true);
         root->left = insert(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        addLine(step.mTree, x, y, x + distance, y + 100, true);
+        addEdge(step.mTree, x, y, x + distance, y + 100, true);
         root->right = insert(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else // Equal keys are not allowed in BST
@@ -889,7 +806,7 @@ Graph::Node* Graph::minValueNode(Step &step, Node* node, float x, float y, float
         return node;
     }
     addPoint(step.mTree, x, y, node->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 100, true);
+    addEdge(step.mTree, x, y, x - distance, y + 100, true);
     mStep.push_back(step);
     return minValueNode(step, node->left, x - distance, y + 100, distance / 2);
 }
@@ -902,12 +819,12 @@ Graph::Node* Graph::remove(Step &step, Node* root, std::string key, float x = 11
 
     if (stoi(key) < stoi(root->key))
     {
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
+        if (root->left) addEdge(step.mTree, x, y, x - distance, y + 100, true);
         root->left = remove(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
+        if (root->right) addEdge(step.mTree, x, y, x + distance, y + 100, true);
         root->right = remove(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else
@@ -922,13 +839,13 @@ Graph::Node* Graph::remove(Step &step, Node* root, std::string key, float x = 11
             {
                 temp = root;
                 root = NULL;
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance * 2, y - 100, x, y, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 100, x, y, true));
+                step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x - distance * 2, y - 100, x, y, true));
+                step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x + distance * 2, y - 100, x, y, true));
             }
             else // One child case
             {
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance, y + 100, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 100, true));
+                step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x, y, x - distance, y + 100, true));
+                step.mTree.mEdge.erase(step.mTree.mEdge.begin() + addEdge(step.mTree, x, y, x + distance, y + 100, true));
                 *root = *temp; // Copy the contents of the non-empty child
             }
             step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, key));
@@ -939,7 +856,7 @@ Graph::Node* Graph::remove(Step &step, Node* root, std::string key, float x = 11
         {
             // node with two children: Get the inorder
             // successor (smallest in the right subtree)
-            addLine(step.mTree, x, y, x + distance, y + 100, true);
+            addEdge(step.mTree, x, y, x + distance, y + 100, true);
             mStep.push_back(step);
             Node* temp = minValueNode(step, root->right, x + distance, y + 100, distance / 2);
             mStep.push_back(step);
@@ -952,7 +869,7 @@ Graph::Node* Graph::remove(Step &step, Node* root, std::string key, float x = 11
             mStep.push_back(step);
  
             // Delete the inorder successor
-            if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
+            if (root->right) addEdge(step.mTree, x, y, x + distance, y + 100, true);
             root->right = remove(step, root->right, temp->key, x + distance, y + 100, distance / 2);
             root->key = temp->key;
         }
@@ -1075,14 +992,14 @@ void Graph::search(Step &step, Node* root, std::string key, float x = 1100, floa
     {
         step.mText = mRealText;
         step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addLine(step.mTree, x, y, x - distance, y + 100, true);
+        if (root->left) addEdge(step.mTree, x, y, x - distance, y + 100, true);
         search(step, root->left, key, x - distance, y + 100, distance / 2);
     }
     else if (stoi(key) > stoi(root->key))
     {
         step.mText = mRealText;
         step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 100, true);
+        if (root->right) addEdge(step.mTree, x, y, x + distance, y + 100, true);
         search(step, root->right, key, x + distance, y + 100, distance / 2);
     }
     else

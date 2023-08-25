@@ -6,7 +6,7 @@
 #include "../interface/ButtonImg.hpp"
 #include "../interface/InputBar.hpp"
 #include "../interface/Point.hpp"
-#include "../interface/Line.hpp"
+#include "../interface/Edge.hpp"
 #include <vector>
 #include <string.h>
 #include <fstream>
@@ -16,22 +16,18 @@
 #include <cstdlib>
 #include <utility>
 #include <iostream>
+#include <cmath>
 
 struct Graph
 {
     Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
-    struct Node
-    {
-        std::string key;
-        Node *left;
-        Node *right;
-        int height;
-    };
-    Node *mRoot;
+    
+    int mVertex, mEdge;
+    vector<pair<int, int>> mAdj[10];
     struct Tree
     {
         std::vector<Point> mPoint;
-        std::vector<Line> mLine;
+        std::vector<Edge> mEdge;
         void draw(sf::RenderWindow &mWindow);
     };
 
@@ -44,22 +40,16 @@ struct Graph
         void draw(sf::RenderWindow &mWindow);
     };
 
-    int height(Node *node);
-    int getBalance(Node *node);
-    Node* newNode(std::string key);
-    Node* copy(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
-    void preOrder(Node *root);
-    void beautify(Tree &tree, Node *root, float x, float y, float distance);
-    void reset(Tree &tree, Node *root);
+    void reset(Tree &tree);
     void resetSub(Tree &tree, Node *root, float x, float y, float distance);
 
     int getIndex(Node *root, int indexRoot, std::string key);
     int findPoint(Tree &tree, std::string key);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
-    int findLine(Tree &tree, float x, float y, float u, float v);
-    int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
+    int findEdge(Tree &tree, float x, float y, float u, float v);
+    int addEdge(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
     void randomize();
