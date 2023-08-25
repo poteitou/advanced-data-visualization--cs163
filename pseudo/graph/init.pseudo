@@ -1,0 +1,3 @@
+this AVLTree = new AVLTree
+for value in list:
+    insert(value) to this AVLTree

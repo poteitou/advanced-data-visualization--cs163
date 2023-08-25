@@ -34,7 +34,6 @@ struct AVLTree
         std::vector<Line> mLine;
         void draw(sf::RenderWindow &mWindow);
     };
-
     struct Step
     {
         int cntCode;

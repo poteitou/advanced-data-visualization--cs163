@@ -22,10 +22,10 @@ struct Graph
     Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode);
     struct Node
     {
-        Node* child[26];
         std::string key;
-        bool isEndOfWord;
-        int numChild;
+        Node *left;
+        Node *right;
+        int height;
     };
     Node *mRoot;
     struct Tree
@@ -44,22 +44,24 @@ struct Graph
         void draw(sf::RenderWindow &mWindow);
     };
 
-    Node* newNode();
+    int height(Node *node);
+    int getBalance(Node *node);
+    Node* newNode(std::string key);
     Node* copy(Node* root);
-    bool isEmpty(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
+    void preOrder(Node *root);
     void beautify(Tree &tree, Node *root, float x, float y, float distance);
     void reset(Tree &tree, Node *root);
     void resetSub(Tree &tree, Node *root, float x, float y, float distance);
 
-    int findPoint(Tree &tree, float x, float y);
+    int getIndex(Node *root, int indexRoot, std::string key);
+    int findPoint(Tree &tree, std::string key);
     int addPoint(Tree &tree, float x, float y, std::string key, bool highLight);
     int findLine(Tree &tree, float x, float y, float u, float v);
     int addLine(Tree &tree, float x, float y, float u, float v, bool highLight);
 
     int Rand(int MAX);
-    std::string randString(int size);
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
@@ -68,14 +70,21 @@ struct Graph
     void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    bool insert(Node* root, std::string key);
+    Node* rightRotate(Node *Y);
+    Node* leftRotate(Node *X);
+    Node* insert(Node* node, std::string key);
     bool canInsert(std::string key);
-    void init(std::string fileName);
-    void insert(std::string key);
-    bool search(Node* root, std::string key);
-    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance, int depth);
+    Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
+    Node *leftRotate(Step &step, Node *X, float x, float y, float distance);
+    Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void finalInit(std::string fileName);
+    Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void finalInsert(std::string key);
+    Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
+    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
     void finalRemove(std::string key);
-    void search(std::string key);
+    void search(Step &step, Node* root, std::string key, float x, float y, float distance);
+    void finalSearch(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;
