@@ -1,9 +1,9 @@
-Node temp = new Node(value)
-add(temp) to leaf of this AVLTree
-check balance:
-    case 1: L-L problem -> rightRotate()
-    case 2: R-R problem -> leftRotate()
-    case 3: L-R problem -> leftRotate()
-                        -> rightRotate()
-    case 4: R-L problem -> rightRotate()
-                        -> leftRotate()
+input(key)
+check condition (height, width, ...)
+Node temp = this->root
+for i in [0, size(key) - 1]:
+    index = key[i]
+    if temp->child[index] == NULL:
+        temp->child[index] = newNode()
+    temp = temp->child[index]
+temp->isEndOfWord = true

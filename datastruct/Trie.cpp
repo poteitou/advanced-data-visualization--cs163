@@ -204,6 +204,7 @@ int Trie::addPoint(Tree &tree, float x, float y, std::string key, bool highLight
     {
         if (tree.mPoint[i].mPos.x == x && tree.mPoint[i].mPos.y == y)
         {
+            tree.mPoint[i].mValue = key;
             tree.mPoint[i].setHighLight(highLight);
             return i;
         }
@@ -657,7 +658,7 @@ void Trie::finalInit(std::string filename)
 
 void Trie::insert(std::string key)
 {
-    std::ifstream inCode("pseudo/avl/insert.pseudo");
+    std::ifstream inCode("pseudo/trie/insert.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -699,31 +700,54 @@ void Trie::insert(std::string key)
 
     int x = 1100, y = 175, distance = 800;
     Node* pTemp = mRoot;
-
+    tmpStep.mText = mRealText;
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+    mStep.push_back(tmpStep);
 	for (int i = 0; i < key.size(); i++) 
     {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+        tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
 		int index = key[i] - 'a';
 		if (!pTemp->child[index])
 		{
+            tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[6].setFillColor(sf::Color(230, 100, 140));
             pTemp->child[index] = newNode();
             pTemp->numChild++;
+            reset(tmpStep.mTree, mRoot);
+            addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+            int Cnt = -1;
+            for (int j = 0; j <= index; j++)
+                if (pTemp->child[j]) Cnt++;
+            addLine(tmpStep.mTree, x, y, x - distance / 2 + Cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
+            addPoint(tmpStep.mTree, x - distance / 2 + Cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, "", true);
+            mStep.push_back(tmpStep);
         }
-        reset(tmpStep.mTree, mRoot);
-        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
-        addLine(tmpStep.mTree, x, y, x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
+        tmpStep.mText[5].setFillColor(sf::Color::Black);
+        tmpStep.mText[6].setFillColor(sf::Color::Black);
         int cnt = -1;
         for (int j = 0; j <= index; j++)
             if (pTemp->child[j]) cnt++;
+        reset(tmpStep.mTree, mRoot);
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        addLine(tmpStep.mTree, x, y, x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
         x = x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
         y = y + 80;
         distance = distance / (pTemp->numChild);
 		pTemp = pTemp->child[index];
         pTemp->key = key[i];
         addPoint(tmpStep.mTree, x, y, pTemp->key, true);
-        tmpStep.mText = mRealText;
+        tmpStep.mText[7].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(tmpStep);
 	}
 	pTemp->isEndOfWord = true;
+    reset(tmpStep.mTree, mRoot);
+    addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+    tmpStep.mText = mRealText;
+    tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
+    mStep.push_back(tmpStep);
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
