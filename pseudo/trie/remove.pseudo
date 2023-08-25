@@ -1,11 +1,11 @@
 remove(root, key, depth):
     if !root: return nullptr
     if depth == size(key):
-		root->isEndOfWord = false
-		if root->isEmpty(): del(root)
+		root->isEndWord = false
+		if root->empty: del(root)
 		return root
 	index = key[depth]
-	root->child[index]
+	root->child[index] 
     = remove(root->child[index], key, depth + 1)
-	if root->isEmpty(), !root->isEndOfWord: del(root)
+	if root->empty, !root->isEndWord: del(root)
 	return root

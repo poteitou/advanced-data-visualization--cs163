@@ -6,4 +6,4 @@ for i in [0, size(key) - 1]:
     if temp->child[index] == NULL:
         return NOT_FOUND
     temp = temp->child[index]
-if temp and pTemp->isEndOfWord: return FOUND
+if temp and pTemp->isEndWord: return FOUND

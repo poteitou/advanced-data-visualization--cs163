@@ -6,4 +6,4 @@ for i in [0, size(key) - 1]:
     if temp->child[index] == NULL:
         temp->child[index] = newNode()
     temp = temp->child[index]
-temp->isEndOfWord = true
+temp->isEndWord = true
