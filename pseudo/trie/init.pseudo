@@ -1,3 +1,3 @@
-this AVLTree = new AVLTree
-for value in list:
-    insert(value) to this AVLTree
+this Trie = new Trie
+for key in list:
+    insert(key) to this Trie

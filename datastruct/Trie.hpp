@@ -44,7 +44,6 @@ struct Trie
         void draw(sf::RenderWindow &mWindow);
     };
 
-    int height(Node *node);
     Node* newNode();
     Node* copy(Node* root);
     bool isEmpty(Node* root);
@@ -64,19 +63,16 @@ struct Trie
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     bool insert(Node* root, std::string key);
     bool canInsert(std::string key);
-    // Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalInit(std::string fileName);
+    void init(std::string fileName);
     void insert(std::string key);
-    // Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
     // void finalRemove(std::string key);
-    // void search(Step &step, Node* root, std::string key, float x, float y, float distance);
     // void finalSearch(std::string key);
     void draw();
 

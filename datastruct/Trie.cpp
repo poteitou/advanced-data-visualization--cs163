@@ -40,7 +40,7 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
         mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     // Init bar + OK
-    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "datafile.data", 2);
+    mInputBar[0] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 175), mFont, "sample.data", 2);
     mInputBar[1] = InputBar(sf::Vector2f(425, 50), sf::Vector2f(225, 175), mFont, randString(0), 3);
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
@@ -85,15 +85,6 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mSpeed = mRun = 1; // pause: 0   play: 1
     mColor = 0;
     mRoot = NULL;
-}
-
-int Trie::height(Node *root)
-{
-    if (root == NULL) return 0;
-    int h = 1;
-    for (int i = 0; i < 26; i++)
-        h = std::max(h, height(root->child[i]) + 1);
-    return h;
 }
 
 Trie::Node* Trie::newNode()
@@ -269,15 +260,20 @@ void Trie::randomize()
     std::ofstream outFile("data/randomize.data");
 
     std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-    int randSize = rng() % 9 + 1;
+    int randSize = rng() % 13 + 1;
     std::string temp = "";
+    int remain = 26;
     for (int i = 0; i < randSize; i++)
     {
-        std::string value = std::to_string(rng() % 100);
-        outFile << value << ' ';
+        std::string value = randString(remain - (randSize - i - 1) * 2 > 6 ? 0 : remain - (randSize - i - 1) * 2);
+        outFile << value;
         temp += value;
         if (i < randSize - 1)
+        {
             temp += ' ';
+            outFile << ' ';
+        }
+        remain -= (value.size() + 1);
     }
     mInputBar[1].mValue = temp;
     mInputBar[1].mText.setString(temp);
@@ -415,7 +411,7 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     switch (mType)
     {
     case 1: // Init
-        // updateInit(mousePress, mousePosition, keyPress);
+        updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
@@ -431,13 +427,12 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     }
 }
 
-/*
 void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[0].mHovered = true;
     if (mButton[4].setMouseOver(mousePosition) && mousePress) // From File
     {
-        mInputBar[0].reset("datafile.data");
+        mInputBar[0].reset("sample.data");
         mSmallType = 1;
         firstTime = true;
     }
@@ -453,7 +448,7 @@ void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         mButton[4].mHovered = true;
         mInputBar[0].update(mousePress, mousePosition, keyPress, 20);
         if (mButton[6].setMouseOver(mousePosition) && mousePress)
-            finalInit("data/" + mInputBar[0].mValue);
+            init("data/" + mInputBar[0].mValue);
         else
             firstTime = true;
         break;
@@ -465,7 +460,7 @@ void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
             std::ofstream outFile("data/randomize.data");
             outFile << mInputBar[1].mValue;
             outFile.close();
-            finalInit("data/randomize.data");
+            init("data/randomize.data");
         }
         else
             firstTime = true;
@@ -474,7 +469,6 @@ void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         break;
     }
 }
-*/
 
 void Trie::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -547,61 +541,7 @@ bool Trie::canInsert(std::string key)
     return res;
 }
 
-/*
-Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
-{
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x - distance / 2, y + 80, true);
-        root->left = insert(step, root->left, key, x - distance / 2, y + 80, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x + distance, y + 80, true);
-        root->right = insert(step, root->right, key, x + distance, y + 80, distance / 2);
-    }
-    else return root;
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(step, root, x, y, distance);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(step, root, x, y, distance);
-    if (balance > 1 && key > root->left->key)
-    {
-        root->left = leftRotate(step, root->left, x - distance / 2, y + 80, distance / 2);
-        resetSub(step.mTree, root->left, x - distance / 2, y + 80, distance / 2);
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(step, root->right, x + distance, y + 80, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 80, distance / 2);
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
-
-void Trie::finalInit(std::string filename)
+void Trie::init(std::string filename)
 {
     std::ifstream inFile(filename), inCode("pseudo/trie/init.pseudo");
     if (!inFile) return;
@@ -640,10 +580,50 @@ void Trie::finalInit(std::string filename)
     tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
 
     std::string key;
+    if (!mRoot) mRoot = newNode();
     while (inFile >> key)
     {
         if (canInsert(key) == false) continue;
-        mRoot = init(tmpStep, mRoot, key);
+        
+        int x = 1100, y = 175, distance = 800;
+        Node* pTemp = mRoot;
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        mStep.push_back(tmpStep);
+        for (int i = 0; i < key.size(); i++) 
+        {
+            int index = key[i] - 'a';
+            if (!pTemp->child[index])
+            {
+                pTemp->child[index] = newNode();
+                pTemp->numChild++;
+                reset(tmpStep.mTree, mRoot);
+                addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+                int Cnt = -1;
+                for (int j = 0; j <= index; j++)
+                    if (pTemp->child[j]) Cnt++;
+                addLine(tmpStep.mTree, x, y, x - distance / 2 + Cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
+                addPoint(tmpStep.mTree, x - distance / 2 + Cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, "", true);
+                mStep.push_back(tmpStep);
+            }
+            int cnt = -1;
+            for (int j = 0; j <= index; j++)
+                if (pTemp->child[j]) cnt++;
+            reset(tmpStep.mTree, mRoot);
+            addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+            addLine(tmpStep.mTree, x, y, x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
+            x = x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
+            y = y + 80;
+            distance = distance / (pTemp->numChild);
+            pTemp = pTemp->child[index];
+            pTemp->key = key[i];
+            addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+            mStep.push_back(tmpStep);
+        }
+        pTemp->isEndOfWord = true;
+        reset(tmpStep.mTree, mRoot);
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        mStep.push_back(tmpStep);
+
         reset(tmpStep.mTree, mRoot);
         mStep.push_back(tmpStep);
     }
@@ -654,7 +634,6 @@ void Trie::finalInit(std::string filename)
     inFile.close();
     inCode.close();
 }
-*/
 
 void Trie::insert(std::string key)
 {
