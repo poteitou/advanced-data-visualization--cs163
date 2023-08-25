@@ -1,3 +1,5 @@
-this AVLTree = new AVLTree
-for value in list:
-    insert(value) to this AVLTree
+input(numVertex, numEdge)
+for i in [0, numEdge - 1]:
+    input(source, target, weight)
+    push(Edge(target, weight)) to adj[source]
+    push(Edge(source, weight)) to adj[target]

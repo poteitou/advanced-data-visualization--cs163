@@ -12,10 +12,10 @@ Edge::Edge(sf::Vector2f posBegin, sf::Vector2f posEnd, std::string text, sf::Fon
 
     // create text
     mText.setStyle(sf::Text::Bold);
-    mText.setString(textIn);
+    mText.setString(text);
     mText.setFont(font);
     mText.setCharacterSize(25);
-    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - mFontSize / 2 - 3);
+    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - 25 / 2 - 3);
     mText.setFillColor(mHighLight ? sf::Color::Black : mColor);
 }
 
@@ -26,7 +26,7 @@ void Edge::setPosition(sf::Vector2f posBegin, sf::Vector2f posEnd)
     mLength = std::sqrt((mPosEnd.x - mPosBegin.x) * (mPosEnd.x - mPosBegin.x) + (mPosEnd.y - mPosBegin.y) * (mPosEnd.y - mPosBegin.y));
     mAngle = std::atan2(mPosEnd.y - mPosBegin.y, mPosEnd.x - mPosBegin.x) * 180.f / std::acos(-1);
     mRect.setSize(sf::Vector2f(mLength, 4.f));
-    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - mFontSize / 2 - 3);
+    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - 25 / 2 - 3);
 }
 
 void Edge::setPosPoint(Point begin, Point end)
@@ -36,7 +36,7 @@ void Edge::setPosPoint(Point begin, Point end)
     mLength = std::sqrt((mPosEnd.x - mPosBegin.x) * (mPosEnd.x - mPosBegin.x) + (mPosEnd.y - mPosBegin.y) * (mPosEnd.y - mPosBegin.y));
     mAngle = std::atan2(mPosEnd.y - mPosBegin.y, mPosEnd.x - mPosBegin.x) * 180.f / std::acos(-1);
     mRect.setSize(sf::Vector2f(mLength, 4.f));
-    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - mFontSize / 2 - 3);
+    mText.setPosition((mPosBegin.x + mPosEnd.x) / 2 - mText.getLocalBounds().width / 2 - 2, (mPosBegin.y + mPosEnd.y) - 25 / 2 - 3);
 }
 
 void Edge::setColor(sf::Color Color)

@@ -1,7 +1,7 @@
 #include "Screen.hpp"
 
 Screen::Screen(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode)
-    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode), mTree234(mWindow, mFont, mFontCode), mHeap(mWindow, mFont, mFontCode), mTrie(mWindow, mFont, mFontCode)
+    : mWindow(window), mFont(font), mFontCode(fontCode), mData(0), mMenu(mWindow, mFont), mHashTable(mWindow, mFont, mFontCode), mAVLTree(mWindow, mFont, mFontCode), mTree234(mWindow, mFont, mFontCode), mHeap(mWindow, mFont, mFontCode), mTrie(mWindow, mFont, mFontCode), mGraph(mWindow, mFont, mFontCode)
 {
     mFont1.loadFromFile("resources/fonts/childtitle.ttf");
     textTitle.setFont(mFont1);
