@@ -23,7 +23,7 @@ struct Trie
         Node* child[26];
         std::string key;
         bool isEndOfWord;
-        int height, numChild;
+        int numChild;
     };
     Node *mRoot;
     struct Tree
@@ -45,6 +45,7 @@ struct Trie
     int height(Node *node);
     Node* newNode();
     Node* copy(Node* root);
+    bool isEmpty(Node* root);
     void destroy(Node* &root);
     void destroyNode(Tree &tree, Node* &root, float x, float y, float distance);
     void beautify(Tree &tree, Node *root, float x, float y, float distance);
@@ -60,24 +61,20 @@ struct Trie
     void randomize();
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
-    void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
-    void* insert(Node* root, std::string key);
+    bool insert(Node* root, std::string key);
     bool canInsert(std::string key);
-    Node *rightRotate(Step &step, Node *Y, float x, float y, float distance);
-    Node *leftRotate(Step &step, Node *X, float x, float y, float distance);
-    Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInit(std::string fileName);
-    Node* insert(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalInsert(std::string key);
-    Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
-    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalRemove(std::string key);
-    void search(Step &step, Node* root, std::string key, float x, float y, float distance);
-    void finalSearch(std::string key);
+    // Node* init(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalInit(std::string fileName);
+    void insert(std::string key);
+    // Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalRemove(std::string key);
+    // void search(Step &step, Node* root, std::string key, float x, float y, float distance);
+    // void finalSearch(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;

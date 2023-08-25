@@ -22,7 +22,7 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
         mNoteText[i].setCharacterSize(20);
     }
 
-    std::ifstream inNote("pseudo/avltree/avltree.note");
+    std::ifstream inNote("pseudo/trie/trie.note");
     std::string tmp;
     cntNote = 0;
     while (getline(inNote, tmp))
@@ -90,14 +90,16 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
 int Trie::height(Node *root)
 {
     if (root == NULL) return 0;
-    return root->height;
+    int h = 1;
+    for (int i = 0; i < 26; i++)
+        h = std::max(h, height(root->child[i]) + 1);
+    return h;
 }
 
 Trie::Node* Trie::newNode()
 {
     Node* node = new Node();
 	node->isEndOfWord = false;
-    node->height = 1;
     node->numChild = 0;
     node->key = "";
 
@@ -112,12 +114,18 @@ Trie::Node* Trie::copy(Node* root)
     if (root == NULL) return NULL;
     Node* node = newNode();
     node->isEndOfWord = root->isEndOfWord;
-    node->height = root->height;
     node->numChild = root->numChild;
     node->key = root->key;
     for (int i = 0; i < 26; i++)
         node->child[i] = copy(root->child[i]);
     return node;
+}
+
+bool Trie::isEmpty(Node* root)
+{
+    for (int i = 0; i < 26; i++)
+        if (root->child[i]) return false;
+    return true;
 }
 
 void Trie::destroy(Node* &root)
@@ -140,8 +148,8 @@ void Trie::destroyNode(Tree &tree, Node* &root, float x = 1100, float y = 175, f
         for (int i = 0, j = 0; i < 26; i++)
             if (root->child[i])
             {
-                tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance + j * distance / numChild + distance / numChild / 2, y + 50, false));
-                destroyNode(tree, root->child[i], x - distance + j * distance / numChild + distance / numChild / 2, y + 50, distance / 2);
+                tree.mLine.erase(tree.mLine.begin() + addLine(tree, x, y, x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, false));
+                destroyNode(tree, root->child[i], x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
                 j++;
             }
     }
@@ -155,8 +163,8 @@ void Trie::beautify(Tree &tree, Node *root, float x = 1100, float y = 175, float
         for (int i = 0, j = 0; i < 26; i++)
             if (root->child[i])
             {
-                tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance + j * distance / numChild + distance / numChild / 2, y + 50), pallete[mColor], false));
-                beautify(tree, root->child[i], x - distance + j * distance / numChild + distance / numChild / 2, y + 50, distance / 2);
+                tree.mLine.push_back(Line(sf::Vector2f(x, y), sf::Vector2f(x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50), pallete[mColor], false));
+                beautify(tree, root->child[i], x - distance + j * distance / root->numChild + distance / root->numChild / 2, y + 50, distance / 2);
                 j++;
             }
     }
@@ -397,22 +405,23 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
     switch (mType)
     {
     case 1: // Init
-        updateInit(mousePress, mousePosition, keyPress);
+        // updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Insert
         updateInsert(mousePress, mousePosition, keyPress);
         break;
     case 3: // Remove
-        updateRemove(mousePress, mousePosition, keyPress);
+        // updateRemove(mousePress, mousePosition, keyPress);
         break;
     case 4: // Search
-        updateSearch(mousePress, mousePosition, keyPress);
+        // updateSearch(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
     }
 }
 
+/*
 void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     mButton[0].mHovered = true;
@@ -455,6 +464,7 @@ void Trie::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPres
         break;
     }
 }
+*/
 
 void Trie::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -463,11 +473,12 @@ void Trie::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPr
 
     mInputBar[2].update(mousePress, mousePosition, keyPress, 2);
     if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-        finalInsert(mInputBar[2].mValue);
+        insert(mInputBar[2].mValue);
     else
         firstTime = true;
 }
 
+/*
 void Trie::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -491,60 +502,41 @@ void Trie::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPr
     else
         firstTime = true;
 }
+*/
 
-Trie::Node* Trie::rightRotate(Node *Y)
+bool Trie::insert(Node* root, std::string key)
 {
-    Node *X = Y->left;
-    Node *T2 = X->right;
+    Node* pTemp = root;
 
-    X->right = Y;
-    Y->left = T2;
-
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-
-    return X;
-}
-
-Trie::Node* Trie::leftRotate(Node *X)
-{
-    Node *Y = X->right;
-    Node *T2 = Y->left;
-
-    Y->left = X;
-    X->right = T2;
-
-    X->height = std::max(height(X->left), height(X->right)) + 1;
-    Y->height = std::max(height(Y->left), height(Y->right)) + 1;
-
-    return Y;
-}
-
-void::Node* Trie::insert(Node* root, std::string key)
-{
-    struct Node* pTemp = root;
-
-	for (int i = 0; i < key.length(); i++) {
+    float distance = 800;
+    if ((int)key.size() > 10) return false;
+	for (int i = 0; i < key.size(); i++) 
+    {
 		int index = key[i] - 'a';
 		if (!pTemp->child[index])
-			pTemp->child[index] = newNode();
-
+		{
+            pTemp->child[index] = newNode();
+            pTemp->numChild++;
+        }
+        if (distance / (pTemp->numChild) < 25) return false;
 		pTemp = pTemp->child[index];
+        pTemp->key = key[i];
 	}
 
 	// mark last node as leaf
 	pTemp->isEndOfWord = true;
+    return true;
 }
 
 bool Trie::canInsert(std::string key)
 {
     Node* root = copy(mRoot);
-    root = insert(root, key);
-    bool res = root->height <= 10;
+    bool res = insert(root, key);
     destroy(root);
     return res;
 }
 
+/*
 Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL)
@@ -600,7 +592,7 @@ Trie::Node* Trie::init(Step &step, Node* root, std::string key, float x = 1100, 
 
 void Trie::finalInit(std::string filename)
 {
-    std::ifstream inFile(filename), inCode("pseudo/avltree/init.pseudo");
+    std::ifstream inFile(filename), inCode("pseudo/trie/init.pseudo");
     if (!inFile) return;
 
     if (firstTime == false)
@@ -651,89 +643,11 @@ void Trie::finalInit(std::string filename)
     inFile.close();
     inCode.close();
 }
+*/
 
-Trie::Node* Trie::insert(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
+void Trie::insert(std::string key)
 {
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x - distance, y + 50, true);
-        root->left = insert(step, root->left, key, x - distance, y + 50, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addLine(step.mTree, x, y, x + distance, y + 50, true);
-        root->right = insert(step, root->right, key, x + distance, y + 50, distance / 2);
-    }
-    else // Equal keys are not allowed in BST
-    {
-        return root;
-    }
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    step.mText = mRealText;
-    step.mText[2].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(step);
-
-    // Left Left Problem
-    if (balance > 1 && key < root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        return rightRotate(step, root, x, y, distance);
-    }
-    // Right Right Problem
-    if (balance < -1 && key > root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        return leftRotate(step, root, x, y, distance);
-    }
-
-    // Left Right Problem
-    if (balance > 1 && key > root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 50, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 50, distance / 2);
-        step.mText = mRealText;
-        step.mText[6].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-
-    // Right Left Problem
-    if (balance < -1 && key < root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 50, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 50, distance / 2);
-        step.mText = mRealText;
-        step.mText[8].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
-
-void Trie::finalInsert(std::string key)
-{
-    std::ifstream inCode("pseudo/avltree/insert.pseudo");
+    std::ifstream inCode("pseudo/trie/insert.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -772,7 +686,31 @@ void Trie::finalInsert(std::string key)
         inCode.close();
         return;
     }
-    mRoot = insert(tmpStep, mRoot, key);
+
+    int x = 1100, y = 175, distance = 800;
+    Node* pTemp = mRoot;
+
+	for (int i = 0; i < key.size(); i++) 
+    {
+		int index = key[i] - 'a';
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+		if (!pTemp->child[index])
+		{
+            pTemp->child[index] = newNode();
+            pTemp->numChild++;
+        }
+        int cnt = -1;
+        for (int j = 0; j <= index; j++)
+            if (pTemp->child[j]) cnt++;
+        addLine(tmpStep.mTree, x, y, x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 50, true);
+        x = x - distance + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
+        y = y + 50;
+        distance = distance / (pTemp->numChild);
+		pTemp = pTemp->child[index];
+        pTemp->key = key[i];
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+	}
+	pTemp->isEndOfWord = true;
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
@@ -780,20 +718,7 @@ void Trie::finalInsert(std::string key)
     inCode.close();
 }
 
-Trie::Node* Trie::minValueNode(Step &step, Node* node, float x, float y, float distance)
-{
-    if (node->left == NULL)
-    {
-        addPoint(step.mTree, x, y, node->key, true);
-        mStep.push_back(step);
-        return node;
-    }
-    addPoint(step.mTree, x, y, node->key, true);
-    addLine(step.mTree, x, y, x - distance, y + 50, true);
-    mStep.push_back(step);
-    return minValueNode(step, node->left, x - distance, y + 50, distance / 2);
-}
-
+/*
 Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL) return root;
@@ -917,7 +842,7 @@ Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100
 
 void Trie::finalRemove(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/remove.pseudo");
+    std::ifstream inCode("pseudo/trie/remove.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -998,7 +923,7 @@ void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float
 
 void Trie::finalSearch(std::string key)
 {
-    std::ifstream inCode("pseudo/avltree/search.pseudo");
+    std::ifstream inCode("pseudo/trie/search.pseudo");
     if (firstTime == false)
     {
         inCode.close();
@@ -1034,7 +959,7 @@ void Trie::finalSearch(std::string key)
     search(tmpStep, mRoot, key);
     inCode.close();
 }
-
+*/
 void Trie::draw()
 {
     sf::Text textImple;
