@@ -44,7 +44,7 @@ Graph::Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWi
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Connected bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(99)), 0);
+    mInputBar[2] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 55), mFont, std::to_string(Rand(10)), 0);
     mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(350, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Mst bar + OK
@@ -230,7 +230,7 @@ void Graph::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, 
             mType = i + 1;
             mSmallType = 0;
             firstTime = true;
-            mInputBar[2].reset(std::to_string(Rand(99)));
+            mInputBar[2].reset(std::to_string(Rand(10)));
             mInputBar[3].reset(std::to_string(Rand(99)));
             mInputBar[4].reset(std::to_string(Rand(99)));
         }
@@ -326,7 +326,7 @@ void Graph::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, 
         updateInit(mousePress, mousePosition, keyPress);
         break;
     case 2: // Connected
-        // updateConnected(mousePress, mousePosition, keyPress);
+        updateConnected(mousePress, mousePosition, keyPress);
         break;
     case 3: // Mst
         // updateMst(mousePress, mousePosition, keyPress);
@@ -378,18 +378,19 @@ void Graph::updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPre
     }
 }
 
-/*
 void Graph::updateConnected(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
     mButton[1].mHovered = true;
 
-    mInputBar[2].update(mousePress, mousePosition, keyPress, 2);
+    mInputBar[2].update(mousePress, mousePosition, keyPress, 1);
     if (mButton[7].setMouseOver(mousePosition) && mousePress && mInputBar[2].mValue != "")
-        finalConnected(mInputBar[2].mValue);
+        connected(mInputBar[2].mValue);
     else
         firstTime = true;
 }
+
+/*
 
 void Graph::updateMst(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
@@ -413,38 +414,6 @@ void Graph::updateDijkstra(bool mousePress, sf::Vector2i mousePosition, char &ke
         finalDijkstra(mInputBar[4].mValue);
     else
         firstTime = true;
-}
-
-Graph::Node* Graph::connected(Node *root, std::string key)
-{
-    if (root == NULL)
-        return newNode(key);
-    if (key < root->key)
-        root->left = connected(root->left, key);
-    else if (key > root->key)
-        root->right = connected(root->right, key);
-    else
-        return root;
-
-    root->height = 1 + std::max(height(root->left), height(root->right));
-    int balance = getBalance(root);
-
-    if (balance > 1 && key < root->left->key)
-        return rightRotate(root);
-    if (balance < -1 && key > root->right->key)
-        return leftRotate(root);
-    if (balance > 1 && key > root->left->key)
-    {
-        root->left = leftRotate(root->left);
-        return rightRotate(root);
-    }
-    if (balance < -1 && key < root->right->key)
-    {
-        root->right = rightRotate(root->right);
-        return leftRotate(root);
-    }
-
-    return root;
 }
 
 */
@@ -516,87 +485,7 @@ void Graph::init(std::string filename)
     inCode.close();
 }
 
-/*
-Graph::Node* Graph::connected(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
-{
-    if (root == NULL)
-    {
-        addPoint(step.mTree, x, y, key, true);
-        mStep.push_back(step);
-        return newNode(key);
-    }
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        addEdge(step.mTree, x, y, x - distance, y + 100, true);
-        root->left = connected(step, root->left, key, x - distance, y + 100, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        addEdge(step.mTree, x, y, x + distance, y + 100, true);
-        root->right = connected(step, root->right, key, x + distance, y + 100, distance / 2);
-    }
-    else // Equal keys are not allowed in BST
-    {
-        return root;
-    }
-
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    step.mText = mRealText;
-    step.mText[2].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(step);
-
-    // Left Left Problem
-    if (balance > 1 && key < root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        return rightRotate(step, root, x, y, distance);
-    }
-    // Right Right Problem
-    if (balance < -1 && key > root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        return leftRotate(step, root, x, y, distance);
-    }
-
-    // Left Right Problem
-    if (balance > 1 && key > root->left->key)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->left, x - distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[6].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
-    }
-
-    // Right Left Problem
-    if (balance < -1 && key < root->right->key)
-    {
-        step.mText = mRealText;
-        step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 100, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 100, distance / 2);
-        step.mText = mRealText;
-        step.mText[8].setFillColor(sf::Color(230, 100, 140));
-        mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
-}
-
-void Graph::finalConnected(std::string key)
+void Graph::connected(std::string key)
 {
     std::ifstream inCode("pseudo/graph/connected.pseudo");
     if (firstTime == false)
@@ -610,41 +499,53 @@ void Graph::finalConnected(std::string key)
     Step tmpStep;
 
     int cnt = 0;
-    std::string tmp;
-    while (getline(inCode, tmp))
-    {
-        mRealText[cnt].setString(tmp);
-        mRealText[cnt++].setFillColor(sf::Color::Black);
-    }
 
-    tmpStep.cntCode = cnt;
     reset(tmpStep.mTree);
     tmpStep.mTime = 0;
-    tmpStep.mText = mRealText;
-    tmpStep.mText[0].setFillColor(sf::Color(230, 100, 140));
     mStep.push_back(tmpStep);
 
     step = 0;
     mRun = 1;
 
-    tmpStep.mText = mRealText;
-    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
-    if (canConnected(key) == false)
+    int s = stoi(key);
+    if (!(0 <= s && s < mVertex))
     {
-        mStep.push_back(tmpStep);
-        tmpStep.mText = mRealText;
-        mStep.push_back(tmpStep);
         inCode.close();
         return;
     }
-    mRoot = connected(tmpStep, mRoot, key);
-
-    reset(tmpStep.mTree);
-    tmpStep.mText = mRealText;
+    bool visited[mVertex];
+    for (int i = 0; i < mVertex; i++)
+        visited[i] = false;
+ 
+    std::queue<int> q;
+ 
+    addPoint(tmpStep.mTree, s, true);
     mStep.push_back(tmpStep);
+    visited[s] = true;
+    q.push(s);
+    while (!q.empty()) 
+    {
+        int u = q.front();
+        q.pop();
+ 
+        for (int i = 0; i < mAdj[u].size(); i++) 
+        {
+            int v = mAdj[u][i].second;
+            int w = mAdj[u][i].first;
+            if (!visited[v]) 
+            {
+                addPoint(tmpStep.mTree, u, true);
+                addPoint(tmpStep.mTree, v, true);
+                addEdge(tmpStep.mTree, u, v, w, true);
+                mStep.push_back(tmpStep);
+                visited[v] = true;
+                q.push(v);
+            }
+        }
+    }
     inCode.close();
 }
-
+/*
 Graph::Node* Graph::mst(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 200)
 {
     if (root == NULL) return root;

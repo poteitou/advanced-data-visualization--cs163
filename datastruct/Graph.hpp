@@ -7,6 +7,7 @@
 #include "../interface/InputBar.hpp"
 #include "../interface/Point.hpp"
 #include "../interface/Edge.hpp"
+#include <queue>
 #include <vector>
 #include <string.h>
 #include <fstream>
@@ -49,19 +50,15 @@ struct Graph
     void setColor();
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateConnected(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateConnected(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateMst(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateDijkstra(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     // Node* connected(Node* node, std::string key);
     void init(std::string fileName);
-    // Node* connected(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalConnected(std::string key);
-    // Node* minValueNode(Step &step, Node* node, float x, float y, float distance);
+    void connected(std::string key);
     // Node* mst(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalMst(std::string key);
-    // void dijkstra(Step &step, Node* root, std::string key, float x, float y, float distance);
-    // void finalDijkstra(std::string key);
+    // void dijkstra(std::string key);
     void draw();
 
     sf::RenderWindow &mWindow;
