@@ -5,15 +5,15 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mButton.resize(10);
     mInputBar.resize(5);
     mButtonImg.resize(12);
-    mRealText.resize(9);
+    mRealText.resize(11);
     mNoteText.resize(3);
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 11; i++)
     {
-        mRealText[i].setCharacterSize(19);
+        mRealText[i].setCharacterSize(18);
         mRealText[i].setFont(mFontCode);
         mRealText[i].setFillColor(sf::Color::Black);
-        mRealText[i].setPosition(120, 525 + i * 35 - 19 / 2);
+        mRealText[i].setPosition(120, 525 + i * 32 - 18 / 2);
     }
     for (int i = 0; i < 3; i++)
     {
@@ -417,7 +417,7 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         updateInsert(mousePress, mousePosition, keyPress);
         break;
     case 3: // Remove
-        // updateRemove(mousePress, mousePosition, keyPress);
+        updateRemove(mousePress, mousePosition, keyPress);
         break;
     case 4: // Search
         // updateSearch(mousePress, mousePosition, keyPress);
@@ -482,7 +482,6 @@ void Trie::updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPr
         firstTime = true;
 }
 
-/*
 void Trie::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -494,7 +493,7 @@ void Trie::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPr
     else
         firstTime = true;
 }
-
+/*
 void Trie::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -734,126 +733,66 @@ void Trie::insert(std::string key)
     inCode.close();
 }
 
-/*
-Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
+Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800, int depth = 0)
 {
-    if (root == NULL) return root;
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
-
-    if (stoi(key) < stoi(root->key))
-    {
-        if (root->left) addLine(step.mTree, x, y, x - distance / 2, y + 80, true);
-        root->left = remove(step, root->left, key, x - distance / 2, y + 80, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 80, true);
-        root->right = remove(step, root->right, key, x + distance, y + 80, distance / 2);
-    }
-    else
-    {
-        // node with only one child or no child
-        if((root->left == NULL) || (root->right == NULL))
-        {
-            Node *temp = root->left ? root->left : root->right;
- 
-            // No child case
-            if (temp == NULL)
-            {
-                temp = root;
-                root = NULL;
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x - distance / 2 * 2, y - 50, x, y, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x + distance * 2, y - 50, x, y, true));
-            }
-            else // One child case
-            {
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x - distance / 2, y + 80, true));
-                step.mTree.mLine.erase(step.mTree.mLine.begin() + addLine(step.mTree, x, y, x + distance, y + 80, true));
-                *root = *temp; // Copy the contents of the non-empty child
-            }
-            step.mTree.mPoint.erase(step.mTree.mPoint.begin() + findPoint(step.mTree, x, y));
-            delete temp;
-            temp = NULL;
-        }
-        else
-        {
-            // node with two children: Get the inorder
-            // successor (smallest in the right subtree)
-            addLine(step.mTree, x, y, x + distance, y + 80, true);
-            mStep.push_back(step);
-            Node* temp = minValueNode(step, root->right, x + distance, y + 80, distance / 2);
-            mStep.push_back(step);
- 
-            // Copy the inorder successor's data to this node
-            resetSub(step.mTree, root, x, y, distance);
-            int id = findPoint(step.mTree, x, y);
-            // root->key = temp->key;
-            step.mTree.mPoint[id] = Point(23, sf::Vector2f(x, y), root->key, mFont, true, pallete[mColor]);
-            mStep.push_back(step);
- 
-            // Delete the inorder successor
-            if (root->right) addLine(step.mTree, x, y, x + distance, y + 80, true);
-            root->right = remove(step, root->right, temp->key, x + distance, y + 80, distance / 2);
-            root->key = temp->key;
-        }
-    }
- 
-    // If the tree had only one node then return
-    if (root == NULL) return root;
- 
-    root->height = std::max(height(root->left), height(root->right)) + 1;
-    int balance = getBalance(root);
-
-    resetSub(step.mTree, root, x, y, distance);
-    addPoint(step.mTree, x, y, root->key, true);
-    step.mText = mRealText;
-    step.mText[2].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(step);
- 
-    // Left Left Case
-    if (balance > 1 && getBalance(root->left) >= 0)
+    reset(step.mTree, mRoot);
+	if (!root) 
     {
         step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        return rightRotate(step, root, x, y, distance);
-    }
- 
-    // Right Right Case
-    if (balance < -1 && getBalance(root->right) <= 0)
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        return leftRotate(step, root, x, y, distance);
-    }
-
-    // Left Right Case
-    if (balance > 1 && getBalance(root->left) < 0)
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        root->left = leftRotate(step, root->left, x - distance / 2, y + 80, distance / 2);
-        resetSub(step.mTree, root->left, x - distance / 2, y + 80, distance / 2);
-        step.mText = mRealText;
-        step.mText[6].setFillColor(sf::Color(230, 100, 140));
+        step.mText[0].setFillColor(sf::Color(230, 100, 140));
+        step.mText[1].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
-        return rightRotate(step, root, x, y, distance);
+        return nullptr;
     }
- 
-    // Right Left Case
-    if (balance < -1 && getBalance(root->right) > 0)
+    addPoint(step.mTree, x, y, root->key, true);
+	if (depth == key.size()) 
+    {
+		if (root->isEndOfWord)
+			root->isEndOfWord = false;
+
+		if (isEmpty(root)) 
+        {
+			delete (root);
+			root = NULL;
+		}
+
+        step.mText = mRealText;
+        step.mText[0].setFillColor(sf::Color(230, 100, 140));
+        for (int i = 2; i < 6; i++)
+            step.mText[i].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(step);
+		return root;
+	}
+
+    int cnt = 0;
+    for (int i = 0; i < 26; i++)
+        if (root->child[i]) cnt++;
+	int index = key[depth] - 'a';
+    step.mText = mRealText;
+    step.mText[0].setFillColor(sf::Color(230, 100, 140));
+    for (int i = 6; i < 8; i++)
+        step.mText[i].setFillColor(sf::Color(230, 100, 140));
+    addLine(step.mTree, x, y, x - distance / 2 + cnt * distance / root->numChild + distance / root->numChild / 2, y + 80, true);
+    mStep.push_back(step);
+	root->child[index] = remove(step, root->child[index], key, x - distance / 2 + cnt * distance / root->numChild + distance / root->numChild / 2, y + 80, distance / root->numChild, depth + 1);
+
+    reset(step.mTree, mRoot);
+    addPoint(step.mTree, x, y, root->key, true);
+	if (isEmpty(root) && root->isEndOfWord == false) 
     {
         step.mText = mRealText;
-        step.mText[7].setFillColor(sf::Color(230, 100, 140));
-        root->right = rightRotate(step, root->right, x + distance, y + 80, distance / 2);
-        resetSub(step.mTree, root->right, x + distance, y + 80, distance / 2);
-        step.mText = mRealText;
+        step.mText[0].setFillColor(sf::Color(230, 100, 140));
         step.mText[8].setFillColor(sf::Color(230, 100, 140));
         mStep.push_back(step);
-        return leftRotate(step, root, x, y, distance);
-    }
- 
-    return root;
+		delete (root);
+		root = NULL;
+	}
+
+    step.mText = mRealText;
+    step.mText[0].setFillColor(sf::Color(230, 100, 140));
+    step.mText[9].setFillColor(sf::Color(230, 100, 140));
+    mStep.push_back(step);
+	return root;
 }
 
 void Trie::finalRemove(std::string key)
@@ -887,18 +826,14 @@ void Trie::finalRemove(std::string key)
     step = 0;
     mRun = 1;
 
-    tmpStep.mText = mRealText;
-    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
-    mStep.push_back(tmpStep);
-
-    mRoot = remove(tmpStep, mRoot, key);
+    remove(tmpStep, mRoot, key, 1100, 175, 800, 0);
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
 }
-
+/*
 void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
 {
     if (root == NULL) 

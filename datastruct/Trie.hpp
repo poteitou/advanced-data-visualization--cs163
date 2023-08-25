@@ -65,14 +65,15 @@ struct Trie
     void update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, int &mData, float dt);
     void updateInit(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     void updateInsert(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
-    // void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
+    void updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
     // void updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress);
 
     bool insert(Node* root, std::string key);
     bool canInsert(std::string key);
     void init(std::string fileName);
     void insert(std::string key);
-    // void finalRemove(std::string key);
+    Node* remove(Step &step, Node* root, std::string key, float x, float y, float distance, int depth);
+    void finalRemove(std::string key);
     // void finalSearch(std::string key);
     void draw();
 
