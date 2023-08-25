@@ -5,15 +5,15 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mButton.resize(10);
     mInputBar.resize(5);
     mButtonImg.resize(12);
-    mRealText.resize(11);
+    mRealText.resize(12);
     mNoteText.resize(3);
 
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < 12; i++)
     {
         mRealText[i].setCharacterSize(18);
         mRealText[i].setFont(mFontCode);
         mRealText[i].setFillColor(sf::Color::Black);
-        mRealText[i].setPosition(120, 525 + i * 32 - 18 / 2);
+        mRealText[i].setPosition(120, 525 + i * 28 - 18 / 2);
     }
     for (int i = 0; i < 3; i++)
     {
@@ -45,16 +45,16 @@ Trie::Trie(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWind
     mButton[6] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[6], mFont, 22);
 
     // Insert bar + OK
-    mInputBar[2] = InputBar(sf::Vector2f(350, 50), sf::Vector2f(225, 100 + 55), mFont, randString(0), 3);
-    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
+    mInputBar[2] = InputBar(sf::Vector2f(150, 50), sf::Vector2f(225, 100 + 55), mFont, randString(0), 3);
+    mButton[7] = Button(sf::Vector2f(75, 50), sf::Vector2f(400, 100 + 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[7], mFont, 22);
 
     // Remove bar + OK
-    mInputBar[3] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(0), 3);
-    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
+    mInputBar[3] = InputBar(sf::Vector2f(150, 50), sf::Vector2f(225, 100 + 2 * 55), mFont, randString(0), 3);
+    mButton[8] = Button(sf::Vector2f(75, 50), sf::Vector2f(400, 100 + 2 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[8], mFont, 22);
 
     // Search bar + OK
-    mInputBar[4] = InputBar(sf::Vector2f(100, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(0), 3);
-    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(575, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
+    mInputBar[4] = InputBar(sf::Vector2f(150, 50), sf::Vector2f(225, 100 + 3 * 55), mFont, randString(0), 3);
+    mButton[9] = Button(sf::Vector2f(75, 50), sf::Vector2f(400, 100 + 3 * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[9], mFont, 22);
 
     // Play button
     std::string nameImg[] = {"begin", "prev", "play", "next", "end", "minus", "plus", "pause", "blue", "purple", "pink", "home"};
@@ -420,7 +420,7 @@ void Trie::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress, i
         updateRemove(mousePress, mousePosition, keyPress);
         break;
     case 4: // Search
-        // updateSearch(mousePress, mousePosition, keyPress);
+        updateSearch(mousePress, mousePosition, keyPress);
         break;
     default:
         break;
@@ -493,7 +493,7 @@ void Trie::updateRemove(bool mousePress, sf::Vector2i mousePosition, char &keyPr
     else
         firstTime = true;
 }
-/*
+
 void Trie::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPress)
 {
     char tempkeyPress;
@@ -501,11 +501,10 @@ void Trie::updateSearch(bool mousePress, sf::Vector2i mousePosition, char &keyPr
 
     mInputBar[4].update(mousePress, mousePosition, keyPress, 6);
     if (mButton[9].setMouseOver(mousePosition) && mousePress && mInputBar[4].mValue != "")
-        finalSearch(mInputBar[4].mValue);
+        search(mInputBar[4].mValue);
     else
         firstTime = true;
 }
-*/
 
 bool Trie::insert(Node* root, std::string key)
 {
@@ -733,6 +732,20 @@ void Trie::insert(std::string key)
     inCode.close();
 }
 
+bool Trie::search(Node* root, std::string key)
+{
+	Node* pTemp = root;
+
+	for (int i = 0; i < key.length(); i++) 
+    {
+		int index = key[i] - 'a';
+		if (!pTemp->child[index]) return false;
+		pTemp = pTemp->child[index];
+	}
+
+	return (pTemp != NULL && pTemp->isEndOfWord);
+}
+
 Trie::Node* Trie::remove(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800, int depth = 0)
 {
     reset(step.mTree, mRoot);
@@ -826,53 +839,16 @@ void Trie::finalRemove(std::string key)
     step = 0;
     mRun = 1;
 
-    remove(tmpStep, mRoot, key, 1100, 175, 800, 0);
+    if (search(mRoot, key))
+        remove(tmpStep, mRoot, key, 1100, 175, 800, 0);
 
     reset(tmpStep.mTree, mRoot);
     tmpStep.mText = mRealText;
     mStep.push_back(tmpStep);
     inCode.close();
 }
-/*
-void Trie::search(Step &step, Node* root, std::string key, float x = 1100, float y = 175, float distance = 800)
-{
-    if (root == NULL) 
-    {
-        step.mText = mRealText;
-        step.mText[2].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        mStep.push_back(step);
-        return;
-    }
-    addPoint(step.mTree, x, y, root->key, true);
-    mStep.push_back(step);
 
-    if (stoi(key) < stoi(root->key))
-    {
-        step.mText = mRealText;
-        step.mText[4].setFillColor(sf::Color(230, 100, 140));
-        if (root->left) addLine(step.mTree, x, y, x - distance / 2, y + 80, true);
-        search(step, root->left, key, x - distance / 2, y + 80, distance / 2);
-    }
-    else if (stoi(key) > stoi(root->key))
-    {
-        step.mText = mRealText;
-        step.mText[5].setFillColor(sf::Color(230, 100, 140));
-        if (root->right) addLine(step.mTree, x, y, x + distance, y + 80, true);
-        search(step, root->right, key, x + distance, y + 80, distance / 2);
-    }
-    else
-    {
-        step.mText = mRealText;
-        step.mText[3].setFillColor(sf::Color(230, 100, 140));
-        reset(step.mTree, mRoot);
-        addPoint(step.mTree, x, y, root->key, true);
-        mStep.push_back(step);
-        return;
-    }
-}
-
-void Trie::finalSearch(std::string key)
+void Trie::search(std::string key)
 {
     std::ifstream inCode("pseudo/trie/search.pseudo");
     if (firstTime == false)
@@ -903,14 +879,56 @@ void Trie::finalSearch(std::string key)
     step = 0;
     mRun = 1;
 
+    int x = 1100, y = 175, distance = 800;
+    Node* pTemp = mRoot;
     tmpStep.mText = mRealText;
-    tmpStep.mText[1].setFillColor(sf::Color(230, 100, 140));
+    tmpStep.mText[2].setFillColor(sf::Color(230, 100, 140));
+    addPoint(tmpStep.mTree, x, y, pTemp->key, true);
     mStep.push_back(tmpStep);
+	for (int i = 0; i < key.size(); i++) 
+    {
+        tmpStep.mText = mRealText;
+        tmpStep.mText[3].setFillColor(sf::Color(230, 100, 140));
+        tmpStep.mText[4].setFillColor(sf::Color(230, 100, 140));
+		int index = key[i] - 'a';
+		if (!pTemp->child[index]) 
+        {
+            tmpStep.mText[5].setFillColor(sf::Color(230, 100, 140));
+            tmpStep.mText[6].setFillColor(sf::Color(230, 100, 140));
+            reset(tmpStep.mTree, mRoot);
+            mStep.push_back(tmpStep);
+            inCode.close();
+            return;
+        }
+        tmpStep.mText[5].setFillColor(sf::Color::Black);
+        tmpStep.mText[6].setFillColor(sf::Color::Black);
+        int cnt = -1;
+        for (int j = 0; j <= index; j++)
+            if (pTemp->child[j]) cnt++;
+        reset(tmpStep.mTree, mRoot);
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        addLine(tmpStep.mTree, x, y, x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2, y + 80, true);
+        x = x - distance / 2 + cnt * distance / pTemp->numChild + distance / pTemp->numChild / 2;
+        y = y + 80;
+        distance = distance / (pTemp->numChild);
+		pTemp = pTemp->child[index];
+        pTemp->key = key[i];
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        tmpStep.mText[7].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+	}
 
-    search(tmpStep, mRoot, key);
+	if (pTemp != NULL && pTemp->isEndOfWord)
+    {
+        reset(tmpStep.mTree, mRoot);
+        addPoint(tmpStep.mTree, x, y, pTemp->key, true);
+        tmpStep.mText = mRealText;
+        tmpStep.mText[8].setFillColor(sf::Color(230, 100, 140));
+        mStep.push_back(tmpStep);
+    }
     inCode.close();
 }
-*/
+
 void Trie::draw()
 {
     sf::Text textImple;

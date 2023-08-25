@@ -1,6 +1,9 @@
 input(value)
 
-if node == NULL: return NOT_FOUND
-if value == node->value: return FOUND
-else if value < node->value: search(left)
-else: search(right)
+Node temp = this->root
+for i in [0, size(key) - 1]:
+    index = key[i]
+    if temp->child[index] == NULL:
+        return NOT_FOUND
+    temp = temp->child[index]
+if temp and pTemp->isEndOfWord: return FOUND
