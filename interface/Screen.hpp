@@ -8,7 +8,7 @@
 #include "../datastruct/Tree234.hpp"
 #include "../datastruct/Heap.hpp"
 #include "../datastruct/Trie.hpp"
-// #include "../datastruct/Queue.hpp"
+#include "../datastruct/Graph.hpp"
 
 struct Screen
 {
@@ -26,7 +26,7 @@ struct Screen
     Tree234 mTree234;
     Heap mHeap;
     Trie mTrie;
-    // Queue mQueue;
+    Graph mGraph;
     int mData;
 };
 

@@ -56,12 +56,9 @@ void Screen::update(bool mousePress, sf::Vector2i mousePosition, char &keyPress,
     case 5: // Trie
         mTrie.update(mousePress, mousePosition, keyPress, mData, dt);
         break;
-    // case 6: // Stack
-    //     mStack.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
-    // case 7: // Queue
-    //     mQueue.update(mousePress, mousePosition, keyPress, mData, dt);
-    //     break;
+    case 6: // Graph
+        mGraph.update(mousePress, mousePosition, keyPress, mData, dt);
+        break;
     default:
         break;
     }
@@ -105,12 +102,10 @@ void Screen::draw()
         textTitle.setString("Trie");
         mTrie.draw();
         break;
-    // case 6: // Stack
-    //     mStack.draw();
-    //     break;
-    // case 7: // Queue
-    //     mQueue.draw();
-    //     break;
+    case 6: // Graph
+        textTitle.setString("Graph");
+        mGraph.draw();
+        break;
     default:
         break;
     }
