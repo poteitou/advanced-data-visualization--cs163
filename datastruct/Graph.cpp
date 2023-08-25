@@ -97,23 +97,15 @@ void Graph::reset(Tree &tree)
 {
     tree.mPoint.clear();
     tree.mEdge.clear();
-    float PI = std::acos(-1);
-    float R = 250;
-    for (int i = 0; i < mEdge; i++)
+    for (int i = 0; i < mVertex; i++)
     {
-        float x = 1100 + R * std::sin(i * 2 * PI / mVertex);
-        float y = 150 + R * (1 - std::cos(i * 2 * PI / mVertex));
-        tree.mPoint.push_back(Point(25, sf::Vector2f(x, y), std::to_string(i), mFont, false, pallete[mColor]));
+        addPoint(tree, i, false);
         for (int j = 0; j < mAdj[i].size(); j++)
         {
             int u = i;
             int v = mAdj[i][j].second;
             int w = mAdj[i][j].first;
-            float x1 = 1100 + R * std::sin(u * 2 * PI / mVertex);
-            float y1 = 150 + R * (1 - std::cos(u * 2 * PI / mVertex));
-            float x2 = 1100 + R * std::sin(v * 2 * PI / mVertex);
-            float y2 = 150 + R * (1 - std::cos(v * 2 * PI / mVertex));
-            tree.mEdge.push_back(Edge(sf::Vector2f(x1, y1), sf::Vector2f(x2, y2), std::to_string(w), mFont, pallete[mColor], false));
+            addEdge(tree, u, v, w, false);
         }
     }
 }
