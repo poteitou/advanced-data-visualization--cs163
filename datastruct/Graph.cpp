@@ -34,7 +34,7 @@ Graph::Graph(sf::RenderWindow &window, sf::Font &font, sf::Font &fontCode) : mWi
 
     std::string nameButton[] = {"Init", "Connected", "MST", "Dijkstra", "From File", "Randomize", "OK", "OK", "OK", "OK"};
     for (int i = 0; i < 4; i++) // Init, Connected, Mst, Dijkstra
-        mButton[i] = Button(sf::Vector2f(100, 50), sf::Vector2f(100, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
+        mButton[i] = Button(sf::Vector2f(120, 50), sf::Vector2f(80, 100 + i * 55), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
 
     for (int i = 4; i < 6; i++) // From File + Randomize
         mButton[i] = Button(sf::Vector2f(150, 50), sf::Vector2f(225 + (i - 4) * 175, 100), sf::Color(160, 220, 255), sf::Color(50, 140, 200), nameButton[i], mFont, 22);
@@ -98,11 +98,11 @@ void Graph::reset(Tree &tree)
     tree.mPoint.clear();
     tree.mEdge.clear();
     float PI = std::acos(-1);
-    float R = 300;
-    for (int i = 0; i < mVertex; i++)
+    float R = 250;
+    for (int i = 0; i < mEdge; i++)
     {
         float x = 1100 + R * std::sin(i * 2 * PI / mVertex);
-        float y = 400 + R * (1 - std::cos(i * 2 * PI / mVertex));
+        float y = 150 + R * (1 - std::cos(i * 2 * PI / mVertex));
         tree.mPoint.push_back(Point(25, sf::Vector2f(x, y), std::to_string(i), mFont, false, pallete[mColor]));
         for (int j = 0; j < mAdj[i].size(); j++)
         {
@@ -110,9 +110,9 @@ void Graph::reset(Tree &tree)
             int v = mAdj[i][j].second;
             int w = mAdj[i][j].first;
             float x1 = 1100 + R * std::sin(u * 2 * PI / mVertex);
-            float y1 = 400 + R * (1 - std::cos(u * 2 * PI / mVertex));
+            float y1 = 150 + R * (1 - std::cos(u * 2 * PI / mVertex));
             float x2 = 1100 + R * std::sin(v * 2 * PI / mVertex);
-            float y2 = 400 + R * (1 - std::cos(v * 2 * PI / mVertex));
+            float y2 = 150 + R * (1 - std::cos(v * 2 * PI / mVertex));
             tree.mEdge.push_back(Edge(sf::Vector2f(x1, y1), sf::Vector2f(x2, y2), std::to_string(w), mFont, pallete[mColor], false));
         }
     }
@@ -129,9 +129,9 @@ void Graph::Tree::draw(sf::RenderWindow &mWindow)
 int Graph::addPoint(Tree &tree, int id, bool highLight)
 {
     float PI = std::acos(-1);
-    float R = 300;
+    float R = 250;
     float x = 1100 + R * std::sin(id * 2 * PI / mVertex);
-    float y = 400 + R * (1 - std::cos(id * 2 * PI / mVertex));
+    float y = 150 + R * (1 - std::cos(id * 2 * PI / mVertex));
     std::string key = std::to_string(id);
     for (int i = 0; i < tree.mPoint.size(); i++)
     {
@@ -148,11 +148,11 @@ int Graph::addPoint(Tree &tree, int id, bool highLight)
 int Graph::addEdge(Tree &tree, int id1, int id2, int w, bool highLight)
 {
     float PI = std::acos(-1);
-    float R = 300;
+    float R = 250;
     float x = 1100 + R * std::sin(id1 * 2 * PI / mVertex);
-    float y = 400 + R * (1 - std::cos(id1 * 2 * PI / mVertex));
+    float y = 150 + R * (1 - std::cos(id1 * 2 * PI / mVertex));
     float u = 1100 + R * std::sin(id2 * 2 * PI / mVertex);
-    float v = 400 + R * (1 - std::cos(id2 * 2 * PI / mVertex));
+    float v = 150 + R * (1 - std::cos(id2 * 2 * PI / mVertex));
     for (int i = 0; i < tree.mEdge.size(); i++)
     {
         if (tree.mEdge[i].mPosBegin == sf::Vector2f(x, y) && tree.mEdge[i].mPosEnd == sf::Vector2f(u, v))
@@ -497,14 +497,14 @@ void Graph::init(std::string filename)
     for (int i = 0; i < mEdge; i++)
     {
         tmpStep.mText = mRealText;
-        for (int j = 0; j < 5; j++)
+        for (int j = 1; j < 5; j++)
             tmpStep.mText[j].setFillColor(sf::Color(230, 100, 140));
         int u, v, w;
         inFile >> u >> v >> w;
         if (mVertex > 10 || !(0 <= u && u < mVertex) || !(0 <= v && v < mVertex) || u == v || !(0 < w && w <= 99)) continue;
-        mAdj[u].push_back(std::make_pair(v, w));
-        mAdj[v].push_back(std::make_pair(u, w));
         reset(tmpStep.mTree);
+        mAdj[u].push_back(std::make_pair(w, v));
+        mAdj[v].push_back(std::make_pair(w, u));
         addPoint(tmpStep.mTree, u, true);
         addPoint(tmpStep.mTree, v, true);
         addEdge(tmpStep.mTree, u, v, w, true);

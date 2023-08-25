@@ -10,12 +10,11 @@ Menu::Menu(sf::RenderWindow &window, sf::Font &font)
     mButton[3] = Button(sf::Vector2f(300, 100), sf::Vector2f(300, 550), sf::Color(160, 220, 255), sf::Color(50, 140, 200), "Heap", mFont, 35);
     mButton[4] = Button(sf::Vector2f(300, 100), sf::Vector2f(650, 550), sf::Color(160, 220, 255), sf::Color(50, 140, 200), "Trie", mFont, 35);
     mButton[5] = Button(sf::Vector2f(300, 100), sf::Vector2f(1000, 550), sf::Color(160, 220, 255), sf::Color(50, 140, 200), "Graph", mFont, 35);
-    mButton[6] = Button(sf::Vector2f(300, 100), sf::Vector2f(650, 700), sf::Color(160, 220, 255), sf::Color(50, 140, 200), "About", mFont, 35);
 }
 
 void Menu::update(bool mousePress, sf::Vector2i mousePosition, int &mData)
 {
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 6; i++)
     {
         if (mButton[i].setMouseOver(mousePosition) && mousePress)
         {
@@ -46,7 +45,7 @@ void Menu::draw()
     text2.setFillColor(sf::Color::Black);
     mWindow.draw(text1);
     mWindow.draw(text2);
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 6; i++)
         mButton[i].draw(mWindow);
 }
 
